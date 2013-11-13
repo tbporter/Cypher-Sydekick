@@ -28,3 +28,4 @@ proguard/
 *.iws
 .idea/
 .metadata/
+CypherSydekick/.settings/org.eclipse.jdt.core.prefs

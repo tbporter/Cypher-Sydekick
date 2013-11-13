@@ -3,6 +3,8 @@
 
     <string name="app_name">Cypher Sydekick</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="nfcEditText_hint">Enter text to share via NFC…</string>
+    <string name="nfcBroadcastButton_text">Broadcast via NFC</string>
+    <string name="nfcReceiveButton_text">Receive via NFC</string>
 
 </resources>
