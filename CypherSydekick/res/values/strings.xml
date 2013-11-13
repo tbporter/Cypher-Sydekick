@@ -4,7 +4,8 @@
     <string name="app_name">Cypher Sydekick</string>
     <string name="action_settings">Settings</string>
     <string name="nfcEditText_hint">Enter text to share via NFC…</string>
-    <string name="nfcBroadcastButton_text">Broadcast via NFC</string>
+    <string name="nfcBroadcastButton_text_initial">Broadcast via NFC</string>
+    <string name="nfcBroadcastButton_text_active">Broadcasting…\n(click to cancel)</string>
     <string name="nfcReceiveButton_text">Receive via NFC</string>
 
 </resources>
