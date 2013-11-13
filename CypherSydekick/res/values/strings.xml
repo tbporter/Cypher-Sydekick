@@ -6,6 +6,7 @@
     <string name="nfcEditText_hint">Enter text to share via NFC…</string>
     <string name="nfcBroadcastButton_text_initial">Broadcast via NFC</string>
     <string name="nfcBroadcastButton_text_active">Broadcasting…\n(click to cancel)</string>
-    <string name="nfcReceiveButton_text">Receive via NFC</string>
+    <string name="nfcReceiveButton_text_initial">Receive via NFC</string>
+    <string name="nfcReceiveButton_text_active">Receiving…\n(click to cancel)</string>
 
 </resources>
