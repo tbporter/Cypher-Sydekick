@@ -1,6 +1,11 @@
 package com.github.tbporter.cypher_sydekick;
 
+import java.nio.charset.Charset;
+
 import android.app.Activity;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -8,9 +13,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class NFCActivity extends Activity {
 	private static String TAG = "NFCActivity";
+	private static String MIME_TYPE = "com.github.tbporter.cypher_sydekick";
+
+	// Device's NFC adapter
+	private NfcAdapter m_nfcAdapter;
 
 	// Views
 	private EditText m_nfcEditText;
@@ -28,6 +38,15 @@ public class NFCActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_nfc);
+
+		// Make sure this device has NFC available
+		m_nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+		if (null == m_nfcAdapter) {
+			Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG)
+					.show();
+			finish();
+			return;
+		}
 
 		// Initialize members
 		m_nfcState = NFCState.NFC_INACTIVE;
@@ -107,7 +126,17 @@ public class NFCActivity extends Activity {
 	private void startNFCBroadcast() {
 		Log.d(TAG, "NFC broadcast starting");
 
-		// TODO: Start the broadcast
+		// Build the NDEF message to broadcast
+		String text = m_nfcEditText.getText().toString();
+		NdefRecord record = new NdefRecord(NdefRecord.TNF_MIME_MEDIA,
+				MIME_TYPE.getBytes(Charset.forName("US-ASCII")), new byte[0],
+				text.getBytes());
+		NdefMessage msg = new NdefMessage(new NdefRecord[] { record });
+
+		// Set the message to broadcast
+		// Using this deprecated method because setNdefPushMessage() requires
+		// API 14+
+		m_nfcAdapter.enableForegroundNdefPush(this, msg);
 
 		// Update the NFC state
 		m_nfcState = NFCState.NFC_BROADCASTING;
@@ -124,7 +153,10 @@ public class NFCActivity extends Activity {
 	private void stopNFCBroadcast() {
 		Log.d(TAG, "NFC broadcast stopping");
 
-		// TODO: Stop the broadcast
+		// Stop the broadcast
+		// Using this deprecated method because setNdefPushMessage() requires
+		// API 14+
+		m_nfcAdapter.disableForegroundNdefPush(this);
 
 		// Update the NFC state
 		m_nfcState = NFCState.NFC_INACTIVE;
@@ -136,35 +168,35 @@ public class NFCActivity extends Activity {
 		// Update broadcast button text to indicate its new function
 		m_nfcBroadcastButton.setText(R.string.nfcBroadcastButton_text_initial);
 	}
-	
+
 	private void startNFCReceive() {
 		Log.d(TAG, "NFC receive starting");
-		
+
 		// TODO: Start receiving
-		
+
 		// Update the NFC state
 		m_nfcState = NFCState.NFC_RECEIVING;
-		
+
 		// Disable the text field and broadcast button when receiving
 		m_nfcEditText.setEnabled(false);
 		m_nfcBroadcastButton.setEnabled(false);
-		
+
 		// Update receive button text to indicate its new function
 		m_nfcReceiveButton.setText(R.string.nfcReceiveButton_text_active);
 	}
-	
+
 	private void stopNFCReceive() {
 		Log.d(TAG, "NFC receive stopping");
-		
+
 		// TODO: Stop receiving
-		
+
 		// Update the NFC state
 		m_nfcState = NFCState.NFC_INACTIVE;
-		
+
 		// Enable the text field and broadcast button when receiving stops
 		m_nfcEditText.setEnabled(true);
 		m_nfcBroadcastButton.setEnabled(true);
-		
+
 		// Update receive button text to indicate its new function
 		m_nfcReceiveButton.setText(R.string.nfcReceiveButton_text_initial);
 	}
