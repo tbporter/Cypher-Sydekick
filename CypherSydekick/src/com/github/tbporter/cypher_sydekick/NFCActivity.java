@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.nfc.NfcAdapter.OnNdefPushCompleteCallback;
+import android.nfc.NfcEvent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -18,11 +20,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class NFCActivity extends Activity {
+public class NFCActivity extends Activity implements OnNdefPushCompleteCallback {
 	private static String TAG = "NFCActivity";
 
 	/** MIME type for messages shared over NFC. */
-	private static String NDEF_MIME_TYPE = "com.github.tbporter.cypher_sydekick";
+	private static String NDEF_MIME_TYPE = "application/com.github.tbporter.cypher_sydekick";
 	/** Charset used for Strings shared over NFC. */
 	private static Charset NDEF_CHARSET = Charset.forName("US-ASCII");
 
@@ -55,6 +57,9 @@ public class NFCActivity extends Activity {
 			finish();
 			return;
 		}
+
+		// Set this class as the callback for an NDEF push completion
+		m_nfcAdapter.setOnNdefPushCompleteCallback(this, this);
 
 		// Initialize members
 		m_nfcState = NFCState.NFC_INACTIVE;
@@ -155,7 +160,8 @@ public class NFCActivity extends Activity {
 		// Set the message to broadcast
 		// Using this deprecated method because setNdefPushMessage() requires
 		// API 14+
-		m_nfcAdapter.enableForegroundNdefPush(this, msg);
+		// m_nfcAdapter.enableForegroundNdefPush(this, msg);
+		m_nfcAdapter.setNdefPushMessage(msg, this);
 
 		// Update the NFC state
 		m_nfcState = NFCState.NFC_BROADCASTING;
@@ -175,7 +181,8 @@ public class NFCActivity extends Activity {
 		// Stop the broadcast
 		// Using this deprecated method because setNdefPushMessage() requires
 		// API 14+
-		m_nfcAdapter.disableForegroundNdefPush(this);
+		// m_nfcAdapter.disableForegroundNdefPush(this);
+		m_nfcAdapter.setNdefPushMessage(null, this);
 
 		// Update the NFC state
 		m_nfcState = NFCState.NFC_INACTIVE;
@@ -247,8 +254,8 @@ public class NFCActivity extends Activity {
 	 */
 	@Override
 	public void onNewIntent(final Intent intent) {
-		Log.d(TAG, "onNewIntent with Intent: " + intent.toString());
-
+		super.onNewIntent(intent);
+		
 		// Make sure it's an NFC intent that should be handled
 		final String action = intent.getAction();
 		if (action.equals(NfcAdapter.ACTION_NDEF_DISCOVERED)) {
@@ -296,12 +303,6 @@ public class NFCActivity extends Activity {
 			}
 
 		}
-		// If it isn't, pass it on to the super class
-		else {
-			Log.d(TAG, "Passing unknown intent to super.  Intent action: "
-					+ action);
-			super.onNewIntent(intent);
-		}
 
 	}
 
@@ -315,6 +316,8 @@ public class NFCActivity extends Activity {
 	private boolean checkNdefRecord(final NdefRecord record) {
 		boolean retVal = true;
 
+		// @formatter:off
+		/*
 		// Check the TNF
 		final short tnf = record.getTnf();
 		if (NdefRecord.TNF_MIME_MEDIA != tnf) {
@@ -328,17 +331,45 @@ public class NFCActivity extends Activity {
 			retVal = false;
 			Log.d(TAG, "Checked NdefRecord with unknown MIME type: " + mime);
 		}
+		*/ 
+		// @formatter:on
 
-		/*
-		 * // Requires API 16: // Check the MIME type final String mime =
-		 * record.toMimeType(); if (null != mime) { // The record has a MIME
-		 * type, make sure it's correct if (MIME_TYPE != mime) { retVal = false;
-		 * Log.d(TAG, "Checked NdefRecord with unknown MIME type: " + mime); } }
-		 * else { // No MIME type found, this is not a valid record retVal =
-		 * false; Log.d(TAG, "Checked NdefRecord with null MIME type"); }
-		 */
+		// Requires API 16:
+		// Check the MIME type
+		final String mime = record.toMimeType();
+		if (null != mime) {
+			// The record has a MIME type, make sure it's correct
+			if (!NDEF_MIME_TYPE.equals(mime)) {
+				retVal = false;
+				Log.d(TAG, "Checked NdefRecord with unknown MIME type: " + mime);
+				Log.d(TAG,
+						"MIME type via old method: "
+								+ new String(record.getType(), NDEF_CHARSET));
+			}
+		} else {
+			// No MIME type found, this is not a valid record
+			retVal = false;
+			Log.d(TAG, "Checked NdefRecord with null MIME type");
+		}
 
 		return retVal;
+	}
+
+	/**
+	 * Stops the NFC broadcast when the push is complete.
+	 */
+	@Override
+	public void onNdefPushComplete(NfcEvent arg0) {
+		Log.d(TAG, "NDEF push complete.");
+
+		// This callback may be called on a binder thread but stopNFCBroadcast()
+		// must be called on the UI thread.
+		this.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				stopNFCBroadcast();
+			}
+		});
 	}
 
 	@Override
