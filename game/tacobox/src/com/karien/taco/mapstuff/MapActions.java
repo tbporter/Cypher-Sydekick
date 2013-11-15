@@ -33,23 +33,25 @@ public class MapActions {
 		String sgy = (String) p.get(C.GoalY);
 		String ssx = (String) p.get(C.SpawnX);
 		String ssy = (String) p.get(C.SpawnY);
-		
+
 		if (sgx == null || sgy == null || ssx == null || ssy == null) {
 			throw new RuntimeException("Didn't set goal/spawn correctly!");
 		}
-		
-		TiledMapTileLayer tilelay = ((TiledMapTileLayer)map.getLayers().get(C.TileLayer));
+
+		TiledMapTileLayer tilelay = ((TiledMapTileLayer) map.getLayers().get(
+				C.TileLayer));
 		int height = tilelay.getHeight();
-		int tileSize = (int)tilelay.getTileHeight();
-		if (tileSize != (int)tilelay.getTileWidth()) {
-			throw new RuntimeException("I assumed they were squares, but they aren't anymore!");
+		int tileSize = (int) tilelay.getTileHeight();
+		if (tileSize != (int) tilelay.getTileWidth()) {
+			throw new RuntimeException(
+					"I assumed they were squares, but they aren't anymore!");
 		}
 
 		p.put(C.GoalX, Integer.parseInt(sgx));
 		p.put(C.GoalY, height - Integer.parseInt(sgy));
 		p.put(C.SpawnX, Integer.parseInt(ssx));
 		p.put(C.SpawnY, height - Integer.parseInt(ssy));
-		
+
 		// Now process the action objects
 		HashMap<String, MapObject> objects = new HashMap<String, MapObject>();
 		HashMap<Coord, MapObject> actable = new HashMap<Coord, MapObject>();
@@ -58,8 +60,9 @@ public class MapActions {
 		for (MapObject o : l.getObjects()) {
 			MapProperties props = o.getProperties();
 
-			Coord c = new Coord(((Integer) props.get("x"))/tileSize, ((Integer) props.get("y"))/tileSize);
-			//System.out.println("Got action obj at " + c);
+			Coord c = new Coord(((Integer) props.get("x")) / tileSize,
+					((Integer) props.get("y")) / tileSize);
+			// System.out.println("Got action obj at " + c);
 			boolean hadAny = makeAction(props, C.onExit)
 					| // Note: Can't do the short-circuiting || operator!
 					makeAction(props, C.onActivate)
@@ -69,7 +72,7 @@ public class MapActions {
 				actable.put(c, o);
 				System.out.println("Got action on obj at " + c);
 			}
-			
+
 			Object id = props.get(C.Id);
 			if (id != null) {
 				objects.put((String) id, o);
@@ -86,9 +89,10 @@ public class MapActions {
 			if (id != null) {
 				objects.put((String) id, o);
 			}
-			
-			Coord c = new Coord(((Integer) props.get("x"))/tileSize, ((Integer) props.get("y"))/tileSize);
-			//System.out.println("Got action obj at " + c);
+
+			Coord c = new Coord(((Integer) props.get("x")) / tileSize,
+					((Integer) props.get("y")) / tileSize);
+			// System.out.println("Got action obj at " + c);
 			boolean hadAny = makeAction(props, C.onExit)
 					| // Note: Can't do the short-circuiting || operator!
 					makeAction(props, C.onActivate)
@@ -98,7 +102,7 @@ public class MapActions {
 				actable.put(c, o);
 				System.out.println("Got action on obj at " + c);
 			}
-			
+
 			setDefaults(props);
 		}
 
@@ -131,14 +135,15 @@ public class MapActions {
 		}
 
 		MapProperties props = obj.getProperties();
-		if (!(Boolean)props.get(C.Visible)) {
+		if (!(Boolean) props.get(C.Visible)) {
 			System.out.println("Ignoring because invisible!");
 			return;
 		}
 
 		ActionAction[] acts = (ActionAction[]) props.get(actStr);
 		if (acts != null) {
-			System.out.println("At " + new Coord(x, y) + " there was a " + actStr + " event: " + Arrays.toString(acts));
+			System.out.println("At " + new Coord(x, y) + " there was a "
+					+ actStr + " event: " + Arrays.toString(acts));
 			for (ActionAction act : acts) {
 				if (act.remote) {
 					sendRemoteMsg(act.targetId, act.act);
@@ -190,14 +195,14 @@ public class MapActions {
 	}
 
 	private static boolean makeAction(MapProperties props, String propName) {
-		String propstr = (String)props.get(propName);
+		String propstr = (String) props.get(propName);
 		if (propstr == null) {
 			return false;
 		}
-		
+
 		String[] acts = propstr.split(",");
 		ActionAction[] out = new ActionAction[acts.length];
-		
+
 		for (int i = 0; i < acts.length; i++) {
 			String pp = acts[i];
 			char location = pp.charAt(0);
@@ -205,12 +210,12 @@ public class MapActions {
 			if (location != 'r' && location != 'l' || colon == -1) {
 				throw new RuntimeException("Bad action string: " + pp);
 			}
-			
-			out[i] = new ActionAction(location == 'r', pp.substring(1, colon), MapAction.valueOf(pp.substring(colon+1)));
+
+			out[i] = new ActionAction(location == 'r', pp.substring(1, colon),
+					MapAction.valueOf(pp.substring(colon + 1)));
 		}
 		props.put(propName, out);
 
-		
 		return true;
 	}
 }

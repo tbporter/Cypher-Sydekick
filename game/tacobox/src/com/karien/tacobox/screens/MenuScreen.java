@@ -9,8 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.karien.tacobox.MyTacoBox;
@@ -30,29 +28,6 @@ public class MenuScreen implements Screen {
 	public void createUI() {
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);
-
-		// Create Dialog
-		Label ipLabel = new Label("Host Address: ", skin);
-		final TextField ipTextField = new TextField("", skin);
-		TextButton connectBtn = new TextButton("Connect", skin);
-		connectBtn.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				parent.menuChoice("join", ipTextField.getText());
-			}
-		});
-
-		final Window joinDialog = new Window("Connect to...", skin);
-		joinDialog.debug();
-		joinDialog.getButtonTable().add(new TextButton("X", skin))
-				.height(joinDialog.getPadTop());
-		joinDialog.setPosition(0, 0);
-		joinDialog.defaults().spaceBottom(10);
-		joinDialog.row().fill().expandX();
-		joinDialog.add(ipLabel);
-		joinDialog.add(ipTextField);
-		joinDialog.row();
-		joinDialog.add(connectBtn).colspan(2).align(Align.center);
-		joinDialog.pack();
 
 		// Create a table that fills the screen. Everything else will go inside
 		// this table.
@@ -76,27 +51,17 @@ public class MenuScreen implements Screen {
 			}
 		});
 
-		TextButton hostBtn = new TextButton("Host", skin);
-		hostBtn.getLabel().setFontScale(2f);
-		hostBtn.addListener(new ClickListener() {
+		TextButton startBtn = new TextButton("Start", skin);
+		startBtn.getLabel().setFontScale(2f);
+		startBtn.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				parent.menuChoice("host");
-			}
-		});
-
-		TextButton joinBtn = new TextButton("Join", skin);
-		joinBtn.getLabel().setFontScale(2f);
-		joinBtn.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				stage.addActor(joinDialog);
+				parent.menuChoice("start");
 			}
 		});
 
 		container.add(titleLabel).align(Align.center).expandX();
 		container.row();
-		container.add(hostBtn).align(Align.center | Align.bottom).expand();
-		container.row();
-		container.add(joinBtn).align(Align.center).expandX();
+		container.add(startBtn).align(Align.center | Align.bottom).expand();
 		container.row();
 		container.add(quitBtn).align(Align.center | Align.top).expand();
 	}

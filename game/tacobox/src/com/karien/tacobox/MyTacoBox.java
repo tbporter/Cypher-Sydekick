@@ -4,8 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.karien.taco.mapstuff.LevelHelper;
-import com.karien.tacobox.comm.MultiplayerComm;
+import com.karien.taco.mapstuff.level.LevelHelper;
 import com.karien.tacobox.screens.LoadingScreen;
 import com.karien.tacobox.screens.MainScreen;
 import com.karien.tacobox.screens.MenuScreen;
@@ -14,7 +13,6 @@ public class MyTacoBox extends Game {
 	private LevelHelper lvls;
 	private GameState state = GameState.Title;
 	private Skin skin;
-	private MultiplayerComm multi;
 
 	public static final int SCREEN_WIDTH = 480;
 	public static final int SCREEN_HEIGHT = 320;
@@ -41,7 +39,7 @@ public class MyTacoBox extends Game {
 			// state = GameState.LoadFirstLevel;
 			break;
 		case LoadFirstLevel:
-			lvls = new LevelHelper(multi, this);
+			lvls = new LevelHelper(null, this);
 			lvls.loadNextLevel();
 			setScreen(new LoadingScreen());
 			state = GameState.WaitLoadFirstLevel;
@@ -92,54 +90,12 @@ public class MyTacoBox extends Game {
 	}
 
 	public void menuChoice(String action, String... params) {
-		if (action.equals("host")) {
-			if (state != GameState.WaitForAction) {
-				throw new RuntimeException(
-						"Invalid state to call this function");
-			}
-			multi = hostMultiplayer();
-			state = GameState.LoadFirstLevel;
-		} else if (action.equals("join")) {
+		if (action.equals("start")) {
 			if (state != GameState.WaitForAction) {
 				throw new RuntimeException(
 						"Invalid state to call this function: " + state);
 			}
-			multi = joinMultiplayer(params[0]);
 			state = GameState.LoadFirstLevel;
-		}
-	}
-
-	private int port = 4608;
-
-	private MultiplayerComm hostMultiplayer() {
-		System.out.println("Hosting multiplayer");
-		setScreen(new LoadingScreen());
-		// TODO: run connect on separate thread
-		try {
-			return MultiplayerComm.connect(port);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-
-	/**
-	 * Joins a multi-player game at <var>ipAddr</var>
-	 * 
-	 * @param ipAddr
-	 *            - The IP Address of the host, if null connects to localhost
-	 * @return a multi-player session
-	 */
-	private MultiplayerComm joinMultiplayer(String ipAddr) {
-		if (ipAddr == null || ipAddr.isEmpty()) {
-			ipAddr = "127.0.0.1";
-		}
-		System.out.println("Joining multiplayer at " + ipAddr);
-		setScreen(new LoadingScreen());
-		// TODO: run connect on separate thread
-		try {
-			return MultiplayerComm.connect(ipAddr, port);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
 		}
 	}
 

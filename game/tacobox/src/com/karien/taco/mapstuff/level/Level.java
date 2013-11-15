@@ -1,4 +1,4 @@
-package com.karien.tacobox.screens;
+package com.karien.taco.mapstuff.level;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -10,7 +10,7 @@ public class Level {
 	public final TiledMap map;
 	public final MapActions acts;
 	public final MyTacoBox parent;
-	
+
 	public Level(MyTacoBox parent, String mapPath, MsgHandler remote) {
 		map = new TmxMapLoader().load(mapPath);
 		acts = MapActions.procActions(map, remote);

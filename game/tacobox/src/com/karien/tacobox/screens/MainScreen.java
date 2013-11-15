@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.karien.taco.mapstuff.C;
 import com.karien.taco.mapstuff.MapActions;
+import com.karien.taco.mapstuff.level.Level;
 import com.karien.tacobox.MyTacoBox;
 import com.karien.tacobox.entities.Player;
 import com.karien.tacobox.entities.Player.EFacing;

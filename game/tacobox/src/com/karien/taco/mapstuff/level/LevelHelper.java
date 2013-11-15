@@ -1,11 +1,10 @@
-package com.karien.taco.mapstuff;
+package com.karien.taco.mapstuff.level;
 
 import java.io.IOException;
 
 import com.karien.taco.mapstuff.map.MapID;
 import com.karien.tacobox.MyTacoBox;
 import com.karien.tacobox.comm.MsgHandler;
-import com.karien.tacobox.screens.Level;
 
 public class LevelHelper {
 	private final MsgHandler msg;
@@ -69,7 +68,7 @@ public class LevelHelper {
 
 		@Override
 		public void run() {
-			Level ll = new Level(listen, path, msg);
+			Level ll = new RandomLevel(listen, msg);
 
 			synchronized (LevelHelper.this) {
 				nextLevel = ll;
