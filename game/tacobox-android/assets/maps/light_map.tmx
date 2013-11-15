@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="20" height="20" tilewidth="32" tileheight="32">
+ <properties>
+  <property name="goalX" value="11"/>
+  <property name="goalY" value="3"/>
+  <property name="spawnX" value="3"/>
+  <property name="spawnY" value="16"/>
+ </properties>
+ <tileset firstgid="1" name="dungeon" tilewidth="32" tileheight="32">
+  <image source="DungeonCrawl_ProjectUtumnoTileset.png" width="2048" height="1536"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJw7yMzAcHAI4NNAfJJMfAqLeeeB+AQBfJMJQrewQOh7QHwfiPeRaR4uPGreqHmj5g0v884B8Rky8Vks5g1WDACrFzl2
+  </data>
+ </layer>
+</map>

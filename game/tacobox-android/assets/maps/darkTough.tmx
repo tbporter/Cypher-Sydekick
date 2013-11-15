@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="20" height="20" tilewidth="32" tileheight="32">
+ <properties>
+  <property name="goalX" value="5"/>
+  <property name="goalY" value="20"/>
+  <property name="spawnX" value="15"/>
+  <property name="spawnY" value="0"/>
+ </properties>
+ <tileset firstgid="1" name="dungeon" tilewidth="32" tileheight="32">
+  <image source="DungeonCrawl_ProjectUtumnoTileset.png" width="2048" height="1536"/>
+ </tileset>
+ <tileset firstgid="3073" name="DungeonCrawl_ProjectUtumnoTileset" tilewidth="32" tileheight="32">
+  <image source="DungeonCrawl_ProjectUtumnoTileset.png" width="2048" height="1536"/>
+ </tileset>
+ <layer name="canvas" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJytklEKgDAMQwf6P3dJ738EGTLdXNKmQ6E4ZKYvacueUlmsc+Pf/6ip13HXdA6yPvr1//xW02t3LS7Gh/SsvJBehG+4T/Sm/DLOj7Ewvp6xZ2N8LL+vx/oM3oknb77ebilz9vpamVt8rC/SU/ngzA091Y/yjvB5fiP5qfwqX2RfFFZ1b1g26j4zDaS3yovqAv5tYVQ=
+  </data>
+ </layer>
+ <objectgroup name="action" width="20" height="20" visible="0">
+  <object gid="4838" x="128" y="160">
+   <properties>
+    <property name="blocked" value="false"/>
+    <property name="id" value="20"/>
+    <property name="onActivate" value="r13:disappear"/>
+   </properties>
+  </object>
+  <object gid="4838" x="160" y="160">
+   <properties>
+    <property name="blocked" value="false"/>
+    <property name="id" value="21"/>
+    <property name="onActivate" value="l19:appear"/>
+    <property name="visible" value="false"/>
+   </properties>
+  </object>
+  <object gid="4838" x="192" y="160">
+   <properties>
+    <property name="blocked" value="false"/>
+    <property name="id" value="22"/>
+    <property name="onActivate" value="l23:appear"/>
+   </properties>
+  </object>
+  <object gid="6059" x="448" y="192">
+   <properties>
+    <property name="blocked" value=""/>
+    <property name="id" value="false"/>
+    <property name="onActivate" value="r4:disappear"/>
+   </properties>
+  </object>
+  <object gid="3083" x="576" y="448">
+   <properties>
+    <property name="blocked" value="false"/>
+    <property name="id" value="31"/>
+    <property name="onEnter" value="l32:disappear"/>
+    <property name="onExit" value="l32:toggle"/>
+   </properties>
+  </object>
+  <object gid="3083" x="32" y="64">
+   <properties>
+    <property name="blocked" value="false"/>
+    <property name="id" value="16"/>
+    <property name="onEnter" value="l32:disappear"/>
+    <property name="onExit" value="l32:toggle"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="object" width="20" height="20" visible="0">
+  <object gid="4199" x="448" y="416">
+   <properties>
+    <property name="id" value="29"/>
+    <property name="moveable" value="true"/>
+   </properties>
+  </object>
+  <object gid="4228" x="160" y="288">
+   <properties>
+    <property name="id" value="24"/>
+   </properties>
+  </object>
+  <object gid="4198" x="64" y="96">
+   <properties>
+    <property name="id" value="18"/>
+    <property name="moveable" value="true"/>
+   </properties>
+  </object>
+  <object gid="3889" x="416" y="224">
+   <properties>
+    <property name="id" value="27"/>
+    <property name="onActivate" value="l27:disappear"/>
+   </properties>
+  </object>
+  <object gid="3889" x="64" y="64">
+   <properties>
+    <property name="id" value="17"/>
+    <property name="onActivate" value="l17:disappear"/>
+   </properties>
+  </object>
+  <object gid="3889" x="448" y="448">
+   <properties>
+    <property name="id" value="30"/>
+    <property name="onActivate" value="l30:disappear"/>
+   </properties>
+  </object>
+  <object gid="5840" x="512" y="160">
+   <properties>
+    <property name="id" value="26"/>
+   </properties>
+  </object>
+  <object gid="4225" x="160" y="608">
+   <properties>
+    <property name="id" value="32"/>
+   </properties>
+  </object>
+  <object gid="4225" x="576" y="288">
+   <properties>
+    <property name="id" value="28"/>
+   </properties>
+  </object>
+  <object gid="3884" x="160" y="256">
+   <properties>
+    <property name="id" value="23"/>
+    <property name="onActivate" value="l23:disappear"/>
+   </properties>
+  </object>
+  <object gid="4164" x="160" y="96">
+   <properties>
+    <property name="id" value="19"/>
+    <property name="visible" value="false"/>
+   </properties>
+  </object>
+  <object gid="1041" x="512" y="32"/>
+  <object gid="1041" x="544" y="32"/>
+  <object gid="1041" x="608" y="32"/>
+  <object gid="1041" x="576" y="32"/>
+  <object gid="1041" x="608" y="64"/>
+  <object gid="1041" x="608" y="96"/>
+  <object gid="1041" x="608" y="128"/>
+  <object gid="1041" x="608" y="384"/>
+  <object gid="1041" x="608" y="160"/>
+  <object gid="1041" x="608" y="192"/>
+  <object gid="1041" x="608" y="224"/>
+  <object gid="1041" x="608" y="256"/>
+  <object gid="1041" x="608" y="288"/>
+  <object gid="1041" x="608" y="320"/>
+  <object gid="1041" x="608" y="352"/>
+  <object gid="1041" x="608" y="384"/>
+  <object gid="1041" x="608" y="416"/>
+  <object gid="1041" x="608" y="448"/>
+  <object gid="1041" x="608" y="512"/>
+  <object gid="1041" x="608" y="480"/>
+  <object gid="1041" x="608" y="512"/>
+  <object gid="1041" x="608" y="544"/>
+  <object gid="1041" x="608" y="576"/>
+  <object gid="1041" x="608" y="608"/>
+  <object gid="1041" x="608" y="608"/>
+  <object gid="1041" x="576" y="640"/>
+  <object gid="1041" x="544" y="640"/>
+  <object gid="1041" x="512" y="640"/>
+  <object gid="1041" x="480" y="640"/>
+  <object gid="1041" x="448" y="640"/>
+  <object gid="1041" x="416" y="640"/>
+  <object gid="1041" x="384" y="640"/>
+  <object gid="1041" x="352" y="640"/>
+  <object gid="1041" x="352" y="640"/>
+  <object gid="1041" x="320" y="640"/>
+  <object gid="1041" x="288" y="640"/>
+  <object gid="1041" x="256" y="640"/>
+  <object gid="1041" x="256" y="640"/>
+  <object gid="1041" x="224" y="640"/>
+  <object gid="1041" x="224" y="640"/>
+  <object gid="1041" x="192" y="640"/>
+  <object gid="1041" x="192" y="640"/>
+  <object gid="1041" x="128" y="640"/>
+  <object gid="1041" x="96" y="640"/>
+  <object gid="1041" x="64" y="640"/>
+  <object gid="1041" x="32" y="640"/>
+  <object gid="1041" x="32" y="640"/>
+  <object gid="1041" x="0" y="640"/>
+  <object gid="1041" x="0" y="640"/>
+  <object gid="1041" x="0" y="608"/>
+  <object gid="1041" x="0" y="576"/>
+  <object gid="1041" x="0" y="544"/>
+  <object gid="1041" x="0" y="512"/>
+  <object gid="1041" x="0" y="512"/>
+  <object gid="1041" x="0" y="480"/>
+  <object gid="1041" x="0" y="448"/>
+  <object gid="1041" x="0" y="416"/>
+  <object gid="1041" x="0" y="416"/>
+  <object gid="1041" x="0" y="352"/>
+  <object gid="1041" x="0" y="352"/>
+  <object gid="1041" x="0" y="320"/>
+  <object gid="1041" x="0" y="320"/>
+  <object gid="1041" x="0" y="288"/>
+  <object gid="1041" x="0" y="288"/>
+  <object gid="1041" x="0" y="288"/>
+  <object gid="1041" x="0" y="256"/>
+  <object gid="1041" x="0" y="224"/>
+  <object gid="1041" x="0" y="224"/>
+  <object gid="1041" x="32" y="224"/>
+  <object gid="1041" x="0" y="192"/>
+  <object gid="1041" x="0" y="160"/>
+  <object gid="1041" x="32" y="160"/>
+  <object gid="1041" x="0" y="128"/>
+  <object gid="1041" x="0" y="96"/>
+  <object gid="1041" x="32" y="96"/>
+  <object gid="1041" x="0" y="64"/>
+  <object gid="1041" x="0" y="32"/>
+  <object gid="1041" x="32" y="32"/>
+  <object gid="1041" x="64" y="32"/>
+  <object gid="1041" x="96" y="32"/>
+  <object gid="1041" x="128" y="32"/>
+  <object gid="1041" x="160" y="32"/>
+  <object gid="1041" x="192" y="32"/>
+  <object gid="1041" x="224" y="32"/>
+  <object gid="1041" x="256" y="32"/>
+  <object gid="1041" x="288" y="32"/>
+  <object gid="1041" x="320" y="32"/>
+  <object gid="1041" x="352" y="32"/>
+  <object gid="1041" x="352" y="32"/>
+  <object gid="1041" x="384" y="32"/>
+  <object gid="1041" x="416" y="32"/>
+  <object gid="1041" x="448" y="32"/>
+  <object gid="1041" x="448" y="32"/>
+  <object gid="1041" x="96" y="96"/>
+  <object gid="1041" x="128" y="96"/>
+  <object gid="1041" x="96" y="128"/>
+  <object gid="1041" x="96" y="160"/>
+  <object gid="1041" x="96" y="192"/>
+  <object gid="1041" x="96" y="224"/>
+  <object gid="1041" x="128" y="224"/>
+  <object gid="1041" x="128" y="256"/>
+  <object gid="1041" x="128" y="288"/>
+  <object gid="1041" x="192" y="288"/>
+  <object gid="1041" x="192" y="256"/>
+  <object gid="1041" x="192" y="224"/>
+  <object gid="1041" x="224" y="224"/>
+  <object gid="1041" x="224" y="192"/>
+  <object gid="1041" x="224" y="160"/>
+  <object gid="1041" x="224" y="128"/>
+  <object gid="1041" x="224" y="96"/>
+  <object gid="1041" x="192" y="96"/>
+  <object gid="1041" x="288" y="96"/>
+  <object gid="1041" x="320" y="96"/>
+  <object gid="1041" x="320" y="128"/>
+  <object gid="1041" x="320" y="160"/>
+  <object gid="1041" x="288" y="160"/>
+  <object gid="1041" x="320" y="192"/>
+  <object gid="1041" x="288" y="224"/>
+  <object gid="1041" x="320" y="224"/>
+  <object gid="1041" x="352" y="96"/>
+  <object gid="1041" x="320" y="96"/>
+  <object gid="1041" x="384" y="96"/>
+  <object gid="1041" x="416" y="96"/>
+  <object gid="1041" x="448" y="96"/>
+  <object gid="1041" x="480" y="96"/>
+  <object gid="1041" x="512" y="96"/>
+  <object gid="1041" x="544" y="96"/>
+  <object gid="1041" x="544" y="128"/>
+  <object gid="1041" x="544" y="160"/>
+  <object gid="1041" x="544" y="192"/>
+  <object gid="1041" x="544" y="224"/>
+  <object gid="1041" x="544" y="256"/>
+  <object gid="1041" x="544" y="288"/>
+  <object gid="1041" x="512" y="288"/>
+  <object gid="1041" x="480" y="288"/>
+  <object gid="1041" x="448" y="288"/>
+  <object gid="1041" x="416" y="288"/>
+  <object gid="1041" x="384" y="288"/>
+  <object gid="1041" x="384" y="256"/>
+  <object gid="1041" x="384" y="224"/>
+  <object gid="1041" x="384" y="192"/>
+  <object gid="1041" x="384" y="160"/>
+  <object gid="1041" x="416" y="160"/>
+  <object gid="1041" x="448" y="160"/>
+  <object gid="1041" x="480" y="160"/>
+  <object gid="1041" x="480" y="192"/>
+  <object gid="1041" x="480" y="224"/>
+  <object gid="1041" x="448" y="224"/>
+  <object gid="1041" x="384" y="320"/>
+  <object gid="1041" x="384" y="352"/>
+  <object gid="1041" x="416" y="352"/>
+  <object gid="1041" x="448" y="352"/>
+  <object gid="1041" x="480" y="352"/>
+  <object gid="1041" x="512" y="352"/>
+  <object gid="1041" x="544" y="352"/>
+  <object gid="1041" x="384" y="384"/>
+  <object gid="1041" x="384" y="416"/>
+  <object gid="1041" x="384" y="448"/>
+  <object gid="1041" x="384" y="480"/>
+  <object gid="1041" x="416" y="480"/>
+  <object gid="1041" x="448" y="480"/>
+  <object gid="1041" x="480" y="480"/>
+  <object gid="1041" x="512" y="480"/>
+  <object gid="1041" x="544" y="480"/>
+  <object gid="1041" x="480" y="416"/>
+  <object gid="1041" x="512" y="416"/>
+  <object gid="1041" x="512" y="416"/>
+  <object gid="1041" x="544" y="416"/>
+  <object gid="1041" x="576" y="416"/>
+  <object gid="1041" x="480" y="576"/>
+  <object gid="1041" x="480" y="544"/>
+  <object gid="1041" x="512" y="544"/>
+  <object gid="1041" x="544" y="544"/>
+  <object gid="1041" x="576" y="544"/>
+  <object gid="1041" x="384" y="512"/>
+  <object gid="1041" x="384" y="544"/>
+  <object gid="1041" x="384" y="576"/>
+  <object gid="1041" x="384" y="608"/>
+  <object gid="1041" x="320" y="256"/>
+  <object gid="1041" x="320" y="288"/>
+  <object gid="1041" x="320" y="320"/>
+  <object gid="1041" x="320" y="352"/>
+  <object gid="1041" x="320" y="384"/>
+  <object gid="1041" x="320" y="416"/>
+  <object gid="1041" x="320" y="448"/>
+  <object gid="1041" x="320" y="480"/>
+  <object gid="1041" x="320" y="512"/>
+  <object gid="1041" x="320" y="544"/>
+  <object gid="1041" x="320" y="576"/>
+  <object gid="1041" x="288" y="576"/>
+  <object gid="1041" x="256" y="576"/>
+  <object gid="1041" x="224" y="576"/>
+  <object gid="1041" x="192" y="576"/>
+  <object gid="1041" x="160" y="576"/>
+  <object gid="1041" x="128" y="576"/>
+  <object gid="1041" x="96" y="576"/>
+  <object gid="1041" x="64" y="576"/>
+  <object gid="1041" x="64" y="544"/>
+  <object gid="1041" x="64" y="512"/>
+  <object gid="1041" x="64" y="480"/>
+  <object gid="1041" x="64" y="448"/>
+  <object gid="1041" x="64" y="416"/>
+  <object gid="1041" x="64" y="384"/>
+  <object gid="1041" x="64" y="352"/>
+  <object gid="1041" x="96" y="352"/>
+  <object gid="1041" x="128" y="352"/>
+  <object gid="1041" x="160" y="352"/>
+  <object gid="1041" x="192" y="352"/>
+  <object gid="1041" x="224" y="352"/>
+  <object gid="1041" x="256" y="352"/>
+  <object gid="1041" x="256" y="384"/>
+  <object gid="1041" x="256" y="416"/>
+  <object gid="1041" x="256" y="448"/>
+  <object gid="1041" x="256" y="480"/>
+  <object gid="1041" x="256" y="512"/>
+  <object gid="1041" x="224" y="512"/>
+  <object gid="1041" x="192" y="512"/>
+  <object gid="1041" x="160" y="512"/>
+  <object gid="1041" x="128" y="512"/>
+  <object gid="1041" x="128" y="480"/>
+  <object gid="1041" x="128" y="448"/>
+  <object gid="1041" x="128" y="416"/>
+  <object gid="1041" x="160" y="416"/>
+  <object gid="1041" x="192" y="416"/>
+  <object gid="1041" x="192" y="448"/>
+  <object gid="1041" x="0" y="416"/>
+  <object gid="1041" x="0" y="384"/>
+ </objectgroup>
+</map>

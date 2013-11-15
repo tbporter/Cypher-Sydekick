@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="20" height="20" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="tileset1" tilewidth="32" tileheight="32">
+  <image source="DungeonCrawl_ProjectUtumnoTileset.png" width="2048" height="1536"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxzYGZgcBgC2B6IXcjEbjjMsyMTu5NpXiILhL7BBKGnAOnpTOSbR233jZo3at6oedQxzwmIHcnEzljMG6wYAFlOaTc=
+  </data>
+ </layer>
+</map>

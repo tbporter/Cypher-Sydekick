@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="32" tileheight="32">
+ <properties>
+  <property name="goalX" value="1"/>
+  <property name="goalY" value="1"/>
+  <property name="spawnX" value="14"/>
+  <property name="spawnY" value="10"/>
+ </properties>
+ <tileset firstgid="1" name="DungeonCrawl_ProjectUtumnoTileset" tilewidth="32" tileheight="32">
+  <image source="DungeonCrawl_ProjectUtumnoTileset.png" width="2048" height="1536"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt10sKgDAMBcCC97+Xx3IlFE2roNaIMyB+aDd5JNhSAL5tnvbX+r1eE63lOdv6tvJgDHnkEuURzTCzagz9kYs8cjmbh5nF3xydP+p3/fG8qLbbmvfOidyrlUfv3trHddEMksd79EcuvTzWZ3mM4/8KAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMhoAXmzSPU=
+  </data>
+ </layer>
+ <objectgroup name="action" width="100" height="100"/>
+ <objectgroup name="object" width="100" height="100">
+  <object gid="1098" x="448" y="320"/>
+  <object gid="1098" x="416" y="352"/>
+  <object gid="1098" x="448" y="384"/>
+  <object gid="1098" x="480" y="352"/>
+ </objectgroup>
+</map>
