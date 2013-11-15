@@ -3,10 +3,13 @@ package com.github.tbporter.cypher_sydekick;
 import java.nio.charset.Charset;
 
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -17,9 +20,13 @@ import android.widget.Toast;
 
 public class NFCActivity extends Activity {
 	private static String TAG = "NFCActivity";
-	private static String MIME_TYPE = "com.github.tbporter.cypher_sydekick";
 
-	// Device's NFC adapter
+	/** MIME type for messages shared over NFC. */
+	private static String NDEF_MIME_TYPE = "com.github.tbporter.cypher_sydekick";
+	/** Charset used for Strings shared over NFC. */
+	private static Charset NDEF_CHARSET = Charset.forName("US-ASCII");
+
+	/** Device's NFC adapter */
 	private NfcAdapter m_nfcAdapter;
 
 	// Views
@@ -27,11 +34,12 @@ public class NFCActivity extends Activity {
 	private Button m_nfcBroadcastButton;
 	private Button m_nfcReceiveButton;
 
-	// States for the NFC broadcast/receive (mutually exclusive)
+	/** States for the NFC broadcast/receive (mutually exclusive) */
 	private enum NFCState {
 		NFC_INACTIVE, NFC_BROADCASTING, NFC_RECEIVING
 	}
 
+	/** Current state for NFC broadcast/receive. */
 	private NFCState m_nfcState = NFCState.NFC_INACTIVE;
 
 	@Override
@@ -72,9 +80,11 @@ public class NFCActivity extends Activity {
 			}
 		});
 	}
-	
+
 	@Override
 	protected void onPause() {
+		super.onPause();
+
 		// Stop any active NFC operations
 		stopNFCBroadcast();
 		stopNFCReceive();
@@ -133,11 +143,13 @@ public class NFCActivity extends Activity {
 	private void startNFCBroadcast() {
 		Log.d(TAG, "NFC broadcast starting");
 
+		checkAndNotifyNFCEnabled();
+
 		// Build the NDEF message to broadcast
 		String text = m_nfcEditText.getText().toString();
 		NdefRecord record = new NdefRecord(NdefRecord.TNF_MIME_MEDIA,
-				MIME_TYPE.getBytes(Charset.forName("US-ASCII")), new byte[0],
-				text.getBytes());
+				NDEF_MIME_TYPE.getBytes(NDEF_CHARSET), new byte[0],
+				text.getBytes(NDEF_CHARSET));
 		NdefMessage msg = new NdefMessage(new NdefRecord[] { record });
 
 		// Set the message to broadcast
@@ -179,7 +191,16 @@ public class NFCActivity extends Activity {
 	private void startNFCReceive() {
 		Log.d(TAG, "NFC receive starting");
 
-		// TODO: Start receiving
+		checkAndNotifyNFCEnabled();
+
+		// Create the PendingIntent for NFC read results
+		PendingIntent nfcPendingIntent = PendingIntent.getActivity(this, 0,
+				new Intent(this, getClass())
+						.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+
+		// Enable a foreground dispatch for all tag types
+		m_nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, null,
+				null);
 
 		// Update the NFC state
 		m_nfcState = NFCState.NFC_RECEIVING;
@@ -195,7 +216,8 @@ public class NFCActivity extends Activity {
 	private void stopNFCReceive() {
 		Log.d(TAG, "NFC receive stopping");
 
-		// TODO: Stop receiving
+		// Disable NFC foreground dispatch
+		m_nfcAdapter.disableForegroundDispatch(this);
 
 		// Update the NFC state
 		m_nfcState = NFCState.NFC_INACTIVE;
@@ -206,6 +228,117 @@ public class NFCActivity extends Activity {
 
 		// Update receive button text to indicate its new function
 		m_nfcReceiveButton.setText(R.string.nfcReceiveButton_text_initial);
+	}
+
+	/**
+	 * Checks if NFC is enabled and notifies the user if it is not.
+	 */
+	private void checkAndNotifyNFCEnabled() {
+		if (!m_nfcAdapter.isEnabled()) {
+			Toast.makeText(
+					this,
+					"NFC disabled, must enable before NFC broadcast/receive will work.",
+					Toast.LENGTH_LONG).show();
+		}
+	}
+
+	/**
+	 * Processes intent for a completed NFC read.
+	 */
+	@Override
+	public void onNewIntent(final Intent intent) {
+		Log.d(TAG, "onNewIntent with Intent: " + intent.toString());
+
+		// Make sure it's an NFC intent that should be handled
+		final String action = intent.getAction();
+		if (action.equals(NfcAdapter.ACTION_NDEF_DISCOVERED)) {
+
+			// Get the NDEF messages from the intent
+			NdefMessage[] msgs = new NdefMessage[0];
+			Parcelable[] rawMsgs = intent
+					.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+			if (rawMsgs != null) {
+				msgs = new NdefMessage[rawMsgs.length];
+				for (int i = 0; i < rawMsgs.length; i++) {
+					msgs[i] = (NdefMessage) rawMsgs[i];
+				}
+
+				// Process the first message
+				if (1 == msgs.length) {
+					// Get the first record (every NDEF message has at least one
+					// record)
+					NdefRecord firstRecord = msgs[0].getRecords()[0];
+
+					// Validate the record
+					if (checkNdefRecord(firstRecord)) {
+						// Set the EditText contents based on the received
+						// String
+						final String payloadStr = new String(
+								firstRecord.getPayload(), NDEF_CHARSET);
+						m_nfcEditText.setText(payloadStr);
+						Toast.makeText(this, "Received a string via NFC",
+								Toast.LENGTH_LONG).show();
+
+						Log.d(TAG,
+								"Received NDEF message with payload string: "
+										+ payloadStr);
+					} else {
+						Log.d(TAG, "Received invalid NDEF message");
+					}
+
+				} else {
+					Log.d(TAG, "Received " + msgs.length
+							+ " NDEF messages, expecting exactly 1");
+				}
+
+			} else {
+				Log.d(TAG, "Received NFC intent with no contents.");
+			}
+
+		}
+		// If it isn't, pass it on to the super class
+		else {
+			Log.d(TAG, "Passing unknown intent to super.  Intent action: "
+					+ action);
+			super.onNewIntent(intent);
+		}
+
+	}
+
+	/**
+	 * Checks if an NdefRecord is the type expected for data exchange.
+	 * 
+	 * @param record
+	 *            The record to check.
+	 * @return true if the record is the type expected, false if not.
+	 */
+	private boolean checkNdefRecord(final NdefRecord record) {
+		boolean retVal = true;
+
+		// Check the TNF
+		final short tnf = record.getTnf();
+		if (NdefRecord.TNF_MIME_MEDIA != tnf) {
+			retVal = false;
+			Log.d(TAG, "Checked NdefRecord with unknown TNF: " + tnf);
+		}
+
+		// Check the MIME type
+		final String mime = new String(record.getType(), NDEF_CHARSET);
+		if (NDEF_MIME_TYPE == mime) {
+			retVal = false;
+			Log.d(TAG, "Checked NdefRecord with unknown MIME type: " + mime);
+		}
+
+		/*
+		 * // Requires API 16: // Check the MIME type final String mime =
+		 * record.toMimeType(); if (null != mime) { // The record has a MIME
+		 * type, make sure it's correct if (MIME_TYPE != mime) { retVal = false;
+		 * Log.d(TAG, "Checked NdefRecord with unknown MIME type: " + mime); } }
+		 * else { // No MIME type found, this is not a valid record retVal =
+		 * false; Log.d(TAG, "Checked NdefRecord with null MIME type"); }
+		 */
+
+		return retVal;
 	}
 
 	@Override
