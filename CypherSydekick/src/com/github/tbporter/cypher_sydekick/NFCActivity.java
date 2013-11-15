@@ -72,6 +72,13 @@ public class NFCActivity extends Activity {
 			}
 		});
 	}
+	
+	@Override
+	protected void onPause() {
+		// Stop any active NFC operations
+		stopNFCBroadcast();
+		stopNFCReceive();
+	}
 
 	private void broadcastButtonClicked() {
 		Log.d(TAG, "Broadcast button clicked, text: " + m_nfcEditText.getText());
