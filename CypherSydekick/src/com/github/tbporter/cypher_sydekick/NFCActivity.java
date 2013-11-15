@@ -52,7 +52,7 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 		// Make sure this device has NFC available
 		m_nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 		if (null == m_nfcAdapter) {
-			Toast.makeText(this, "NFC is not available", Toast.LENGTH_LONG)
+			Toast.makeText(this, "NFC is not available on this device", Toast.LENGTH_LONG)
 					.show();
 			finish();
 			return;
@@ -244,7 +244,7 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 		if (!m_nfcAdapter.isEnabled()) {
 			Toast.makeText(
 					this,
-					"NFC disabled, must enable before NFC broadcast/receive will work.",
+					"NFC disabled, must enable before Android Beam will work.",
 					Toast.LENGTH_LONG).show();
 		}
 	}
@@ -255,7 +255,7 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 	@Override
 	public void onNewIntent(final Intent intent) {
 		super.onNewIntent(intent);
-		
+
 		// Make sure it's an NFC intent that should be handled
 		final String action = intent.getAction();
 		if (action.equals(NfcAdapter.ACTION_NDEF_DISCOVERED)) {
@@ -283,7 +283,7 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 						final String payloadStr = new String(
 								firstRecord.getPayload(), NDEF_CHARSET);
 						m_nfcEditText.setText(payloadStr);
-						Toast.makeText(this, "Received a string via NFC",
+						Toast.makeText(this, "Received a string via Android Beam",
 								Toast.LENGTH_LONG).show();
 
 						Log.d(TAG,
@@ -360,6 +360,7 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 	 */
 	@Override
 	public void onNdefPushComplete(NfcEvent arg0) {
+		Toast.makeText(this, "Beam complete", Toast.LENGTH_LONG).show();
 		Log.d(TAG, "NDEF push complete.");
 
 		// This callback may be called on a binder thread but stopNFCBroadcast()
