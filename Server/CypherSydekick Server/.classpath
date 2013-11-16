@@ -22,5 +22,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jetty-webapp-9.0.6.v20130930.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jetty-xml-9.0.6.v20130930.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/servlet-api-3.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
