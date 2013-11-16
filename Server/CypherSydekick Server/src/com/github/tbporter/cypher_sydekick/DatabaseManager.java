@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Handles all database-related operations (opening database, managing tables,
@@ -115,6 +117,41 @@ public final class DatabaseManager {
 			} else {
 				// No results found
 				retVal = null;
+			}
+
+		} else {
+			throw new Exception("Database not open.");
+		}
+
+		return retVal;
+	}
+
+	/**
+	 * Returns a list containing all users in the user table.
+	 * 
+	 * @return List<String> containing all users.
+	 * @throws Exception
+	 *             if the search fails
+	 */
+	public static List<String> getAllUsers() throws Exception {
+		List<String> retVal = new ArrayList<String>();
+
+		if (isDatabaseOpen()) {
+
+			final String sql = "SELECT * FROM " + USER_TABLE_NAME + ";";
+			ResultSet results;
+
+			// Search the table for user(s) with the given name
+			try {
+				Statement s = s_connection.createStatement();
+				results = s.executeQuery(sql);
+			} catch (SQLException sqle) {
+				throw new Exception("SQL exception during user search.");
+			}
+			
+			// Convert the ResultSet to a list
+			while (results.next()) {
+				retVal.add(results.getString(USERNAME_COLUMN_LABEL));
 			}
 
 		} else {
