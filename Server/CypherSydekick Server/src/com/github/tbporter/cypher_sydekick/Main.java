@@ -23,7 +23,7 @@ public final class Main {
 		context.addServlet(DefaultServlet.class, "/");
 
 		// Set up custom servlets
-		context.addServlet(MainServlet.class, ""); // Empty string maps to
+		context.addServlet(RootServlet.class, ""); // Empty string maps to
 													// *exactly* root
 
 		// Start the server

@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class MainServlet extends HttpServlet {
+public class RootServlet extends HttpServlet {
 	/** Header for HTML pages. */
 	private static final String HTML_HEAD = "<!DOCTYPE html>\n<html>\n<body>\n";
 	/** Footer for HTML pages. */
