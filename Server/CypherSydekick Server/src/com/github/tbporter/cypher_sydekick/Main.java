@@ -8,9 +8,21 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 
 import com.github.tbporter.cypher_sydekick.debugging.Debug;
 
+/**
+ * Configures and starts the server and database.
+ * 
+ * @author ayelix
+ * 
+ */
 public final class Main {
 	private static final String TAG = "Main";
 
+	/**
+	 * Configures and starts the server and database.
+	 * 
+	 * @param args
+	 *            command-line arguments
+	 */
 	public static void main(String[] args) {
 		// Set up file serving via DefaultServlet
 		final Server server = new Server(8080);

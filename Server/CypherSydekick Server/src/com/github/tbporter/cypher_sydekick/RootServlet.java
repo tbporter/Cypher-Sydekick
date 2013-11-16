@@ -8,6 +8,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Serves a diagnostic page for viewing and adding users.
+ * 
+ * @author ayelix
+ * 
+ */
 public class RootServlet extends HttpServlet {
 	/** Header for HTML pages. */
 	private static final String HTML_HEAD = "<!DOCTYPE html>\n<html>\n<body>\n";
@@ -17,6 +23,9 @@ public class RootServlet extends HttpServlet {
 	/** HTML string for "Add User" form. */
 	private static final String HTML_ADD_USER_FORM = "<form action=\"newUser\" method=\"post\">\nUsername: <input type=\"text\" name=\"username\">\n<input type=\"submit\" value=\"Add User\">\n</form>\n";
 
+	/**
+	 * Writes the "add user" form and list of users.
+	 */
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
@@ -37,7 +46,7 @@ public class RootServlet extends HttpServlet {
 			for (final String user : users) {
 				out.write(user + "<br>\n");
 			}
-			
+
 		} catch (Exception e) {
 			out.write("<i>Unable to read user list.</i><br>\n");
 		}
@@ -45,6 +54,9 @@ public class RootServlet extends HttpServlet {
 		out.write(HTML_FOOT);
 	}
 
+	/**
+	 * Forwards request to doGet()
+	 */
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {

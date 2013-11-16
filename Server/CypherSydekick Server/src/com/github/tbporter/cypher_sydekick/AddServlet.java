@@ -7,6 +7,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Handles requests to add new users.
+ * 
+ * @author ayelix
+ * 
+ */
 public class AddServlet extends HttpServlet {
 
 	@Override
