@@ -23,7 +23,8 @@ public final class Main {
 		context.addServlet(DefaultServlet.class, "/");
 
 		// Set up custom servlets
-		context.addServlet(MainServlet.class, "/main");
+		context.addServlet(MainServlet.class, ""); // Empty string maps to
+													// *exactly* root
 
 		// Start the server
 		server.setHandler(context);
