@@ -30,6 +30,32 @@ public final class Main {
 			Debug.printError(TAG, e.getMessage());
 			return;
 		}
+		
+		// Do some user search/add testing
+		try {
+			String result;
+			result = DatabaseManager.getUser("ayelix");
+			if (null != result) {
+				Debug.printMsg(TAG, "Found user ayelix");
+			} else {
+				Debug.printMsg(TAG, "Didn't find user ayelix, adding him");
+			}
+			
+			if (DatabaseManager.addUser("ayelix")) {
+				Debug.printMsg(TAG, "Added user ayelix");
+			} else {
+				Debug.printError(TAG, "Did not add user ayelix");
+			}
+			
+			result = DatabaseManager.getUser("ayelix");
+			if (null != result) {
+				Debug.printMsg(TAG, "Second search, found user ayelix");
+			} else {
+				Debug.printError(TAG, "Second search, didn't find user ayelix");
+			}
+		} catch (Exception e) {
+			Debug.printError(TAG, e.getMessage());
+		}
 
 		// Setup complete, join this thread to the server
 		try {
