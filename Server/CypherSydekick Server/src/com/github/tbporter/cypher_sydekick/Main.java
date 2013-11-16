@@ -22,9 +22,10 @@ public final class Main {
 			return;
 		}
 
-		// Open the database
+		// Open the database and create the table
 		try {
 			DatabaseManager.openDatabase();
+			DatabaseManager.createUserTable();
 		} catch (Exception e) {
 			Debug.printError(TAG, e.getMessage());
 			return;
