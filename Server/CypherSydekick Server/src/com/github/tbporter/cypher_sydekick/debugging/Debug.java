@@ -7,7 +7,7 @@ package com.github.tbporter.cypher_sydekick.debugging;
  * 
  */
 public final class Debug {
-	
+
 	/**
 	 * Prints an error message to stdout of the format "{tag} : {msg}"
 	 * 
@@ -19,7 +19,7 @@ public final class Debug {
 	public static void printMsg(final String tag, final String msg) {
 		System.out.println(tag + " : " + msg);
 	}
-	
+
 	/**
 	 * Prints an error message to stderr of the format "{tag} : {msg}"
 	 * 

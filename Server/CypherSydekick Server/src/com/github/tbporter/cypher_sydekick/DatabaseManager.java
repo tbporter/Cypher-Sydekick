@@ -148,7 +148,7 @@ public final class DatabaseManager {
 			} catch (SQLException sqle) {
 				throw new Exception("SQL exception during user search.");
 			}
-			
+
 			// Convert the ResultSet to a list
 			while (results.next()) {
 				retVal.add(results.getString(USERNAME_COLUMN_LABEL));

@@ -52,16 +52,17 @@ public final class Main {
 				msg += user + "\n";
 			}
 			Debug.printMsg(TAG, msg);
-			
+
 			String result;
 			final String newUser = "cj123";
-			
+
 			// See if the user is there already
 			result = DatabaseManager.getUser(newUser);
 			if (null != result) {
 				Debug.printMsg(TAG, "Found user " + newUser);
 			} else {
-				Debug.printMsg(TAG, "Didn't find user " + newUser + ", adding user");
+				Debug.printMsg(TAG, "Didn't find user " + newUser
+						+ ", adding user");
 			}
 
 			// See if we can add the user
@@ -76,7 +77,8 @@ public final class Main {
 			if (null != result) {
 				Debug.printMsg(TAG, "Second search, found user " + newUser);
 			} else {
-				Debug.printError(TAG, "Second search, didn't find user " + newUser);
+				Debug.printError(TAG, "Second search, didn't find user "
+						+ newUser);
 			}
 		} catch (Exception e) {
 			Debug.printError(TAG, "Database exception: " + e.getMessage());
