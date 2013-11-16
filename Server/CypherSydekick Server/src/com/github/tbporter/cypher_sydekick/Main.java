@@ -17,7 +17,7 @@ public final class Main {
 				ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
 		context.setResourceBase("./war/res");
-		context.setWelcomeFiles(new String[] { "./res/index.html" });
+		context.setWelcomeFiles(new String[] { "index.html" });
 		context.setClassLoader(Thread.currentThread().getContextClassLoader());
 		context.addServlet(DefaultServlet.class, "/");
 
