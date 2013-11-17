@@ -32,8 +32,6 @@ public class RootServlet extends HttpServlet {
 		resp.setContentType("text/html");
 		PrintWriter out = resp.getWriter();
 		
-		//TODO: Investigate JavaServer Pages
-
 		out.write(HTML_HEAD);
 
 		// Place the add user form at the top
