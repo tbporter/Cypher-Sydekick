@@ -19,13 +19,6 @@ import java.util.List;
 public final class DatabaseManager {
 	private static final String TAG = "DatabaseManager";
 
-	/** Location of the main database. */
-	private static String DB_NAME = "jdbc:sqlite:war/WEB-INF/userlist.db";
-
-	/** Name of the user table. */
-	private static String USER_TABLE_NAME = "users";
-	private static String USERNAME_COLUMN_LABEL = "username";
-
 	/** Connection to the database, created in {@link #openDatabase()}. */
 	private static Connection s_connection;
 
@@ -38,7 +31,8 @@ public final class DatabaseManager {
 	public static void openDatabase() throws DatabaseManagerException {
 		try {
 			Class.forName(org.sqlite.JDBC.class.getName());
-			s_connection = DriverManager.getConnection(DB_NAME);
+			s_connection = DriverManager
+					.getConnection(DatabaseConstants.DB_NAME);
 
 		} catch (ClassNotFoundException cnfe) {
 			throw new DatabaseManagerException(
@@ -69,10 +63,7 @@ public final class DatabaseManager {
 		if (isDatabaseOpen()) {
 			try {
 				Statement s = s_connection.createStatement();
-				final String sql = "CREATE TABLE IF NOT EXISTS "
-						+ USER_TABLE_NAME + " (" + USERNAME_COLUMN_LABEL
-						+ " TEXT PRIMARY KEY NOT NULL);";
-				s.executeUpdate(sql);
+				s.executeUpdate(DatabaseConstants.USERS_TABLE_CREATE);
 				s.close();
 
 			} catch (SQLException sqle) {
@@ -101,8 +92,9 @@ public final class DatabaseManager {
 
 		if (isDatabaseOpen()) {
 
-			final String sql = "SELECT * FROM " + USER_TABLE_NAME + " WHERE "
-					+ USERNAME_COLUMN_LABEL + "=?;";
+			final String sql = "SELECT * FROM "
+					+ DatabaseConstants.USERS_TABLE_NAME + " WHERE "
+					+ DatabaseConstants.USERNAME_COLUMN_LABEL + "=?;";
 			ResultSet result;
 
 			// Search the table for user(s) with the given name
@@ -113,7 +105,8 @@ public final class DatabaseManager {
 
 				// Return the first result
 				if (result.next()) {
-					retVal = result.getString(USERNAME_COLUMN_LABEL);
+					retVal = result
+							.getString(DatabaseConstants.USERNAME_COLUMN_LABEL);
 				} else {
 					// No results found
 					retVal = null;
@@ -143,7 +136,8 @@ public final class DatabaseManager {
 
 		if (isDatabaseOpen()) {
 
-			final String sql = "SELECT * FROM " + USER_TABLE_NAME + ";";
+			final String sql = "SELECT * FROM "
+					+ DatabaseConstants.USERS_TABLE_NAME + ";";
 			ResultSet results;
 
 			// Search the table for user(s) with the given name
@@ -153,7 +147,8 @@ public final class DatabaseManager {
 
 				// Convert the ResultSet to a list
 				while (results.next()) {
-					retVal.add(results.getString(USERNAME_COLUMN_LABEL));
+					retVal.add(results
+							.getString(DatabaseConstants.USERNAME_COLUMN_LABEL));
 				}
 
 			} catch (SQLException sqle) {
@@ -197,7 +192,8 @@ public final class DatabaseManager {
 
 			if (null == searchResult) {
 				// User does not already exist, add the user
-				final String sql = "INSERT INTO " + USER_TABLE_NAME
+				final String sql = "INSERT INTO "
+						+ DatabaseConstants.USERS_TABLE_NAME
 						+ " (username) VALUES (?);";
 				try {
 					PreparedStatement ps = s_connection.prepareStatement(sql);
