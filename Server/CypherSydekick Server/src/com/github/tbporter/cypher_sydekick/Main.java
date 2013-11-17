@@ -6,7 +6,10 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
+import com.github.tbporter.cypher_sydekick.database.DatabaseManager;
 import com.github.tbporter.cypher_sydekick.debugging.Debug;
+import com.github.tbporter.cypher_sydekick.servlets.AddServlet;
+import com.github.tbporter.cypher_sydekick.servlets.RootServlet;
 
 /**
  * Configures and starts the server and database.

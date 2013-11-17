@@ -1,4 +1,4 @@
-package com.github.tbporter.cypher_sydekick;
+package com.github.tbporter.cypher_sydekick.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -7,6 +7,8 @@ import java.util.List;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.github.tbporter.cypher_sydekick.database.DatabaseManager;
 
 /**
  * Serves a diagnostic page for viewing and adding users.

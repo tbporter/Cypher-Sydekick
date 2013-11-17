@@ -1,4 +1,4 @@
-package com.github.tbporter.cypher_sydekick;
+package com.github.tbporter.cypher_sydekick.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

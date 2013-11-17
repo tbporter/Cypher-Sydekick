@@ -1,4 +1,4 @@
-package com.github.tbporter.cypher_sydekick;
+package com.github.tbporter.cypher_sydekick.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpStatus;
+
+import com.github.tbporter.cypher_sydekick.database.DatabaseManager;
 
 /**
  * Handles requests to add new users.
