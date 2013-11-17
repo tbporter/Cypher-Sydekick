@@ -21,7 +21,7 @@ public class RootServlet extends HttpServlet {
 	private static final String HTML_FOOT = "\n</body>\n</html>";
 
 	/** HTML string for "Add User" form. */
-	private static final String HTML_ADD_USER_FORM = "<form action=\"newUser\" method=\"post\">\nUsername: <input type=\"text\" name=\"username\">\n<input type=\"submit\" value=\"Add User\">\n</form>\n";
+	private static final String HTML_ADD_USER_FORM = "<form action=\"users\" method=\"post\">\nUsername: <input type=\"text\" name=\"username\">\n<input type=\"submit\" value=\"Add User\">\n</form>\n";
 
 	/**
 	 * Writes the "add user" form and list of users.

@@ -37,7 +37,7 @@ public final class Main {
 		// Set up custom servlets
 		context.addServlet(RootServlet.class, ""); // Empty string maps to
 													// *exactly* root
-		context.addServlet(AddServlet.class, "/newUser");
+		context.addServlet(AddServlet.class, "/users");
 
 		// Start the server
 		server.setHandler(context);
