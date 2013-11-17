@@ -14,19 +14,17 @@ abstract class DatabaseConstants {
 	public static final String USERS_TABLE_NAME = "users";
 	/** Name of the users table's username column. */
 	public static final String USERNAME_COLUMN_LABEL = "username";
-	/** Name of the users table's messages column. */
-	public static final String MESSAGES_COLUMN_LABEL = "messages";
 	/** SQL string to create users table. */
 	public static final String USERS_TABLE_CREATE = "CREATE TABLE IF NOT EXISTS "
 			+ USERS_TABLE_NAME
 			+ " ("
 			+ USERNAME_COLUMN_LABEL
-			+ " TEXT PRIMARY KEY NOT NULL, "
-			+ MESSAGES_COLUMN_LABEL
-			+ " TEXT);";
+			+ " TEXT PRIMARY KEY NOT NULL);";
 
 	/** Name of the messages table. */
 	public static final String MESSAGES_TABLE_NAME = "messages";
+	/** Name of the messages table's receiver column. */
+	public static final String RECEIVER_COLUMN_LABEL = "receiver";
 	/** Name of the messages table's sender column. */
 	public static final String SENDER_COLUMN_LABEL = "sender";
 	/** Name of the messages table's contents column. */
@@ -35,6 +33,9 @@ abstract class DatabaseConstants {
 	public static final String MESSAGES_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS "
 			+ MESSAGES_TABLE_NAME
 			+ " ("
+			+ RECEIVER_COLUMN_LABEL
+			+ " TEXT NOT NULL, "
 			+ SENDER_COLUMN_LABEL
-			+ " TEXT NOT NULL, " + CONTENTS_COLUMN_LABEL + " TEXT NOT NULL);";
+			+ " TEXT NOT NULL, "
+			+ CONTENTS_COLUMN_LABEL + " TEXT NOT NULL);";
 }
