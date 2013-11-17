@@ -9,6 +9,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.tbporter.cypher_sydekick.chat.ChatMessage;
+import com.github.tbporter.cypher_sydekick.debugging.Debug;
+
 /**
  * Handles all database-related operations (opening database, managing tables,
  * etc.).
@@ -57,7 +60,7 @@ public final class DatabaseManager {
 	 * {@link #openDatabase()}).
 	 * 
 	 * @throws DatabaseManagerException
-	 *             if table creation fails or database has not been opened.
+	 *             if table creation fails
 	 */
 	public static void createUserTable() throws DatabaseManagerException {
 		createTable(DatabaseConstants.USERS_TABLE_CREATE);
@@ -68,7 +71,7 @@ public final class DatabaseManager {
 	 * {@link #openDatabase()}).
 	 * 
 	 * @throws DatabaseManagerException
-	 *             if table creation fails or database has not been opened.
+	 *             if table creation fails
 	 */
 	public static void createMessagesTable() throws DatabaseManagerException {
 		createTable(DatabaseConstants.MESSAGES_CREATE_TABLE);
@@ -182,10 +185,10 @@ public final class DatabaseManager {
 			String searchResult = null;
 			try {
 				searchResult = getUser(username);
-			} catch (DatabaseManagerException e) {
+			} catch (DatabaseManagerException dme) {
 				throw new DatabaseManagerException(
 						"Error while checking if user exists, message: "
-								+ e.getMessage());
+								+ dme.getMessage());
 			}
 
 			if (null == searchResult) {
@@ -208,6 +211,131 @@ public final class DatabaseManager {
 			} else {
 				// User already exists
 				retVal = false;
+			}
+
+		} else {
+			throw new DatabaseManagerException("Database not open.");
+		}
+
+		return retVal;
+	}
+
+	/**
+	 * Gets the next message from the given sender to the given receiver.
+	 * 
+	 * @param receiver
+	 *            username of receiver
+	 * @param sender
+	 *            username of sender
+	 * @return The next ChatMessage from <tt>sender</tt> to <tt>receiver</tt>,
+	 *         or <tt>null</tt> if none available.
+	 * @throws DatabaseManagerException
+	 *             if users do not exist or if the search fails
+	 */
+	public static ChatMessage getMessage(final String receiver,
+			final String sender) throws DatabaseManagerException {
+		ChatMessage msg = null;
+
+		if (isDatabaseOpen()) {
+			String searchResult = null;
+
+			// Make sure receiver exists
+			try {
+				searchResult = getUser(receiver);
+			} catch (DatabaseManagerException dme) {
+				throw new DatabaseManagerException(
+						"Error while checking if user exists, message: "
+								+ dme.getMessage());
+			}
+			if (null == searchResult) {
+				throw new DatabaseManagerException("Receiver " + receiver
+						+ " does not exist.");
+			}
+
+			// Make sure sender exists
+			try {
+				searchResult = getUser(sender);
+			} catch (DatabaseManagerException dme) {
+				throw new DatabaseManagerException(
+						"Error while checking if user exists, message: "
+								+ dme.getMessage());
+			}
+			if (null == searchResult) {
+				throw new DatabaseManagerException("Sender " + sender
+						+ " does not exist.");
+			}
+
+			// Search the table for a row with matching receiver and sender
+			try {
+				final String sql = "SELECT ROWID,* FROM "
+						+ DatabaseConstants.MESSAGES_TABLE_NAME + " WHERE "
+						+ DatabaseConstants.RECEIVER_COLUMN_LABEL + "=? AND "
+						+ DatabaseConstants.SENDER_COLUMN_LABEL + "=? LIMIT 1;";
+				ResultSet result;
+				PreparedStatement ps = s_connection.prepareStatement(sql);
+				ps.setString(1, receiver);
+				ps.setString(2, sender);
+				result = ps.executeQuery();
+
+				// Prepare to return the first result
+				if (result.next()) {
+					final String msgReceiver = result
+							.getString(DatabaseConstants.RECEIVER_COLUMN_LABEL);
+					final String msgSender = result
+							.getString(DatabaseConstants.SENDER_COLUMN_LABEL);
+					final String msgContents = result
+							.getString(DatabaseConstants.CONTENTS_COLUMN_LABEL);
+					msg = new ChatMessage(msgReceiver, msgSender, msgContents);
+					
+				} else {
+					// No results found
+					msg = null;
+				}
+
+			} catch (SQLException sqle) {
+				sqle.printStackTrace();
+				throw new DatabaseManagerException(
+						"SQL exception during user search.");
+			}
+
+		} else {
+			throw new DatabaseManagerException("Database not open.");
+		}
+
+		return msg;
+	}
+
+	/**
+	 * Adds the given message to the messages table.
+	 * 
+	 * @param msg
+	 *            ChatMessage to add
+	 * @return <tt>true</tt> if the message was added, <tt>false</tt> if not.
+	 * @throws DatabaseManagerException
+	 *             if the add fails
+	 */
+	public static boolean addMessage(final ChatMessage msg)
+			throws DatabaseManagerException {
+		boolean retVal = false;
+
+		if (isDatabaseOpen()) {
+
+			// Add the message to the table
+			try {
+				final String sql = "INSERT INTO "
+						+ DatabaseConstants.MESSAGES_TABLE_NAME
+						+ " (receiver, sender, contents) VALUES (?, ?, ?);";
+				PreparedStatement ps = s_connection.prepareStatement(sql);
+				ps.setString(1, msg.getReceiver());
+				ps.setString(2, msg.getSender());
+				ps.setString(3, msg.getContents());
+				ps.execute();
+				ps.close();
+				retVal = true;
+
+			} catch (SQLException sqle) {
+				throw new DatabaseManagerException(
+						"SQL exception during message insertion.");
 			}
 
 		} else {

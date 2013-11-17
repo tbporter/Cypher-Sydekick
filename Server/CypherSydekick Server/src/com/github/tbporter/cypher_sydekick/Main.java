@@ -6,6 +6,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
+import com.github.tbporter.cypher_sydekick.chat.ChatMessage;
 import com.github.tbporter.cypher_sydekick.database.DatabaseManager;
 import com.github.tbporter.cypher_sydekick.database.DatabaseManagerException;
 import com.github.tbporter.cypher_sydekick.debugging.Debug;
@@ -99,6 +100,26 @@ public final class Main {
 				Debug.printError(TAG, "Second search, didn't find user "
 						+ newUser);
 			}
+			
+			// See if there's a message from teja to alex
+			ChatMessage chatMsg = DatabaseManager.getMessage("alex", "teja");
+			if (null != chatMsg) {
+			Debug.printMsg(TAG, chatMsg.toString());
+			} else {
+				Debug.printMsg(TAG, "No message.");
+			}
+			
+			// Add a message from teja to alex
+			DatabaseManager.addMessage(new ChatMessage("alex", "teja", "hello there"));
+			
+			// Now see if there's a message from teja to alex
+			chatMsg = DatabaseManager.getMessage("alex", "teja");
+			if (null != chatMsg) {
+			Debug.printMsg(TAG, chatMsg.toString());
+			} else {
+				Debug.printMsg(TAG, "No message.");
+			}
+			
 		} catch (DatabaseManagerException e) {
 			Debug.printError(TAG, "Database exception: " + e.getMessage());
 		}
