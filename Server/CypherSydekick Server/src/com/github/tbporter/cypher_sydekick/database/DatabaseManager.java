@@ -32,19 +32,20 @@ public final class DatabaseManager {
 	/**
 	 * Attempts to connect to the database.
 	 * 
-	 * @throws Exception
+	 * @throws DatabaseManagerException
 	 *             if the connection fails.
 	 */
-	public static void openDatabase() throws Exception {
+	public static void openDatabase() throws DatabaseManagerException {
 		try {
 			Class.forName(org.sqlite.JDBC.class.getName());
 			s_connection = DriverManager.getConnection(DB_NAME);
 
 		} catch (ClassNotFoundException cnfe) {
-			throw new Exception(
+			throw new DatabaseManagerException(
 					"Cannot open database - unable to load JDBC driver class.");
 		} catch (SQLException sqle) {
-			throw new Exception("SQL exception while opening database.");
+			throw new DatabaseManagerException(
+					"SQL exception while opening database.");
 		}
 	}
 
@@ -61,10 +62,10 @@ public final class DatabaseManager {
 	 * Creates the table containing users. Database must be open (
 	 * {@link #openDatabase()}).
 	 * 
-	 * @throws Exception
+	 * @throws DatabaseManagerException
 	 *             if table creation fails or database has not been opened.
 	 */
-	public static void createUserTable() throws Exception {
+	public static void createUserTable() throws DatabaseManagerException {
 		if (isDatabaseOpen()) {
 			try {
 				Statement s = s_connection.createStatement();
@@ -75,11 +76,12 @@ public final class DatabaseManager {
 				s.close();
 
 			} catch (SQLException sqle) {
-				throw new Exception("SQL exception during table creation.");
+				throw new DatabaseManagerException(
+						"SQL exception during table creation.");
 			}
 
 		} else {
-			throw new Exception("Database not open.");
+			throw new DatabaseManagerException("Database not open.");
 		}
 	}
 
@@ -90,10 +92,11 @@ public final class DatabaseManager {
 	 * @param username
 	 *            username to find.
 	 * @return <tt>username</tt> if the user is found, <tt>null</tt> if not.
-	 * @throws Exception
+	 * @throws DatabaseManagerException
 	 *             if the search fails
 	 */
-	public static String getUser(final String username) throws Exception {
+	public static String getUser(final String username)
+			throws DatabaseManagerException {
 		String retVal = null;
 
 		if (isDatabaseOpen()) {
@@ -107,20 +110,22 @@ public final class DatabaseManager {
 				PreparedStatement ps = s_connection.prepareStatement(sql);
 				ps.setString(1, username);
 				result = ps.executeQuery();
-			} catch (SQLException sqle) {
-				throw new Exception("SQL exception during user search.");
-			}
 
-			// Return the first result
-			if (result.next()) {
-				retVal = result.getString(USERNAME_COLUMN_LABEL);
-			} else {
-				// No results found
-				retVal = null;
+				// Return the first result
+				if (result.next()) {
+					retVal = result.getString(USERNAME_COLUMN_LABEL);
+				} else {
+					// No results found
+					retVal = null;
+				}
+
+			} catch (SQLException sqle) {
+				throw new DatabaseManagerException(
+						"SQL exception during user search.");
 			}
 
 		} else {
-			throw new Exception("Database not open.");
+			throw new DatabaseManagerException("Database not open.");
 		}
 
 		return retVal;
@@ -130,10 +135,10 @@ public final class DatabaseManager {
 	 * Returns a list containing all users in the user table.
 	 * 
 	 * @return List<String> containing all users.
-	 * @throws Exception
+	 * @throws DatabaseManagerException
 	 *             if the search fails
 	 */
-	public static List<String> getAllUsers() throws Exception {
+	public static List<String> getAllUsers() throws DatabaseManagerException {
 		List<String> retVal = new ArrayList<String>();
 
 		if (isDatabaseOpen()) {
@@ -145,17 +150,19 @@ public final class DatabaseManager {
 			try {
 				Statement s = s_connection.createStatement();
 				results = s.executeQuery(sql);
-			} catch (SQLException sqle) {
-				throw new Exception("SQL exception during user search.");
-			}
 
-			// Convert the ResultSet to a list
-			while (results.next()) {
-				retVal.add(results.getString(USERNAME_COLUMN_LABEL));
+				// Convert the ResultSet to a list
+				while (results.next()) {
+					retVal.add(results.getString(USERNAME_COLUMN_LABEL));
+				}
+
+			} catch (SQLException sqle) {
+				throw new DatabaseManagerException(
+						"SQL exception during user search.");
 			}
 
 		} else {
-			throw new Exception("Database not open.");
+			throw new DatabaseManagerException("Database not open.");
 		}
 
 		return retVal;
@@ -169,10 +176,11 @@ public final class DatabaseManager {
 	 *            username to add
 	 * @return <tt>true</tt> if the user is added, <tt>false</tt> if not
 	 *         (because the user already exists).
-	 * @throws Exception
+	 * @throws DatabaseManagerException
 	 *             if the add fails
 	 */
-	public static boolean addUser(final String username) throws Exception {
+	public static boolean addUser(final String username)
+			throws DatabaseManagerException {
 		boolean retVal = false;
 
 		if (isDatabaseOpen()) {
@@ -181,8 +189,8 @@ public final class DatabaseManager {
 			String searchResult = null;
 			try {
 				searchResult = getUser(username);
-			} catch (Exception e) {
-				throw new Exception(
+			} catch (DatabaseManagerException e) {
+				throw new DatabaseManagerException(
 						"Error while checking if user exists, message: "
 								+ e.getMessage());
 			}
@@ -199,7 +207,8 @@ public final class DatabaseManager {
 					retVal = true;
 
 				} catch (SQLException sqle) {
-					throw new Exception("SQL exception during user insertion.");
+					throw new DatabaseManagerException(
+							"SQL exception during user insertion.");
 				}
 
 			} else {
@@ -208,7 +217,7 @@ public final class DatabaseManager {
 			}
 
 		} else {
-			throw new Exception("Database not open.");
+			throw new DatabaseManagerException("Database not open.");
 		}
 
 		return retVal;

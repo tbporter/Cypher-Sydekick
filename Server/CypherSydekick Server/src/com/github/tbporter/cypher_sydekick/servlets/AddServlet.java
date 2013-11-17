@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpStatus;
 
 import com.github.tbporter.cypher_sydekick.database.DatabaseManager;
+import com.github.tbporter.cypher_sydekick.database.DatabaseManagerException;
 
 /**
  * Handles requests to add new users.
@@ -58,7 +59,7 @@ public class AddServlet extends HttpServlet {
 
 				}
 
-			} catch (Exception e) {
+			} catch (DatabaseManagerException e) {
 				out.write("Internal database error.");
 			}
 

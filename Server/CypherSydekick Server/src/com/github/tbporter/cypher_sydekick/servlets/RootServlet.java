@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.github.tbporter.cypher_sydekick.database.DatabaseManager;
+import com.github.tbporter.cypher_sydekick.database.DatabaseManagerException;
 
 /**
  * Serves a diagnostic page for viewing and adding users.
@@ -33,7 +34,7 @@ public class RootServlet extends HttpServlet {
 			throws IOException {
 		resp.setContentType("text/html");
 		PrintWriter out = resp.getWriter();
-		
+
 		out.write(HTML_HEAD);
 
 		// Place the add user form at the top
@@ -47,7 +48,7 @@ public class RootServlet extends HttpServlet {
 				out.write(user + "<br>\n");
 			}
 
-		} catch (Exception e) {
+		} catch (DatabaseManagerException e) {
 			out.write("<i>Unable to read user list.</i><br>\n");
 		}
 

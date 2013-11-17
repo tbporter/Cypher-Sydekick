@@ -7,6 +7,7 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
 import com.github.tbporter.cypher_sydekick.database.DatabaseManager;
+import com.github.tbporter.cypher_sydekick.database.DatabaseManagerException;
 import com.github.tbporter.cypher_sydekick.debugging.Debug;
 import com.github.tbporter.cypher_sydekick.servlets.AddServlet;
 import com.github.tbporter.cypher_sydekick.servlets.RootServlet;
@@ -55,7 +56,7 @@ public final class Main {
 		try {
 			DatabaseManager.openDatabase();
 			DatabaseManager.createUserTable();
-		} catch (Exception e) {
+		} catch (DatabaseManagerException e) {
 			Debug.printError(TAG, e.getMessage());
 			return;
 		}
@@ -97,7 +98,7 @@ public final class Main {
 				Debug.printError(TAG, "Second search, didn't find user "
 						+ newUser);
 			}
-		} catch (Exception e) {
+		} catch (DatabaseManagerException e) {
 			Debug.printError(TAG, "Database exception: " + e.getMessage());
 		}
 
