@@ -221,7 +221,8 @@ public final class DatabaseManager {
 	}
 
 	/**
-	 * Gets the next message from the given sender to the given receiver.
+	 * Gets the next message from the given sender to the given receiver. <br>
+	 * <b>The message is deleted once it is retrieved with this method.</b>
 	 * 
 	 * @param receiver
 	 *            username of receiver
@@ -286,7 +287,17 @@ public final class DatabaseManager {
 					final String msgContents = result
 							.getString(DatabaseConstants.CONTENTS_COLUMN_LABEL);
 					msg = new ChatMessage(msgReceiver, msgSender, msgContents);
-					
+
+					// Delete the message now that it has been received
+					final int msgID = result.getInt("ROWID");
+					try {
+						deleteMessage(msgID);
+					} catch (DatabaseManagerException dme) {
+						throw new DatabaseManagerException(
+								"Error while deleting message, exception message: "
+										+ dme.getMessage());
+					}
+
 				} else {
 					// No results found
 					msg = null;
@@ -343,6 +354,39 @@ public final class DatabaseManager {
 		}
 
 		return retVal;
+	}
+
+	/**
+	 * Deletes the message with the given ROWID. Users should never need to know
+	 * row IDs, so this is private.
+	 * 
+	 * @param rowId
+	 *            ROWID for the message to delete.
+	 * @throws DatabaseManagerException
+	 *             if the delete fails.
+	 */
+	private static void deleteMessage(final int rowId)
+			throws DatabaseManagerException {
+		if (isDatabaseOpen()) {
+
+			// Add the message to the table
+			try {
+				final String sql = "DELETE FROM "
+						+ DatabaseConstants.MESSAGES_TABLE_NAME
+						+ " WHERE ROWID=?;";
+				PreparedStatement ps = s_connection.prepareStatement(sql);
+				ps.setInt(1, rowId);
+				ps.execute();
+				ps.close();
+
+			} catch (SQLException sqle) {
+				throw new DatabaseManagerException(
+						"SQL exception during message deletion.");
+			}
+
+		} else {
+			throw new DatabaseManagerException("Database not open.");
+		}
 	}
 
 	/**
