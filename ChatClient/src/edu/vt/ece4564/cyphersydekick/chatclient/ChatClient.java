@@ -2,13 +2,17 @@ package edu.vt.ece4564.cyphersydekick.chatclient;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -29,8 +33,7 @@ public class ChatClient extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_client);
-
+        setContentView(R.layout.activity_chat_client);        
         
         mTitle = getResources().getString(R.string.chatclient_title);
         mDrawerTitle = getResources().getString(R.string.drawer_title);
@@ -125,6 +128,10 @@ public class ChatClient extends Activity {
     }
 
     private void selectItem(int position) {
+        Fragment fragment = new ChatFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+
         // update the main content by replacing fragments
         /*Fragment fragment = new PlanetFragment();
         Bundle args = new Bundle();
@@ -163,6 +170,22 @@ public class ChatClient extends Activity {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggls
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    // Fragment for the Chat
+    public static class ChatFragment extends Fragment {
+        public static final String ARG_PLANET_NUMBER = "planet_number";
+
+        public ChatFragment() {
+            // Empty constructor required for fragment subclasses
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
+            return rootView;
+        }
     }
     
 }
