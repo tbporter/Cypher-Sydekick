@@ -136,7 +136,7 @@ public class ChatClient extends Activity {
     private void selectItem(int position) {
     	mDrawerList.setItemChecked(position, true);
         mDrawerLayout.closeDrawer(mDrawerList);
-        chatFragment_.setUsername("username"+position);
+        chatFragment_.setUsername(mDrawerList.getItemAtPosition(position).toString());
     }
 
     @Override
