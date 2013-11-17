@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.view.View;
 
 public class ChatClient extends Activity {
@@ -29,11 +30,16 @@ public class ChatClient extends Activity {
     private CharSequence mTitle;
     private String[] mFriendsArray;
     
+    private ChatFragment chatFragment_ = new ChatFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_client);        
+
+        
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, chatFragment_).commit();
         
         mTitle = getResources().getString(R.string.chatclient_title);
         mDrawerTitle = getResources().getString(R.string.drawer_title);
@@ -73,9 +79,9 @@ public class ChatClient extends Activity {
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        if (savedInstanceState == null) {
+/*        if (savedInstanceState == null) {
             selectItem(0);
-        }
+        }*/
     }
 
     @Override
@@ -128,23 +134,9 @@ public class ChatClient extends Activity {
     }
 
     private void selectItem(int position) {
-        Fragment fragment = new ChatFragment();
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-
-        // update the main content by replacing fragments
-        /*Fragment fragment = new PlanetFragment();
-        Bundle args = new Bundle();
-        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-        fragment.setArguments(args);
-
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-
-        // update selected item and title, then close the drawer
-        mDrawerList.setItemChecked(position, true);
-        setTitle(mPlanetTitles[position]);
-        mDrawerLayout.closeDrawer(mDrawerList);*/
+    	mDrawerList.setItemChecked(position, true);
+        mDrawerLayout.closeDrawer(mDrawerList);
+        chatFragment_.setUsername("username"+position);
     }
 
     @Override
@@ -174,7 +166,7 @@ public class ChatClient extends Activity {
 
     // Fragment for the Chat
     public static class ChatFragment extends Fragment {
-        public static final String ARG_PLANET_NUMBER = "planet_number";
+    	private TextView chatUsername_;
 
         public ChatFragment() {
             // Empty constructor required for fragment subclasses
@@ -184,7 +176,12 @@ public class ChatClient extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
+            chatUsername_ = (TextView) rootView.findViewById(R.id.textView_chatUsername);
             return rootView;
+        }
+        
+        public void setUsername(String username){
+        	chatUsername_.setText(username);
         }
     }
     
