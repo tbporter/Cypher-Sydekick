@@ -10,7 +10,7 @@ import com.github.tbporter.cypher_sydekick.chat.ChatMessage;
 import com.github.tbporter.cypher_sydekick.database.DatabaseManager;
 import com.github.tbporter.cypher_sydekick.database.DatabaseManagerException;
 import com.github.tbporter.cypher_sydekick.debugging.Debug;
-import com.github.tbporter.cypher_sydekick.servlets.AddServlet;
+import com.github.tbporter.cypher_sydekick.servlets.UsersServlet;
 import com.github.tbporter.cypher_sydekick.servlets.RootServlet;
 
 /**
@@ -42,7 +42,7 @@ public final class Main {
 		// Set up custom servlets
 		context.addServlet(RootServlet.class, ""); // Empty string maps to
 													// *exactly* root
-		context.addServlet(AddServlet.class, "/users");
+		context.addServlet(UsersServlet.class, "/users");
 
 		// Start the server
 		server.setHandler(context);

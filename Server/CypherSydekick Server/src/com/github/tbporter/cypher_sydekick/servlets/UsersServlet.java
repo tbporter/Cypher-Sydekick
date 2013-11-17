@@ -18,7 +18,7 @@ import com.github.tbporter.cypher_sydekick.database.DatabaseManagerException;
  * @author ayelix
  * 
  */
-public class AddServlet extends HttpServlet {
+public class UsersServlet extends HttpServlet {
 	/** Parameter key for username. */
 	private static final String PARAM_USERNAME = "username";
 
