@@ -52,10 +52,11 @@ public final class Main {
 			return;
 		}
 
-		// Open the database and create the table
+		// Open the database and create the tables
 		try {
 			DatabaseManager.openDatabase();
 			DatabaseManager.createUserTable();
+			DatabaseManager.createMessagesTable();
 		} catch (DatabaseManagerException e) {
 			Debug.printError(TAG, e.getMessage());
 			return;

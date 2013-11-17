@@ -60,20 +60,18 @@ public final class DatabaseManager {
 	 *             if table creation fails or database has not been opened.
 	 */
 	public static void createUserTable() throws DatabaseManagerException {
-		if (isDatabaseOpen()) {
-			try {
-				Statement s = s_connection.createStatement();
-				s.executeUpdate(DatabaseConstants.USERS_TABLE_CREATE);
-				s.close();
+		createTable(DatabaseConstants.USERS_TABLE_CREATE);
+	}
 
-			} catch (SQLException sqle) {
-				throw new DatabaseManagerException(
-						"SQL exception during table creation.");
-			}
-
-		} else {
-			throw new DatabaseManagerException("Database not open.");
-		}
+	/**
+	 * Creates the table containing messages. Database must be open (
+	 * {@link #openDatabase()}).
+	 * 
+	 * @throws DatabaseManagerException
+	 *             if table creation fails or database has not been opened.
+	 */
+	public static void createMessagesTable() throws DatabaseManagerException {
+		createTable(DatabaseConstants.MESSAGES_CREATE_TABLE);
 	}
 
 	/**
@@ -217,5 +215,31 @@ public final class DatabaseManager {
 		}
 
 		return retVal;
+	}
+
+	/**
+	 * Creates a table using the given SQL statement string.
+	 * 
+	 * @param tableCreateSqlString
+	 *            SQL statement string to execute in order to create the table.
+	 * @throws DatabaseManagerException
+	 *             if table creation fails or database has not been opened.
+	 */
+	private static void createTable(final String tableCreateSqlString)
+			throws DatabaseManagerException {
+		if (isDatabaseOpen()) {
+			try {
+				Statement s = s_connection.createStatement();
+				s.executeUpdate(tableCreateSqlString);
+				s.close();
+
+			} catch (SQLException sqle) {
+				throw new DatabaseManagerException(
+						"SQL exception during table creation.");
+			}
+
+		} else {
+			throw new DatabaseManagerException("Database not open.");
+		}
 	}
 }
