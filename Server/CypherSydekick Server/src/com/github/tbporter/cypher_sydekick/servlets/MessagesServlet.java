@@ -23,7 +23,6 @@ public class MessagesServlet extends HttpServlet {
 	private static final String PARAM_ACTION = "action";
 	private static final String PARAM_RECIPIENT = "recipient";
 	private static final String PARAM_SENDER = "sender";
-	
 
 	/** Default error code sent for general errors. */
 	private static final int STATUS_ERROR = HttpStatus.INTERNAL_SERVER_ERROR_500;
@@ -46,33 +45,34 @@ public class MessagesServlet extends HttpServlet {
 		final String action = req.getParameter(PARAM_ACTION);
 		final String sender = req.getParameter(PARAM_SENDER);
 		final String recipient = req.getParameter(PARAM_RECIPIENT);
-		
+
 		boolean validParams = true; // Assume params are valid first
-		
+
 		// Exception handling for validating sender and recipient
 		try {
-			if(DatabaseManager.getUser(sender) == null){
+			if (DatabaseManager.getUser(sender) == null) {
 				out.write("Sender " + sender + " does not exist.");
 				validParams = false;
 			}
-			if(DatabaseManager.getUser(recipient) == null){
-				out.write("Recipient " + sender + " does not exist.");
+			if (DatabaseManager.getUser(recipient) == null) {
+				out.write("Recipient " + recipient + " does not exist.");
 				validParams = false;
 			}
 		} catch (DatabaseManagerException e) {
 			out.write("Internal database error.");
 		}
-		
+
 		// Make sure parameters were provided
-		if (action == "send" && validParams) {
+		if (validParams) {
+			if (action.equals("send")) {
 
+			} else if (action.equals("receive")) {
 
-		} 
-		else if (action == "receive" && validParams){
-			
-		}
-		else {
-			out.write("Invalid action.");
+			} else {
+				out.write("Invalid action.");
+			}
+		} else {
+			out.write("Invalid parameters.");
 		}
 	}
 
