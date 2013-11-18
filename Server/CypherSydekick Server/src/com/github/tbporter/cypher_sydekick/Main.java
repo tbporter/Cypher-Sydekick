@@ -1,15 +1,14 @@
 package com.github.tbporter.cypher_sydekick;
 
 import java.util.List;
-
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-
 import com.github.tbporter.cypher_sydekick.chat.ChatMessage;
 import com.github.tbporter.cypher_sydekick.database.DatabaseManager;
 import com.github.tbporter.cypher_sydekick.database.DatabaseManagerException;
 import com.github.tbporter.cypher_sydekick.debugging.Debug;
+import com.github.tbporter.cypher_sydekick.servlets.MessagesServlet;
 import com.github.tbporter.cypher_sydekick.servlets.UsersServlet;
 import com.github.tbporter.cypher_sydekick.servlets.RootServlet;
 
@@ -43,6 +42,9 @@ public final class Main {
 		context.addServlet(RootServlet.class, ""); // Empty string maps to
 													// *exactly* root
 		context.addServlet(UsersServlet.class, "/users");
+		
+		// Add the chat servlet
+		context.addServlet(MessagesServlet.class, "/message");
 
 		// Start the server
 		server.setHandler(context);
