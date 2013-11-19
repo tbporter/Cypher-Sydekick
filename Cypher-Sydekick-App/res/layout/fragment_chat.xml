@@ -24,6 +24,7 @@
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/btn_sendMessage"
         android:ems="10"
+        android:hint="Type message"
         android:inputType="textMultiLine" />
 
     <ImageButton
@@ -35,6 +36,7 @@
         android:layout_weight="1"
         android:background="?android:selectableItemBackground"
         android:contentDescription="TODO"
+        android:padding="8dp"
         android:src="@drawable/ic_action_send_now" />
 
 </RelativeLayout>

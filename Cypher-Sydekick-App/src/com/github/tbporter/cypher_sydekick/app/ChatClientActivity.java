@@ -1,8 +1,10 @@
 package com.github.tbporter.cypher_sydekick.app;
 
 import com.github.tbporter.cypher_sydekick.app.R;
+
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
@@ -15,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -109,17 +112,21 @@ public class ChatClientActivity extends Activity {
         }
         // Handle action buttons
         switch(item.getItemId()) {
-        /*case R.id.action_websearch:
-            // create intent to perform web search for this planet
-            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-            intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
-            // catch event that there's no activity to handle intent
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
-            }
-            return true;*/
+        case R.id.action_add_person:
+        	 final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        	    alert.setTitle("Adding new friend");
+        	    alert.setMessage("Bump phones together and press Android Beam button to share public key pairs and add friend.");
+
+        	    /*final EditText input = new EditText(this);
+        	    alert.setView(input);*/
+
+        	    alert.setNegativeButton("Dismiss", null);
+        	    final AlertDialog helpDialog = alert.create();
+        	    helpDialog.show();
+        	    
+        	return true;
+        case R.id.action_game:
+        	return true;
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -164,7 +171,7 @@ public class ChatClientActivity extends Activity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    // Fragment for the Chat
+    /** Fragment for the Chat **/
     public static class ChatFragment extends Fragment {
 
         public ChatFragment() {
