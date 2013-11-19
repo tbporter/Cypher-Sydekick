@@ -28,13 +28,6 @@
         </EditText>
 
         <Button
-            android:id="@+id/nfcBroadcastButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/nfcBroadcastButton_text_initial" />
-
-        <Button
             android:id="@+id/nfcReceiveButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

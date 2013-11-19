@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.nfc.NfcAdapter.CreateNdefMessageCallback;
 import android.nfc.NfcAdapter.OnNdefPushCompleteCallback;
 import android.nfc.NfcEvent;
 import android.os.Bundle;
@@ -20,7 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class NFCActivity extends Activity implements OnNdefPushCompleteCallback {
+public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 	private static String TAG = "NFCActivity";
 
 	/** MIME type for messages shared over NFC. */
@@ -33,7 +34,6 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 
 	// Views
 	private EditText m_nfcEditText;
-	private Button m_nfcBroadcastButton;
 	private Button m_nfcReceiveButton;
 
 	/** States for the NFC broadcast/receive (mutually exclusive) */
@@ -52,30 +52,24 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 		// Make sure this device has NFC available
 		m_nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 		if (null == m_nfcAdapter) {
-			Toast.makeText(this, "NFC is not available on this device", Toast.LENGTH_LONG)
-					.show();
+			Toast.makeText(this, "NFC is not available on this device",
+					Toast.LENGTH_LONG).show();
 			finish();
 			return;
 		}
 
-		// Set this class as the callback for an NDEF push completion
-		m_nfcAdapter.setOnNdefPushCompleteCallback(this, this);
+		// Notify the user if they have not enabled NFC
+		checkAndNotifyNFCEnabled();
+
+		// Set this class as the callback to create an NDEF push message
+		m_nfcAdapter.setNdefPushMessageCallback(this, this);
 
 		// Initialize members
 		m_nfcState = NFCState.NFC_INACTIVE;
 
 		// Get views by id
 		m_nfcEditText = (EditText) findViewById(R.id.nfcEditText);
-		m_nfcBroadcastButton = (Button) findViewById(R.id.nfcBroadcastButton);
 		m_nfcReceiveButton = (Button) findViewById(R.id.nfcReceiveButton);
-
-		// Create listener for broadcast button
-		m_nfcBroadcastButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				broadcastButtonClicked();
-			}
-		});
 
 		// Create listener for receive button
 		m_nfcReceiveButton.setOnClickListener(new OnClickListener() {
@@ -91,33 +85,7 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 		super.onPause();
 
 		// Stop any active NFC operations
-		stopNFCBroadcast();
 		stopNFCReceive();
-	}
-
-	private void broadcastButtonClicked() {
-		Log.d(TAG, "Broadcast button clicked, text: " + m_nfcEditText.getText());
-
-		// Check the NFC state to determine what to do
-		switch (m_nfcState) {
-
-		// If not broadcasting or receiving, start the broadcast
-		case NFC_INACTIVE:
-			startNFCBroadcast();
-			break;
-
-		// If already broadcasting, stop the broadcast
-		case NFC_BROADCASTING:
-			stopNFCBroadcast();
-			break;
-
-		// Any other state is an error
-		case NFC_RECEIVING:
-		default:
-			Log.e(TAG, "Broadcast button clicked with invalid NFC state: "
-					+ m_nfcState);
-
-		} // end switch (m_nfcState)
 	}
 
 	private void receiveButtonClicked() {
@@ -145,56 +113,6 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 		} // end switch (m_nfcState)
 	}
 
-	private void startNFCBroadcast() {
-		Log.d(TAG, "NFC broadcast starting");
-
-		checkAndNotifyNFCEnabled();
-
-		// Build the NDEF message to broadcast
-		String text = m_nfcEditText.getText().toString();
-		NdefRecord record = new NdefRecord(NdefRecord.TNF_MIME_MEDIA,
-				NDEF_MIME_TYPE.getBytes(NDEF_CHARSET), new byte[0],
-				text.getBytes(NDEF_CHARSET));
-		NdefMessage msg = new NdefMessage(new NdefRecord[] { record });
-
-		// Set the message to broadcast
-		// Using this deprecated method because setNdefPushMessage() requires
-		// API 14+
-		// m_nfcAdapter.enableForegroundNdefPush(this, msg);
-		m_nfcAdapter.setNdefPushMessage(msg, this);
-
-		// Update the NFC state
-		m_nfcState = NFCState.NFC_BROADCASTING;
-
-		// Disable the text field and receive button while broadcast is in
-		// progress
-		m_nfcEditText.setEnabled(false);
-		m_nfcReceiveButton.setEnabled(false);
-
-		// Update broadcast button text to indicate its new function
-		m_nfcBroadcastButton.setText(R.string.nfcBroadcastButton_text_active);
-	}
-
-	private void stopNFCBroadcast() {
-		Log.d(TAG, "NFC broadcast stopping");
-
-		// Stop the broadcast
-		// Using this deprecated method because setNdefPushMessage() requires
-		// API 14+
-		// m_nfcAdapter.disableForegroundNdefPush(this);
-		m_nfcAdapter.setNdefPushMessage(null, this);
-
-		// Update the NFC state
-		m_nfcState = NFCState.NFC_INACTIVE;
-
-		// Enable the text field and receive button when broadcast is stopped
-		m_nfcEditText.setEnabled(true);
-		m_nfcReceiveButton.setEnabled(true);
-
-		// Update broadcast button text to indicate its new function
-		m_nfcBroadcastButton.setText(R.string.nfcBroadcastButton_text_initial);
-	}
-
 	private void startNFCReceive() {
 		Log.d(TAG, "NFC receive starting");
 
@@ -212,9 +130,8 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 		// Update the NFC state
 		m_nfcState = NFCState.NFC_RECEIVING;
 
-		// Disable the text field and broadcast button when receiving
+		// Disable the text field when receiving
 		m_nfcEditText.setEnabled(false);
-		m_nfcBroadcastButton.setEnabled(false);
 
 		// Update receive button text to indicate its new function
 		m_nfcReceiveButton.setText(R.string.nfcReceiveButton_text_active);
@@ -229,9 +146,8 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 		// Update the NFC state
 		m_nfcState = NFCState.NFC_INACTIVE;
 
-		// Enable the text field and broadcast button when receiving stops
+		// Enable the text field when receiving stops
 		m_nfcEditText.setEnabled(true);
-		m_nfcBroadcastButton.setEnabled(true);
 
 		// Update receive button text to indicate its new function
 		m_nfcReceiveButton.setText(R.string.nfcReceiveButton_text_initial);
@@ -242,8 +158,7 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 	 */
 	private void checkAndNotifyNFCEnabled() {
 		if (!m_nfcAdapter.isEnabled()) {
-			Toast.makeText(
-					this,
+			Toast.makeText(this,
 					"NFC disabled, must enable before Android Beam will work.",
 					Toast.LENGTH_LONG).show();
 		}
@@ -283,7 +198,8 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 						final String payloadStr = new String(
 								firstRecord.getPayload(), NDEF_CHARSET);
 						m_nfcEditText.setText(payloadStr);
-						Toast.makeText(this, "Received a string via Android Beam",
+						Toast.makeText(this,
+								"Received a string via Android Beam",
 								Toast.LENGTH_LONG).show();
 
 						Log.d(TAG,
@@ -316,24 +232,6 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 	private boolean checkNdefRecord(final NdefRecord record) {
 		boolean retVal = true;
 
-		// @formatter:off
-		/*
-		// Check the TNF
-		final short tnf = record.getTnf();
-		if (NdefRecord.TNF_MIME_MEDIA != tnf) {
-			retVal = false;
-			Log.d(TAG, "Checked NdefRecord with unknown TNF: " + tnf);
-		}
-
-		// Check the MIME type
-		final String mime = new String(record.getType(), NDEF_CHARSET);
-		if (NDEF_MIME_TYPE == mime) {
-			retVal = false;
-			Log.d(TAG, "Checked NdefRecord with unknown MIME type: " + mime);
-		}
-		*/ 
-		// @formatter:on
-
 		// Requires API 16:
 		// Check the MIME type
 		final String mime = record.toMimeType();
@@ -355,22 +253,19 @@ public class NFCActivity extends Activity implements OnNdefPushCompleteCallback 
 		return retVal;
 	}
 
-	/**
-	 * Stops the NFC broadcast when the push is complete.
-	 */
 	@Override
-	public void onNdefPushComplete(NfcEvent arg0) {
-		Toast.makeText(this, "Beam complete", Toast.LENGTH_LONG).show();
-		Log.d(TAG, "NDEF push complete.");
+	public NdefMessage createNdefMessage(NfcEvent event) {
+		Log.d(TAG, "Building NDEF message");
 
-		// This callback may be called on a binder thread but stopNFCBroadcast()
-		// must be called on the UI thread.
-		this.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				stopNFCBroadcast();
-			}
-		});
+		// Build the NDEF message to broadcast
+		String text = m_nfcEditText.getText().toString();
+		NdefRecord record = new NdefRecord(NdefRecord.TNF_MIME_MEDIA,
+				NDEF_MIME_TYPE.getBytes(NDEF_CHARSET), new byte[0],
+				text.getBytes(NDEF_CHARSET));
+		NdefMessage msg = new NdefMessage(new NdefRecord[] { record });
+
+		// Return the NDEF message to broadcast
+		return msg;
 	}
 
 	@Override
