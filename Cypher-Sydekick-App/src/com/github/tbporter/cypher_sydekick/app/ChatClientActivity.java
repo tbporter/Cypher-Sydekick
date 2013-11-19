@@ -136,7 +136,7 @@ public class ChatClientActivity extends Activity {
     private void selectItem(int position) {
     	mDrawerList.setItemChecked(position, true);
         mDrawerLayout.closeDrawer(mDrawerList);
-        chatFragment_.setUsername(mDrawerList.getItemAtPosition(position).toString());
+        setTitle(mDrawerList.getItemAtPosition(position).toString());
     }
 
     @Override
@@ -166,7 +166,6 @@ public class ChatClientActivity extends Activity {
 
     // Fragment for the Chat
     public static class ChatFragment extends Fragment {
-    	private TextView chatUsername_;
 
         public ChatFragment() {
             // Empty constructor required for fragment subclasses
@@ -176,13 +175,9 @@ public class ChatClientActivity extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
-            chatUsername_ = (TextView) rootView.findViewById(R.id.textView_chatUsername);
             return rootView;
         }
         
-        public void setUsername(String username){
-        	chatUsername_.setText(username);
-        }
     }
     
 }

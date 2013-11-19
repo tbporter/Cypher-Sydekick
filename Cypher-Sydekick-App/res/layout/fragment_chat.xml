@@ -1,49 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/text_chatUsername"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/textView_chatUsername"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/hello_world"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
     <ListView
         android:id="@+id/listView_conversation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/editText_message"
+        android:layout_alignParentLeft="true"
         android:layout_gravity="fill_vertical" >
 
     </ListView>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <EditText
+        android:id="@+id/editText_message"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom" >
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/btn_sendMessage"
+        android:ems="10"
+        android:inputType="textMultiLine" />
 
-        <EditText
-            android:id="@+id/editText_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textMultiLine" />
+    <ImageButton
+        android:id="@+id/btn_sendMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_weight="1"
+        android:background="?android:selectableItemBackground"
+        android:contentDescription="TODO"
+        android:src="@drawable/ic_action_send_now" />
 
-        <ImageButton
-            android:id="@+id/btn_sendMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_action_send_now" 
-            android:background="@null" 
-            android:contentDescription="TODO"/>
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
