@@ -20,7 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.view.View;
 
-public class ChatClient extends Activity {
+public class ChatClientActivity extends Activity {
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
