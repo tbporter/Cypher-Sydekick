@@ -1,5 +1,6 @@
-package edu.vt.ece4564.cyphersydekick.chatclient;
+package com.github.tbporter.cypher_sydekick.app;
 
+import com.github.tbporter.cypher_sydekick.app.R;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Fragment;
@@ -14,7 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
