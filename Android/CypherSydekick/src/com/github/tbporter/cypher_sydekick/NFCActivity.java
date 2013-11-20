@@ -1,7 +1,5 @@
 package com.github.tbporter.cypher_sydekick;
 
-import java.nio.charset.Charset;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -9,25 +7,16 @@ import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcAdapter.CreateNdefMessageCallback;
-import android.nfc.NfcAdapter.OnNdefPushCompleteCallback;
 import android.nfc.NfcEvent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 	private static String TAG = "NFCActivity";
-
-	/** MIME type for messages shared over NFC. */
-	private static String NDEF_MIME_TYPE = "application/com.github.tbporter.cypher_sydekick";
-	/** Charset used for Strings shared over NFC. */
-	private static Charset NDEF_CHARSET = Charset.forName("US-ASCII");
 
 	/** Device's NFC adapter */
 	private NfcAdapter m_nfcAdapter;
@@ -135,7 +124,7 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 
 					// There should be 2 records
 					if (2 == records.length) {
-						
+
 						// Get the second record
 						final NdefRecord secondRecord = records[1];
 
@@ -144,7 +133,8 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 							// Set the EditText contents based on the received
 							// String
 							final String payloadStr = new String(
-									secondRecord.getPayload(), NDEF_CHARSET);
+									secondRecord.getPayload(),
+									NfcUtilities.NDEF_CHARSET);
 							m_nfcEditText.setText(payloadStr);
 							Toast.makeText(this,
 									"Received a string via Android Beam",
@@ -153,7 +143,7 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 							Log.d(TAG,
 									"Received NDEF message with payload string: "
 											+ payloadStr);
-							
+
 						} else {
 							Log.d(TAG, "Received invalid NDEF message");
 						}
@@ -191,12 +181,9 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 		final String mime = record.toMimeType();
 		if (null != mime) {
 			// The record has a MIME type, make sure it's correct
-			if (!NDEF_MIME_TYPE.equals(mime)) {
+			if (!NfcUtilities.NDEF_MIME_TYPE.equals(mime)) {
 				retVal = false;
 				Log.d(TAG, "Checked NdefRecord with unknown MIME type: " + mime);
-				Log.d(TAG,
-						"MIME type via old method: "
-								+ new String(record.getType(), NDEF_CHARSET));
 			}
 		} else {
 			// No MIME type found, this is not a valid record
@@ -210,24 +197,8 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 	@Override
 	public NdefMessage createNdefMessage(NfcEvent event) {
 		Log.d(TAG, "Building NDEF message");
-
-		// Create an NDEF Android Application Record so that this app will open
-		// when the message is received.
-		NdefRecord appRecord = NdefRecord
-				.createApplicationRecord(getApplicationContext()
-						.getPackageName());
-
-		// Create an NDEF record with the string from the EditText
-		String text = m_nfcEditText.getText().toString();
-		NdefRecord stringRecord = NdefRecord.createMime(NDEF_MIME_TYPE,
-				text.getBytes(NDEF_CHARSET));
-
-		// Build an NDEF message with the records created above
-		NdefMessage msg = new NdefMessage(new NdefRecord[] { appRecord,
-				stringRecord });
-
-		// Return the NDEF message to broadcast
-		return msg;
+		return NfcUtilities.createNdefMessage(new UserInfo(m_nfcEditText
+				.getText().toString(), "key"), getApplicationContext());
 	}
 
 	@Override
