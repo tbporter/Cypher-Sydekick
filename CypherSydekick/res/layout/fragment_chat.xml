@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/text_chatUsername"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_vertical"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@+id/listView_conversation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/editText_message"
+        android:layout_alignParentLeft="true"
+        android:layout_gravity="fill_vertical" >
+
+    </ListView>
+
+    <EditText
+        android:id="@+id/editText_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/btn_sendMessage"
+        android:ems="10"
+        android:hint="Type message"
+        android:inputType="textMultiLine" />
+
+    <ImageButton
+        android:id="@+id/btn_sendMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_weight="1"
+        android:background="?android:selectableItemBackground"
+        android:contentDescription="TODO"
+        android:padding="8dp"
+        android:src="@drawable/ic_action_send_now" />
+
+</RelativeLayout>
