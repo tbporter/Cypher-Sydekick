@@ -66,15 +66,15 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 		// Stop any active NFC operations
 		stopNFCReceive();
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		// Start listening for NFC
 		startNFCReceive();
 	}
-	
+
 	private void startNFCReceive() {
 		Log.d(TAG, "NFC receive starting");
 
@@ -131,26 +131,36 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 
 				// Process the first message
 				if (1 == msgs.length) {
-					// Get the first record (every NDEF message has at least one
-					// record)
-					NdefRecord firstRecord = msgs[0].getRecords()[0];
+					final NdefRecord[] records = msgs[0].getRecords();
 
-					// Validate the record
-					if (checkNdefRecord(firstRecord)) {
-						// Set the EditText contents based on the received
-						// String
-						final String payloadStr = new String(
-								firstRecord.getPayload(), NDEF_CHARSET);
-						m_nfcEditText.setText(payloadStr);
-						Toast.makeText(this,
-								"Received a string via Android Beam",
-								Toast.LENGTH_LONG).show();
+					// There should be 2 records
+					if (2 == records.length) {
+						
+						// Get the second record
+						final NdefRecord secondRecord = records[1];
 
-						Log.d(TAG,
-								"Received NDEF message with payload string: "
-										+ payloadStr);
+						// Validate the record
+						if (checkNdefRecord(secondRecord)) {
+							// Set the EditText contents based on the received
+							// String
+							final String payloadStr = new String(
+									secondRecord.getPayload(), NDEF_CHARSET);
+							m_nfcEditText.setText(payloadStr);
+							Toast.makeText(this,
+									"Received a string via Android Beam",
+									Toast.LENGTH_LONG).show();
+
+							Log.d(TAG,
+									"Received NDEF message with payload string: "
+											+ payloadStr);
+							
+						} else {
+							Log.d(TAG, "Received invalid NDEF message");
+						}
+
 					} else {
-						Log.d(TAG, "Received invalid NDEF message");
+						Log.d(TAG, "Received " + records.length
+								+ " NDEF record(s), expecting exactly 2");
 					}
 
 				} else {
@@ -201,12 +211,20 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 	public NdefMessage createNdefMessage(NfcEvent event) {
 		Log.d(TAG, "Building NDEF message");
 
-		// Build the NDEF message to broadcast
+		// Create an NDEF Android Application Record so that this app will open
+		// when the message is received.
+		NdefRecord appRecord = NdefRecord
+				.createApplicationRecord(getApplicationContext()
+						.getPackageName());
+
+		// Create an NDEF record with the string from the EditText
 		String text = m_nfcEditText.getText().toString();
-		NdefRecord record = new NdefRecord(NdefRecord.TNF_MIME_MEDIA,
-				NDEF_MIME_TYPE.getBytes(NDEF_CHARSET), new byte[0],
+		NdefRecord stringRecord = NdefRecord.createMime(NDEF_MIME_TYPE,
 				text.getBytes(NDEF_CHARSET));
-		NdefMessage msg = new NdefMessage(new NdefRecord[] { record });
+
+		// Build an NDEF message with the records created above
+		NdefMessage msg = new NdefMessage(new NdefRecord[] { appRecord,
+				stringRecord });
 
 		// Return the NDEF message to broadcast
 		return msg;
