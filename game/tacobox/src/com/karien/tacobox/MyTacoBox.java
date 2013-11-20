@@ -3,6 +3,8 @@ package com.karien.tacobox;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.karien.taco.mapstuff.level.LevelHelper;
 import com.karien.tacobox.screens.LoadingScreen;
@@ -13,6 +15,7 @@ public class MyTacoBox extends Game {
 	private LevelHelper lvls;
 	private GameState state = GameState.Title;
 	private Skin skin;
+	private World world;
 
 	public static final int SCREEN_WIDTH = 480;
 	public static final int SCREEN_HEIGHT = 320;
@@ -24,6 +27,7 @@ public class MyTacoBox extends Game {
 		// recommended solely for the convenience of getting a texture, region,
 		// etc as a drawable, tinted drawable, etc.
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+		world = new World(new Vector2(0, 0), true);
 	}
 
 	@Override
@@ -39,7 +43,7 @@ public class MyTacoBox extends Game {
 			// state = GameState.LoadFirstLevel;
 			break;
 		case LoadFirstLevel:
-			lvls = new LevelHelper(null, this);
+			lvls = new LevelHelper(null, this, world);
 			lvls.loadNextLevel();
 			setScreen(new LoadingScreen());
 			state = GameState.WaitLoadFirstLevel;
@@ -104,5 +108,12 @@ public class MyTacoBox extends Game {
 	 */
 	public Skin getDefaultSkin() {
 		return skin;
+	}
+
+	/**
+	 * @return the physics world
+	 */
+	public World getWorld() {
+		return world;
 	}
 }

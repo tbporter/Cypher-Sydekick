@@ -2,6 +2,7 @@ package com.karien.taco.mapstuff.level;
 
 import java.io.IOException;
 
+import com.badlogic.gdx.physics.box2d.World;
 import com.karien.taco.mapstuff.map.MapID;
 import com.karien.tacobox.MyTacoBox;
 import com.karien.tacobox.comm.MsgHandler;
@@ -9,6 +10,7 @@ import com.karien.tacobox.comm.MsgHandler;
 public class LevelHelper {
 	private final MsgHandler msg;
 	private final MyTacoBox listen;
+	private final World world;
 
 	/**
 	 * Lock must be held to access this variable.
@@ -54,9 +56,10 @@ public class LevelHelper {
 		return nextLevel;
 	}
 
-	public LevelHelper(MsgHandler msg, MyTacoBox listen) {
+	public LevelHelper(MsgHandler msg, MyTacoBox listen, World world) {
 		this.msg = msg;
 		this.listen = listen;
+		this.world = world;
 	}
 
 	private class lvlLoader implements Runnable {
@@ -68,7 +71,7 @@ public class LevelHelper {
 
 		@Override
 		public void run() {
-			Level ll = new RandomLevel(listen, msg);
+			Level ll = new RandomLevel(listen, msg, world);
 
 			synchronized (LevelHelper.this) {
 				nextLevel = ll;
