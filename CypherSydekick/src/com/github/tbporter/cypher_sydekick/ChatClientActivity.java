@@ -116,20 +116,24 @@ public class ChatClientActivity extends Activity {
 		switch (item.getItemId()) {
 		case R.id.action_add_person:
 			/*
-			final AlertDialog.Builder alert = new AlertDialog.Builder(this);
-			alert.setTitle("Adding new friend");
-			alert.setMessage("Bump phones together and press Android Beam button to share public key pairs and add friend.");
-
-			alert.setNegativeButton("Dismiss", null);
-			final AlertDialog helpDialog = alert.create();
-			helpDialog.show();
-			*/
+			 * final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			 * alert.setTitle("Adding new friend"); alert.setMessage(
+			 * "Bump phones together and press Android Beam button to share public key pairs and add friend."
+			 * );
+			 * 
+			 * alert.setNegativeButton("Dismiss", null); final AlertDialog
+			 * helpDialog = alert.create(); helpDialog.show();
+			 */
 			// Open the NFC activity
 			Intent nfcIntent = new Intent(this, NFCActivity.class);
 			startActivity(nfcIntent);
 
 			return true;
 		case R.id.action_game:
+			// Open the game activity
+			Intent gameIntent = new Intent(this, GameActivity.class);
+			startActivity(gameIntent);
+
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
