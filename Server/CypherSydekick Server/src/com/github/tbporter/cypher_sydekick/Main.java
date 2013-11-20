@@ -44,7 +44,7 @@ public final class Main {
 		context.addServlet(UsersServlet.class, "/users");
 		
 		// Add the chat servlet
-		context.addServlet(MessagesServlet.class, "/message");
+		context.addServlet(MessagesServlet.class, "/messages");
 
 		// Start the server
 		server.setHandler(context);
