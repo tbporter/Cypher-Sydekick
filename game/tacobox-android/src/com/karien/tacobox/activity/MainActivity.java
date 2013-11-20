@@ -1,9 +1,10 @@
-package com.karien.tacobox;
+package com.karien.tacobox.activity;
 
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.karien.tacobox.MyTacoBox;
 
 public class MainActivity extends AndroidApplication {
 	@Override

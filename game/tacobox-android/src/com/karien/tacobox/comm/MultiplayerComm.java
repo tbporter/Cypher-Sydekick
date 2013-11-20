@@ -77,7 +77,6 @@ public class MultiplayerComm implements Runnable, MsgHandler {
 		return new MultiplayerComm(s, false);
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public void run() {
 		Scanner sc;
