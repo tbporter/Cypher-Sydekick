@@ -34,15 +34,6 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 
 	// Views
 	private EditText m_nfcEditText;
-	private Button m_nfcReceiveButton;
-
-	/** States for the NFC broadcast/receive (mutually exclusive) */
-	private enum NFCState {
-		NFC_INACTIVE, NFC_BROADCASTING, NFC_RECEIVING
-	}
-
-	/** Current state for NFC broadcast/receive. */
-	private NFCState m_nfcState = NFCState.NFC_INACTIVE;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,20 +55,8 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 		// Set this class as the callback to create an NDEF push message
 		m_nfcAdapter.setNdefPushMessageCallback(this, this);
 
-		// Initialize members
-		m_nfcState = NFCState.NFC_INACTIVE;
-
 		// Get views by id
 		m_nfcEditText = (EditText) findViewById(R.id.nfcEditText);
-		m_nfcReceiveButton = (Button) findViewById(R.id.nfcReceiveButton);
-
-		// Create listener for receive button
-		m_nfcReceiveButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				receiveButtonClicked();
-			}
-		});
 	}
 
 	@Override
@@ -87,32 +66,15 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 		// Stop any active NFC operations
 		stopNFCReceive();
 	}
-
-	private void receiveButtonClicked() {
-		Log.d(TAG, "Receive button clicked");
-
-		// Check the NFC state to determine what to do
-		switch (m_nfcState) {
-
-		// If not broadcasting or receiving, start receiving
-		case NFC_INACTIVE:
-			startNFCReceive();
-			break;
-
-		// If already receiving, stop receiving
-		case NFC_RECEIVING:
-			stopNFCReceive();
-			break;
-
-		// Any other state is an error
-		case NFC_BROADCASTING:
-		default:
-			Log.e(TAG, "Receive button clicked with invalid NFC state: "
-					+ m_nfcState);
-
-		} // end switch (m_nfcState)
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		// Start listening for NFC
+		startNFCReceive();
 	}
-
+	
 	private void startNFCReceive() {
 		Log.d(TAG, "NFC receive starting");
 
@@ -126,15 +88,6 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 		// Enable a foreground dispatch for all tag types
 		m_nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, null,
 				null);
-
-		// Update the NFC state
-		m_nfcState = NFCState.NFC_RECEIVING;
-
-		// Disable the text field when receiving
-		m_nfcEditText.setEnabled(false);
-
-		// Update receive button text to indicate its new function
-		m_nfcReceiveButton.setText(R.string.nfcReceiveButton_text_active);
 	}
 
 	private void stopNFCReceive() {
@@ -142,15 +95,6 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 
 		// Disable NFC foreground dispatch
 		m_nfcAdapter.disableForegroundDispatch(this);
-
-		// Update the NFC state
-		m_nfcState = NFCState.NFC_INACTIVE;
-
-		// Enable the text field when receiving stops
-		m_nfcEditText.setEnabled(true);
-
-		// Update receive button text to indicate its new function
-		m_nfcReceiveButton.setText(R.string.nfcReceiveButton_text_initial);
 	}
 
 	/**

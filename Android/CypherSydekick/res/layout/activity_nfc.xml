@@ -19,20 +19,14 @@
         <EditText
             android:id="@+id/nfcEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:ems="10"
+            android:gravity="center_vertical|top"
             android:hint="@string/nfcEditText_hint"
             android:inputType="textMultiLine" >
 
             <requestFocus />
         </EditText>
-
-        <Button
-            android:id="@+id/nfcReceiveButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/nfcReceiveButton_text_initial" />
     </LinearLayout>
 
 </ScrollView>
