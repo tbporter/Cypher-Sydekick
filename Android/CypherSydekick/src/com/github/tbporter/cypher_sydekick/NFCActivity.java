@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
-import android.nfc.NfcAdapter.CreateNdefMessageCallback;
-import android.nfc.NfcEvent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -15,11 +13,11 @@ import android.view.Menu;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class NFCActivity extends Activity implements CreateNdefMessageCallback {
+public class NFCActivity extends Activity {
 	private static String TAG = "NFCActivity";
 
-	/** Device's NFC adapter */
-	private NfcAdapter m_nfcAdapter;
+	/** NFCManager to handle NFC transactions. */
+	private NFCManager m_nfcManager;
 
 	// Views
 	private EditText m_nfcEditText;
@@ -28,21 +26,20 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_nfc);
+		
+		Log.d(TAG, "onCreate()");
 
-		// Make sure this device has NFC available
-		m_nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-		if (null == m_nfcAdapter) {
-			Toast.makeText(this, "NFC is not available on this device",
-					Toast.LENGTH_LONG).show();
+		// Create the NFCManager to handle NFC transactions
+		try {
+			m_nfcManager = new NFCManager(this);
+		} catch (NFCManagerException nme) {
+			Toast.makeText(this, nme.getMessage(), Toast.LENGTH_LONG).show();
 			finish();
 			return;
 		}
 
 		// Notify the user if they have not enabled NFC
-		checkAndNotifyNFCEnabled();
-
-		// Set this class as the callback to create an NDEF push message
-		m_nfcAdapter.setNdefPushMessageCallback(this, this);
+		m_nfcManager.checkAndNotifyNFCEnabled();
 
 		// Get views by id
 		m_nfcEditText = (EditText) findViewById(R.id.nfcEditText);
@@ -51,50 +48,19 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 	@Override
 	protected void onPause() {
 		super.onPause();
+		Log.d(TAG, "onPause()");
 
 		// Stop any active NFC operations
-		stopNFCReceive();
+		m_nfcManager.stopNFCReceive();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
+		Log.d(TAG, "onResume()");
 
 		// Start listening for NFC
-		startNFCReceive();
-	}
-
-	private void startNFCReceive() {
-		Log.d(TAG, "NFC receive starting");
-
-		checkAndNotifyNFCEnabled();
-
-		// Create the PendingIntent for NFC read results
-		PendingIntent nfcPendingIntent = PendingIntent.getActivity(this, 0,
-				new Intent(this, getClass())
-						.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-
-		// Enable a foreground dispatch for all tag types
-		m_nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, null,
-				null);
-	}
-
-	private void stopNFCReceive() {
-		Log.d(TAG, "NFC receive stopping");
-
-		// Disable NFC foreground dispatch
-		m_nfcAdapter.disableForegroundDispatch(this);
-	}
-
-	/**
-	 * Checks if NFC is enabled and notifies the user if it is not.
-	 */
-	private void checkAndNotifyNFCEnabled() {
-		if (!m_nfcAdapter.isEnabled()) {
-			Toast.makeText(this,
-					"NFC disabled, must enable before Android Beam will work.",
-					Toast.LENGTH_LONG).show();
-		}
+		m_nfcManager.startNFCReceive();
 	}
 
 	/**
@@ -105,100 +71,12 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 		super.onNewIntent(intent);
 
 		// Make sure it's an NFC intent that should be handled
-		final String action = intent.getAction();
-		if (action.equals(NfcAdapter.ACTION_NDEF_DISCOVERED)) {
-
-			// Get the NDEF messages from the intent
-			NdefMessage[] msgs = new NdefMessage[0];
-			Parcelable[] rawMsgs = intent
-					.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-			if (rawMsgs != null) {
-				msgs = new NdefMessage[rawMsgs.length];
-				for (int i = 0; i < rawMsgs.length; i++) {
-					msgs[i] = (NdefMessage) rawMsgs[i];
-				}
-
-				// Process the first message
-				if (1 == msgs.length) {
-					final NdefRecord[] records = msgs[0].getRecords();
-
-					// There should be 2 records
-					if (2 == records.length) {
-
-						// Get the second record
-						final NdefRecord secondRecord = records[1];
-
-						// Validate the record
-						if (checkNdefRecord(secondRecord)) {
-							// Set the EditText contents based on the received
-							// String
-							final String payloadStr = new String(
-									secondRecord.getPayload(),
-									NfcUtilities.NDEF_CHARSET);
-							m_nfcEditText.setText(payloadStr);
-							Toast.makeText(this,
-									"Received a string via Android Beam",
-									Toast.LENGTH_LONG).show();
-
-							Log.d(TAG,
-									"Received NDEF message with payload string: "
-											+ payloadStr);
-
-						} else {
-							Log.d(TAG, "Received invalid NDEF message");
-						}
-
-					} else {
-						Log.d(TAG, "Received " + records.length
-								+ " NDEF record(s), expecting exactly 2");
-					}
-
-				} else {
-					Log.d(TAG, "Received " + msgs.length
-							+ " NDEF messages, expecting exactly 1");
-				}
-
-			} else {
-				Log.d(TAG, "Received NFC intent with no contents.");
-			}
-
+		if (m_nfcManager.willHandleIntent(intent)) {
+			UserInfo newUser = m_nfcManager.parseIntent(intent);
+			Log.d(TAG,
+					"Received new user information: " + newUser.getUsername()
+							+ ", " + newUser.getPublicKey());
 		}
-
-	}
-
-	/**
-	 * Checks if an NdefRecord is the type expected for data exchange.
-	 * 
-	 * @param record
-	 *            The record to check.
-	 * @return true if the record is the type expected, false if not.
-	 */
-	private boolean checkNdefRecord(final NdefRecord record) {
-		boolean retVal = true;
-
-		// Requires API 16:
-		// Check the MIME type
-		final String mime = record.toMimeType();
-		if (null != mime) {
-			// The record has a MIME type, make sure it's correct
-			if (!NfcUtilities.NDEF_MIME_TYPE.equals(mime)) {
-				retVal = false;
-				Log.d(TAG, "Checked NdefRecord with unknown MIME type: " + mime);
-			}
-		} else {
-			// No MIME type found, this is not a valid record
-			retVal = false;
-			Log.d(TAG, "Checked NdefRecord with null MIME type");
-		}
-
-		return retVal;
-	}
-
-	@Override
-	public NdefMessage createNdefMessage(NfcEvent event) {
-		Log.d(TAG, "Building NDEF message");
-		return NfcUtilities.createNdefMessage(new UserInfo(m_nfcEditText
-				.getText().toString(), "key"), getApplicationContext());
 	}
 
 	@Override
