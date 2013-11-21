@@ -1,9 +1,7 @@
 package com.karien.tacobox.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
@@ -14,9 +12,13 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.karien.taco.mapstuff.C;
 import com.karien.taco.mapstuff.MapActions;
 import com.karien.taco.mapstuff.level.Level;
@@ -24,7 +26,7 @@ import com.karien.tacobox.MyTacoBox;
 import com.karien.tacobox.entities.Player;
 import com.karien.tacobox.entities.Player.EFacing;
 
-public class MainScreen implements Screen, InputProcessor, GestureListener {
+public class MainScreen implements Screen, GestureListener {
 
 	private final TiledMap map;
 	private final MapActions acts;
@@ -36,6 +38,32 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 
 	Player mPlayer;
 
+	private Stage stage;
+	private Skin skin;
+	private Touchpad mJoystick[];
+
+	private static final float DEADZONE_RADIUS = 10f;
+
+	public void createUI() {
+		stage = new Stage();
+
+		// A skin can be loaded via JSON or defined programmatically, either is
+		// fine. Using a skin is optional but strongly
+		// recommended solely for the convenience of getting a texture, region,
+		// etc as a drawable, tinted drawable, etc.
+		skin = callback.getDefaultSkin();
+
+		// Create Controls
+		mJoystick = new Touchpad[] { new Touchpad(DEADZONE_RADIUS, skin),
+				new Touchpad(DEADZONE_RADIUS, skin) };
+		float w = MyTacoBox.SCREEN_WIDTH / 7f;
+		mJoystick[0].setBounds(20, 20, w, w);
+		mJoystick[1].setBounds(MyTacoBox.SCREEN_WIDTH - w, 20, w, w);
+
+		stage.addActor(mJoystick[0]);
+		stage.addActor(mJoystick[1]);
+	}
+
 	public MainScreen(Level lvl) {
 		this.map = lvl.map;
 		this.acts = lvl.acts;
@@ -44,8 +72,21 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 
 	@Override
 	public void render(float delta) {
-
+		// step
 		this.callback.getWorld().step(delta, 10, 10);
+		stage.act(delta);
+
+		// update player
+		Vector2 heading = new Vector2();
+		heading.x = mJoystick[0].getKnobPercentX();
+		heading.y = mJoystick[0].getKnobPercentY();
+		mPlayer.setHeading(heading.x, heading.y);
+
+		heading.x = mJoystick[1].getKnobPercentX();
+		heading.y = mJoystick[1].getKnobPercentY();
+		heading.nor();
+		if (heading.angle() != 0)
+			mPlayer.setRotation(heading.angle() * MathUtils.degreesToRadians);
 
 		camera.position.lerp(new Vector3(mPlayer.getX(), mPlayer.getY(), 0),
 				0.5f);
@@ -69,6 +110,8 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 		new Box2DDebugRenderer().render(this.callback.getWorld(),
 				camera.combined);
 		acts.checkRemoteMessage();
+
+		stage.draw();
 	}
 
 	public void drawObjects(String layerID) {
@@ -87,12 +130,15 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 	public void resize(int width, int height) {
 		camera.viewportWidth = MyTacoBox.SCREEN_WIDTH;
 		camera.viewportHeight = MyTacoBox.SCREEN_HEIGHT;
+		stage.setViewport(MyTacoBox.SCREEN_WIDTH, MyTacoBox.SCREEN_HEIGHT, true);
 	}
 
 	@Override
 	public void show() {
 		renderer = new OrthogonalTiledMapRenderer(map);
 		camera = new OrthographicCamera();
+
+		createUI();
 
 		mPlayer = new Player(new String[] { "man_back.png", "man_front.png",
 				"man_right.png", "man_left.png" }, map, acts, (Integer) map
@@ -105,7 +151,7 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 		GestureDetector gDetector = new GestureDetector(this);
 		gDetector.setLongPressSeconds(0.25f);
 
-		Gdx.input.setInputProcessor(new InputMultiplexer(gDetector, this));
+		Gdx.input.setInputProcessor(new InputMultiplexer(stage, gDetector));
 	}
 
 	@Override
@@ -126,10 +172,13 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 		map.dispose();
 		renderer.dispose();
 		mPlayer.dispose();
+		stage.dispose();
+		skin.dispose();
 	}
 
 	@Override
 	public boolean touchDown(float x, float y, int pointer, int button) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -153,7 +202,7 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 		// Check for activation
 		if (Math.abs(mPlayer.getX() - tileTouch.x) <= 1
 				&& Math.abs(mPlayer.getY() - tileTouch.y) <= 1) {
-			keyDown(Keys.SPACE);
+			mPlayer.grab();
 		}
 		return true;
 	}
@@ -166,14 +215,53 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 
 	@Override
 	public boolean pan(float x, float y, float deltaX, float deltaY) {
-		// TODO Auto-generated method stub
-		return false;
+		Vector3 touchPt = new Vector3(x, y, 0);
+		camera.unproject(touchPt);
+		Vector2 tileTouch = new Vector2((int) (touchPt.x / mPlayer.TILE_WIDTH),
+				(int) (touchPt.y / mPlayer.TILE_HEIGHT));
+
+		System.out.println(String.format(
+				"touched Screen: (%f, %f) World: (%f,%f) Tiles: (%f,%f)", x, y,
+				touchPt.x, touchPt.y, tileTouch.x, tileTouch.y));
+
+		int posX = (int) (mPlayer.getX() / mPlayer.TILE_WIDTH);
+		int posY = (int) (mPlayer.getY() / mPlayer.TILE_HEIGHT);
+
+		// Check for activation
+		if (Math.abs(posX - tileTouch.x) <= 1
+				&& Math.abs(posY - tileTouch.y) <= 1) {
+			mPlayer.activate();
+			return true;
+		}
+
+		// translate touch into movement
+		Vector2 dir = new Vector2();
+
+		dir = tileTouch.sub(new Vector2(posX, posY));
+
+		if (dir.y != 0) {
+			if (dir.y >= 1) {
+				mPlayer.setFacing(EFacing.N);
+			} else {
+				mPlayer.setFacing(EFacing.S);
+			}
+		} else if (dir.x != 0) {
+			if (dir.x >= 1) {
+				mPlayer.setFacing(EFacing.E);
+			} else {
+				mPlayer.setFacing(EFacing.W);
+			}
+		}
+
+		mPlayer.setHeading(dir.x, dir.y);
+
+		return true;
 	}
 
 	@Override
 	public boolean panStop(float x, float y, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
+		mPlayer.setHeading(0, 0);
+		return true;
 	}
 
 	@Override
@@ -198,149 +286,6 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 			Vector2 pointer1, Vector2 pointer2) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public boolean keyDown(int keycode) {
-		Vector2 velocity = mPlayer.getHeading();
-		switch (keycode) {
-		case Keys.W:
-		case Keys.UP:
-			// Move up
-			velocity.y = 1;
-			mPlayer.setFacing(EFacing.N);
-			break;
-		case Keys.A:
-		case Keys.LEFT:
-			// Move left
-			velocity.x = -1;
-			mPlayer.setFacing(EFacing.W);
-			break;
-		case Keys.S:
-		case Keys.DOWN:
-			// Move down
-			velocity.y = -1;
-			mPlayer.setFacing(EFacing.S);
-			break;
-		case Keys.D:
-		case Keys.RIGHT:
-			// Move right
-			velocity.x = 1;
-			mPlayer.setFacing(EFacing.E);
-			break;
-		case Keys.E:
-			// Action
-			mPlayer.activate();
-			break;
-		case Keys.SPACE:
-			// Grab
-			mPlayer.grab();
-			break;
-		}
-		mPlayer.setHeading(velocity.x, velocity.y);
-		System.out.println("Player Heading: " + mPlayer.getHeading());
-		return true;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		Vector2 heading = mPlayer.getHeading();
-		switch (keycode) {
-		case Keys.W:
-		case Keys.UP:
-		case Keys.S:
-		case Keys.DOWN:
-			// Stop vertical movement
-			mPlayer.setHeading(heading.x, 0);
-			break;
-		case Keys.A:
-		case Keys.LEFT:
-		case Keys.D:
-		case Keys.RIGHT:
-			// Stop horizontal movement
-			mPlayer.setHeading(0, heading.y);
-			break;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		keyUp(Keys.UP);
-		keyUp(Keys.DOWN);
-		keyUp(Keys.LEFT);
-		keyUp(Keys.RIGHT);
-		return true;
-	}
-
-	@Override
-	public boolean touchDragged(int x, int y, int pointer) {
-		Vector3 touchPt = new Vector3(x, y, 0);
-		camera.unproject(touchPt);
-		Vector2 tileTouch = new Vector2((int) (touchPt.x / mPlayer.TILE_WIDTH),
-				(int) (touchPt.y / mPlayer.TILE_HEIGHT));
-
-		System.out.println(String.format(
-				"touched Screen: (%d, %d) World: (%f,%f) Tiles: (%f,%f)", x, y,
-				touchPt.x, touchPt.y, tileTouch.x, tileTouch.y));
-
-		int posX = (int) (mPlayer.getX() / mPlayer.TILE_WIDTH);
-		int posY = (int) (mPlayer.getY() / mPlayer.TILE_HEIGHT);
-
-		// Check for activation
-		if (Math.abs(posX - tileTouch.x) <= 1
-				&& Math.abs(posY - tileTouch.y) <= 1) {
-			mPlayer.activate();
-			return true;
-		}
-
-		// translate touch into movement
-		Vector2 dir = new Vector2();
-
-		dir = tileTouch.sub(new Vector2(posX, posY));
-
-		if (dir.y != 0) {
-			if (dir.y >= 1) {
-				keyDown(Keys.UP);
-			} else {
-				keyDown(Keys.DOWN);
-			}
-		}
-
-		if (dir.x != 0) {
-			if (dir.x >= 1) {
-				keyDown(Keys.RIGHT);
-			} else {
-				keyDown(Keys.LEFT);
-			}
-		}
-
-		return true;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		float zoom = lastZoomDistance + 50 * amount;
-		System.out.println("Mouse Scroll: " + zoom);
-		return zoom(0, zoom);
 	}
 
 }

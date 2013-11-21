@@ -42,7 +42,7 @@ public class RandomLevel extends Level {
 				Gdx.files.internal("test.json"));
 
 		// Generate ground
-		for (int y = 0; y < tileLayer.getHeight(); y++) {
+		for (int y = 0; y < tileLayer.getHeight() + 4; y++) {
 			for (int x = 0; x < tileLayer.getWidth(); x++) {
 				tileLayer.setCell(x, y, dirtCell);
 			}
