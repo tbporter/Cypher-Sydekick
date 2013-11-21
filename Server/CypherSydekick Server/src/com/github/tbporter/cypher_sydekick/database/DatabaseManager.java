@@ -42,7 +42,7 @@ public final class DatabaseManager {
 					"Cannot open database - unable to load JDBC driver class.");
 		} catch (SQLException sqle) {
 			throw new DatabaseManagerException(
-					"SQL exception while opening database.");
+					"SQL exception while opening database: " + sqle.getMessage());
 		}
 	}
 

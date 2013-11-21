@@ -51,7 +51,7 @@ public final class Main {
 		try {
 			server.start();
 		} catch (Exception e) {
-			Debug.printError(TAG, "Error starting server.");
+			Debug.printError(TAG, "Error starting server: " + e.getMessage());
 			return;
 		}
 
