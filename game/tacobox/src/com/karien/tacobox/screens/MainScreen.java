@@ -24,7 +24,6 @@ import com.karien.taco.mapstuff.MapActions;
 import com.karien.taco.mapstuff.level.Level;
 import com.karien.tacobox.MyTacoBox;
 import com.karien.tacobox.entities.Player;
-import com.karien.tacobox.entities.Player.EFacing;
 
 public class MainScreen implements Screen, GestureListener {
 
@@ -73,8 +72,9 @@ public class MainScreen implements Screen, GestureListener {
 	@Override
 	public void render(float delta) {
 		// step
-		this.callback.getWorld().step(delta, 10, 10);
+		this.callback.getWorld().step(delta, 8, 3);
 		stage.act(delta);
+		acts.checkRemoteMessage();
 
 		// update player
 		Vector2 heading = new Vector2();
@@ -84,16 +84,16 @@ public class MainScreen implements Screen, GestureListener {
 
 		heading.x = mJoystick[1].getKnobPercentX();
 		heading.y = mJoystick[1].getKnobPercentY();
-		heading.nor();
 		if (heading.angle() != 0)
 			mPlayer.setRotation(heading.angle() * MathUtils.degreesToRadians);
 
+		// Update camera
 		camera.position.lerp(new Vector3(mPlayer.getX(), mPlayer.getY(), 0),
 				0.5f);
 		camera.update();
 
+		// Draw
 		renderer.setView(camera);
-
 		renderer.getSpriteBatch().begin();
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(
 				C.TileLayer));
@@ -109,8 +109,6 @@ public class MainScreen implements Screen, GestureListener {
 
 		new Box2DDebugRenderer().render(this.callback.getWorld(),
 				camera.combined);
-		acts.checkRemoteMessage();
-
 		stage.draw();
 	}
 
@@ -234,34 +232,13 @@ public class MainScreen implements Screen, GestureListener {
 			return true;
 		}
 
-		// translate touch into movement
-		Vector2 dir = new Vector2();
-
-		dir = tileTouch.sub(new Vector2(posX, posY));
-
-		if (dir.y != 0) {
-			if (dir.y >= 1) {
-				mPlayer.setFacing(EFacing.N);
-			} else {
-				mPlayer.setFacing(EFacing.S);
-			}
-		} else if (dir.x != 0) {
-			if (dir.x >= 1) {
-				mPlayer.setFacing(EFacing.E);
-			} else {
-				mPlayer.setFacing(EFacing.W);
-			}
-		}
-
-		mPlayer.setHeading(dir.x, dir.y);
-
 		return true;
 	}
 
 	@Override
 	public boolean panStop(float x, float y, int pointer, int button) {
-		mPlayer.setHeading(0, 0);
-		return true;
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override

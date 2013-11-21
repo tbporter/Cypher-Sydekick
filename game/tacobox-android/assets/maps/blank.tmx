@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="20" height="20" tilewidth="32" tileheight="32">
+<map version="1.0" orientation="orthogonal" width="200" height="200" tilewidth="32" tileheight="32">
  <properties>
   <property name="goalX" value="14"/>
   <property name="goalY" value="2"/>
   <property name="spawnX" value="3"/>
   <property name="spawnY" value="15"/>
  </properties>
- <tileset firstgid="1" name="tileset" tilewidth="32" tileheight="32">
-  <image source="DungeonCrawl_ProjectUtumnoTileset.png" width="2048" height="1536"/>
+ <tileset firstgid="1" name="cypher-sidekick" tilewidth="32" tileheight="32">
+  <image source="cypher-sidekick.png" width="256" height="256"/>
  </tileset>
- <layer name="canvas" width="20" height="20">
+ <layer name="canvas" width="200" height="200">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjIJRMApIBwAGQAAB
+   eJztwYEAAAAAw6D5U1/hAFUBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHwGcR4AAQ==
   </data>
  </layer>
- <objectgroup name="action" width="20" height="20"/>
- <objectgroup name="object" width="20" height="20"/>
+ <objectgroup name="action" width="200" height="200"/>
+ <objectgroup name="object" width="200" height="200"/>
 </map>

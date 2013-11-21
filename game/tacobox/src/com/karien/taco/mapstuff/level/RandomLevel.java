@@ -20,6 +20,9 @@ public class RandomLevel extends Level {
 	private final static String EMPTY_MAP_PATH = "maps/blank.tmx";
 	private final float TILE_WIDTH, TILE_HEIGHT;
 
+	private static final int WALL_ID = 2;
+	private static final int FLOOR_ID = 9;
+
 	public RandomLevel(MyTacoBox parent, MsgHandler remote, World world) {
 		super(parent, EMPTY_MAP_PATH, remote);
 		TiledMapTileLayer tileLayer = (TiledMapTileLayer) map.getLayers().get(
@@ -33,10 +36,10 @@ public class RandomLevel extends Level {
 			TiledMapTileLayer tileLayer, World world) {
 
 		Cell dirtCell = new Cell();
-		dirtCell.setTile(tileSets.getTile(829));
+		dirtCell.setTile(tileSets.getTile(FLOOR_ID));
 
 		Cell wallCell = new Cell();
-		wallCell.setTile(tileSets.getTile(914));
+		wallCell.setTile(tileSets.getTile(WALL_ID));
 
 		BodyEditorLoader loader = new BodyEditorLoader(
 				Gdx.files.internal("test.json"));
