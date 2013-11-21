@@ -25,3 +25,6 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
+
+CypherSydekick Server/war/WEB-INF/*.db
+
