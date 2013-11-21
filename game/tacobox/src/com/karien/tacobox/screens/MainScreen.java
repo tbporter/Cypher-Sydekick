@@ -1,6 +1,7 @@
 package com.karien.tacobox.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
@@ -11,9 +12,13 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.karien.taco.mapstuff.C;
 import com.karien.taco.mapstuff.MapActions;
 import com.karien.taco.mapstuff.level.Level;
@@ -33,6 +38,32 @@ public class MainScreen implements Screen, GestureListener {
 
 	Player mPlayer;
 
+	private Stage stage;
+	private Skin skin;
+	private Touchpad mJoystick[];
+
+	private static final float DEADZONE_RADIUS = 10f;
+
+	public void createUI() {
+		stage = new Stage();
+
+		// A skin can be loaded via JSON or defined programmatically, either is
+		// fine. Using a skin is optional but strongly
+		// recommended solely for the convenience of getting a texture, region,
+		// etc as a drawable, tinted drawable, etc.
+		skin = callback.getDefaultSkin();
+
+		// Create Controls
+		mJoystick = new Touchpad[] { new Touchpad(DEADZONE_RADIUS, skin),
+				new Touchpad(DEADZONE_RADIUS, skin) };
+		float w = MyTacoBox.SCREEN_WIDTH / 7f;
+		mJoystick[0].setBounds(20, 20, w, w);
+		mJoystick[1].setBounds(MyTacoBox.SCREEN_WIDTH - w, 20, w, w);
+
+		stage.addActor(mJoystick[0]);
+		stage.addActor(mJoystick[1]);
+	}
+
 	public MainScreen(Level lvl) {
 		this.map = lvl.map;
 		this.acts = lvl.acts;
@@ -41,8 +72,21 @@ public class MainScreen implements Screen, GestureListener {
 
 	@Override
 	public void render(float delta) {
-
+		// step
 		this.callback.getWorld().step(delta, 10, 10);
+		stage.act(delta);
+
+		// update player
+		Vector2 heading = new Vector2();
+		heading.x = mJoystick[0].getKnobPercentX();
+		heading.y = mJoystick[0].getKnobPercentY();
+		mPlayer.setHeading(heading.x, heading.y);
+
+		heading.x = mJoystick[1].getKnobPercentX();
+		heading.y = mJoystick[1].getKnobPercentY();
+		heading.nor();
+		if (heading.angle() != 0)
+			mPlayer.setRotation(heading.angle() * MathUtils.degreesToRadians);
 
 		camera.position.lerp(new Vector3(mPlayer.getX(), mPlayer.getY(), 0),
 				0.5f);
@@ -66,6 +110,8 @@ public class MainScreen implements Screen, GestureListener {
 		new Box2DDebugRenderer().render(this.callback.getWorld(),
 				camera.combined);
 		acts.checkRemoteMessage();
+
+		stage.draw();
 	}
 
 	public void drawObjects(String layerID) {
@@ -84,12 +130,15 @@ public class MainScreen implements Screen, GestureListener {
 	public void resize(int width, int height) {
 		camera.viewportWidth = MyTacoBox.SCREEN_WIDTH;
 		camera.viewportHeight = MyTacoBox.SCREEN_HEIGHT;
+		stage.setViewport(MyTacoBox.SCREEN_WIDTH, MyTacoBox.SCREEN_HEIGHT, true);
 	}
 
 	@Override
 	public void show() {
 		renderer = new OrthogonalTiledMapRenderer(map);
 		camera = new OrthographicCamera();
+
+		createUI();
 
 		mPlayer = new Player(new String[] { "man_back.png", "man_front.png",
 				"man_right.png", "man_left.png" }, map, acts, (Integer) map
@@ -102,7 +151,7 @@ public class MainScreen implements Screen, GestureListener {
 		GestureDetector gDetector = new GestureDetector(this);
 		gDetector.setLongPressSeconds(0.25f);
 
-		Gdx.input.setInputProcessor(gDetector);
+		Gdx.input.setInputProcessor(new InputMultiplexer(stage, gDetector));
 	}
 
 	@Override
@@ -123,6 +172,8 @@ public class MainScreen implements Screen, GestureListener {
 		map.dispose();
 		renderer.dispose();
 		mPlayer.dispose();
+		stage.dispose();
+		skin.dispose();
 	}
 
 	@Override

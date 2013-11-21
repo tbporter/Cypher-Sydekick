@@ -107,6 +107,10 @@ public class Player {
 		mHeading.set(x, y).nor();
 	}
 
+	public void setRotation(float radAngle) {
+		mBody.setTransform(mBody.getPosition(), radAngle);
+	}
+
 	public void setFacing(EFacing direction) {
 		mFacing = direction;
 	}

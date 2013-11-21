@@ -5,16 +5,13 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.karien.tacobox.MyTacoBox;
 
 public class LoadingScreen implements Screen {
@@ -60,17 +57,7 @@ public class LoadingScreen implements Screen {
 		// Create labels
 		loadingLabel = new Label("Please Wait...", skin);
 
-		// create buttons
-		TextButton submitBtn = new TextButton("Submit", skin);
-		submitBtn.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				// Do click stuff here
-			}
-		});
-
 		container.add(loadingLabel).align(Align.center).expand();
-		// container.row();
-		// container.add(submitBtn).align(Align.right);
 	}
 
 	@Override
