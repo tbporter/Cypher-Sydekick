@@ -1,9 +1,6 @@
 package com.karien.tacobox.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
@@ -24,7 +21,7 @@ import com.karien.tacobox.MyTacoBox;
 import com.karien.tacobox.entities.Player;
 import com.karien.tacobox.entities.Player.EFacing;
 
-public class MainScreen implements Screen, InputProcessor, GestureListener {
+public class MainScreen implements Screen, GestureListener {
 
 	private final TiledMap map;
 	private final MapActions acts;
@@ -105,7 +102,7 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 		GestureDetector gDetector = new GestureDetector(this);
 		gDetector.setLongPressSeconds(0.25f);
 
-		Gdx.input.setInputProcessor(new InputMultiplexer(gDetector, this));
+		Gdx.input.setInputProcessor(gDetector);
 	}
 
 	@Override
@@ -130,6 +127,7 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 
 	@Override
 	public boolean touchDown(float x, float y, int pointer, int button) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -153,7 +151,7 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 		// Check for activation
 		if (Math.abs(mPlayer.getX() - tileTouch.x) <= 1
 				&& Math.abs(mPlayer.getY() - tileTouch.y) <= 1) {
-			keyDown(Keys.SPACE);
+			mPlayer.grab();
 		}
 		return true;
 	}
@@ -166,14 +164,53 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 
 	@Override
 	public boolean pan(float x, float y, float deltaX, float deltaY) {
-		// TODO Auto-generated method stub
-		return false;
+		Vector3 touchPt = new Vector3(x, y, 0);
+		camera.unproject(touchPt);
+		Vector2 tileTouch = new Vector2((int) (touchPt.x / mPlayer.TILE_WIDTH),
+				(int) (touchPt.y / mPlayer.TILE_HEIGHT));
+
+		System.out.println(String.format(
+				"touched Screen: (%f, %f) World: (%f,%f) Tiles: (%f,%f)", x, y,
+				touchPt.x, touchPt.y, tileTouch.x, tileTouch.y));
+
+		int posX = (int) (mPlayer.getX() / mPlayer.TILE_WIDTH);
+		int posY = (int) (mPlayer.getY() / mPlayer.TILE_HEIGHT);
+
+		// Check for activation
+		if (Math.abs(posX - tileTouch.x) <= 1
+				&& Math.abs(posY - tileTouch.y) <= 1) {
+			mPlayer.activate();
+			return true;
+		}
+
+		// translate touch into movement
+		Vector2 dir = new Vector2();
+
+		dir = tileTouch.sub(new Vector2(posX, posY));
+
+		if (dir.y != 0) {
+			if (dir.y >= 1) {
+				mPlayer.setFacing(EFacing.N);
+			} else {
+				mPlayer.setFacing(EFacing.S);
+			}
+		} else if (dir.x != 0) {
+			if (dir.x >= 1) {
+				mPlayer.setFacing(EFacing.E);
+			} else {
+				mPlayer.setFacing(EFacing.W);
+			}
+		}
+
+		mPlayer.setHeading(dir.x, dir.y);
+
+		return true;
 	}
 
 	@Override
 	public boolean panStop(float x, float y, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
+		mPlayer.setHeading(0, 0);
+		return true;
 	}
 
 	@Override
@@ -198,149 +235,6 @@ public class MainScreen implements Screen, InputProcessor, GestureListener {
 			Vector2 pointer1, Vector2 pointer2) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public boolean keyDown(int keycode) {
-		Vector2 velocity = mPlayer.getHeading();
-		switch (keycode) {
-		case Keys.W:
-		case Keys.UP:
-			// Move up
-			velocity.y = 1;
-			mPlayer.setFacing(EFacing.N);
-			break;
-		case Keys.A:
-		case Keys.LEFT:
-			// Move left
-			velocity.x = -1;
-			mPlayer.setFacing(EFacing.W);
-			break;
-		case Keys.S:
-		case Keys.DOWN:
-			// Move down
-			velocity.y = -1;
-			mPlayer.setFacing(EFacing.S);
-			break;
-		case Keys.D:
-		case Keys.RIGHT:
-			// Move right
-			velocity.x = 1;
-			mPlayer.setFacing(EFacing.E);
-			break;
-		case Keys.E:
-			// Action
-			mPlayer.activate();
-			break;
-		case Keys.SPACE:
-			// Grab
-			mPlayer.grab();
-			break;
-		}
-		mPlayer.setHeading(velocity.x, velocity.y);
-		System.out.println("Player Heading: " + mPlayer.getHeading());
-		return true;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		Vector2 heading = mPlayer.getHeading();
-		switch (keycode) {
-		case Keys.W:
-		case Keys.UP:
-		case Keys.S:
-		case Keys.DOWN:
-			// Stop vertical movement
-			mPlayer.setHeading(heading.x, 0);
-			break;
-		case Keys.A:
-		case Keys.LEFT:
-		case Keys.D:
-		case Keys.RIGHT:
-			// Stop horizontal movement
-			mPlayer.setHeading(0, heading.y);
-			break;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		keyUp(Keys.UP);
-		keyUp(Keys.DOWN);
-		keyUp(Keys.LEFT);
-		keyUp(Keys.RIGHT);
-		return true;
-	}
-
-	@Override
-	public boolean touchDragged(int x, int y, int pointer) {
-		Vector3 touchPt = new Vector3(x, y, 0);
-		camera.unproject(touchPt);
-		Vector2 tileTouch = new Vector2((int) (touchPt.x / mPlayer.TILE_WIDTH),
-				(int) (touchPt.y / mPlayer.TILE_HEIGHT));
-
-		System.out.println(String.format(
-				"touched Screen: (%d, %d) World: (%f,%f) Tiles: (%f,%f)", x, y,
-				touchPt.x, touchPt.y, tileTouch.x, tileTouch.y));
-
-		int posX = (int) (mPlayer.getX() / mPlayer.TILE_WIDTH);
-		int posY = (int) (mPlayer.getY() / mPlayer.TILE_HEIGHT);
-
-		// Check for activation
-		if (Math.abs(posX - tileTouch.x) <= 1
-				&& Math.abs(posY - tileTouch.y) <= 1) {
-			mPlayer.activate();
-			return true;
-		}
-
-		// translate touch into movement
-		Vector2 dir = new Vector2();
-
-		dir = tileTouch.sub(new Vector2(posX, posY));
-
-		if (dir.y != 0) {
-			if (dir.y >= 1) {
-				keyDown(Keys.UP);
-			} else {
-				keyDown(Keys.DOWN);
-			}
-		}
-
-		if (dir.x != 0) {
-			if (dir.x >= 1) {
-				keyDown(Keys.RIGHT);
-			} else {
-				keyDown(Keys.LEFT);
-			}
-		}
-
-		return true;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		float zoom = lastZoomDistance + 50 * amount;
-		System.out.println("Mouse Scroll: " + zoom);
-		return zoom(0, zoom);
 	}
 
 }
