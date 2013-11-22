@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.tbporter.cypher_sydekick.chat.ChatMessage;
-import com.github.tbporter.cypher_sydekick.debugging.Debug;
 
 /**
  * Handles all database-related operations (opening database, managing tables,
@@ -42,7 +41,8 @@ public final class DatabaseManager {
 					"Cannot open database - unable to load JDBC driver class.");
 		} catch (SQLException sqle) {
 			throw new DatabaseManagerException(
-					"SQL exception while opening database: " + sqle.getMessage());
+					"SQL exception while opening database: "
+							+ sqle.getMessage());
 		}
 	}
 
