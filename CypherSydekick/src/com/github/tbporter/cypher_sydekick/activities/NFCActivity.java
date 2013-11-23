@@ -69,22 +69,8 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 		super.onResume();
 
 		// Start listening for NFC
-		startNFCReceive();
-	}
-
-	private void startNFCReceive() {
-		Log.d(TAG, "NFC receive starting");
-
 		checkAndNotifyNFCEnabled();
-
-		// Create the PendingIntent for NFC read results
-		PendingIntent nfcPendingIntent = PendingIntent.getActivity(this, 0,
-				new Intent(this, getClass())
-						.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-
-		// Enable a foreground dispatch for all tag types
-		m_nfcManager.getNfcAdapter().enableForegroundDispatch(this,
-				nfcPendingIntent, null, null);
+		m_nfcManager.startNFCReceive();
 	}
 
 	private void stopNFCReceive() {
@@ -98,7 +84,7 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 	 * Checks if NFC is enabled and notifies the user if it is not.
 	 */
 	private void checkAndNotifyNFCEnabled() {
-		if (!m_nfcManager.getNfcAdapter().isEnabled()) {
+		if (!m_nfcManager.isNFCEnabled()) {
 			Toast.makeText(this,
 					"NFC disabled, must enable before Android Beam will work.",
 					Toast.LENGTH_LONG).show();

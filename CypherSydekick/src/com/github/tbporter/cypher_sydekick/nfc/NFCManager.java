@@ -3,11 +3,15 @@ package com.github.tbporter.cypher_sydekick.nfc;
 import java.nio.charset.Charset;
 
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcAdapter.CreateNdefMessageCallback;
+import android.util.Log;
 import android.widget.Toast;
 
 public class NFCManager {
+	private static final String TAG = "NFCManager";
 
 	/** MIME type for messages shared over NFC. */
 	public static final String NDEF_MIME_TYPE = "application/com.github.tbporter.cypher_sydekick";
@@ -43,7 +47,39 @@ public class NFCManager {
 		}
 	}
 
+	/**
+	 * Returns the NfcAdapter associated with this manager. This method should
+	 * be removed once all NFC operations are moved into this class.
+	 * 
+	 * @return NfcAdapter associated with this manager.
+	 */
 	public NfcAdapter getNfcAdapter() {
+		// TODO: remove this method.
 		return m_nfcAdapter;
+	}
+
+	/**
+	 * Checks if NFC is enabled for the adapter associated with this manager.
+	 * 
+	 * @return <tt>true</tt> if NFC is enabled, <tt>false</tt> if not.
+	 */
+	public boolean isNFCEnabled() {
+		return m_nfcAdapter.isEnabled();
+	}
+
+	/**
+	 * Starts the NFC foreground dispatch to enable receipt via Android Beam.
+	 */
+	public void startNFCReceive() {
+		Log.d(TAG, "NFC receive starting");
+
+		// Create the PendingIntent for NFC read results
+		PendingIntent nfcPendingIntent = PendingIntent.getActivity(m_activity,
+				0, new Intent(m_activity, m_activity.getClass())
+						.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+
+		// Enable a foreground dispatch for all tag types
+		m_nfcAdapter.enableForegroundDispatch(m_activity, nfcPendingIntent,
+				null, null);
 	}
 }
