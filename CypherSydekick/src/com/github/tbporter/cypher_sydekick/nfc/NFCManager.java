@@ -82,4 +82,14 @@ public class NFCManager {
 		m_nfcAdapter.enableForegroundDispatch(m_activity, nfcPendingIntent,
 				null, null);
 	}
+
+	/**
+	 * Stops the NFC foreground dispatch - Android Beam will no longer be received.
+	 */
+	public void stopNFCReceive() {
+		Log.d(TAG, "NFC receive stopping");
+
+		// Disable NFC foreground dispatch
+		m_nfcAdapter.disableForegroundDispatch(m_activity);
+	}
 }

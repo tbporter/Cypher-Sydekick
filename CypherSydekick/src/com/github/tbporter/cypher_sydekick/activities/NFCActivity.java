@@ -60,24 +60,17 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 	protected void onPause() {
 		super.onPause();
 
-		// Stop any active NFC operations
-		stopNFCReceive();
+		// Stop listening for NFC messages
+		m_nfcManager.stopNFCReceive();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		// Start listening for NFC
+		// Start listening for NFC messages
 		checkAndNotifyNFCEnabled();
 		m_nfcManager.startNFCReceive();
-	}
-
-	private void stopNFCReceive() {
-		Log.d(TAG, "NFC receive stopping");
-
-		// Disable NFC foreground dispatch
-		m_nfcManager.getNfcAdapter().disableForegroundDispatch(this);
 	}
 
 	/**
