@@ -3,6 +3,8 @@ package com.github.tbporter.cypher_sydekick.activities;
 import java.nio.charset.Charset;
 
 import com.github.tbporter.cypher_sydekick.R;
+import com.github.tbporter.cypher_sydekick.nfc.NFCManager;
+import com.github.tbporter.cypher_sydekick.nfc.NFCManagerException;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -22,13 +24,8 @@ import android.widget.Toast;
 public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 	private static String TAG = "NFCActivity";
 
-	/** MIME type for messages shared over NFC. */
-	private static String NDEF_MIME_TYPE = "application/com.github.tbporter.cypher_sydekick";
-	/** Charset used for Strings shared over NFC. */
-	private static Charset NDEF_CHARSET = Charset.forName("US-ASCII");
-
-	/** Device's NFC adapter */
-	private NfcAdapter m_nfcAdapter;
+	/** NFCManager to handle NFC operations. */
+	NFCManager m_nfcManager;
 
 	// Views
 	private EditText m_nfcEditText;
@@ -38,10 +35,12 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_nfc);
 
-		// Make sure this device has NFC available
-		m_nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-		if (null == m_nfcAdapter) {
-			Toast.makeText(this, "NFC is not available on this device",
+		// Create the NFCManager
+		try {
+			m_nfcManager = new NFCManager(NfcAdapter.getDefaultAdapter(this),
+					this);
+		} catch (NFCManagerException nme) {
+			Toast.makeText(this, nme.getMessage(),
 					Toast.LENGTH_LONG).show();
 			finish();
 			return;
@@ -51,7 +50,7 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 		checkAndNotifyNFCEnabled();
 
 		// Set this class as the callback to create an NDEF push message
-		m_nfcAdapter.setNdefPushMessageCallback(this, this);
+		m_nfcManager.getNfcAdapter().setNdefPushMessageCallback(this, this);
 
 		// Get views by id
 		m_nfcEditText = (EditText) findViewById(R.id.nfcEditText);
@@ -84,22 +83,22 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 						.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
 		// Enable a foreground dispatch for all tag types
-		m_nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, null,
-				null);
+		m_nfcManager.getNfcAdapter().enableForegroundDispatch(this,
+				nfcPendingIntent, null, null);
 	}
 
 	private void stopNFCReceive() {
 		Log.d(TAG, "NFC receive stopping");
 
 		// Disable NFC foreground dispatch
-		m_nfcAdapter.disableForegroundDispatch(this);
+		m_nfcManager.getNfcAdapter().disableForegroundDispatch(this);
 	}
 
 	/**
 	 * Checks if NFC is enabled and notifies the user if it is not.
 	 */
 	private void checkAndNotifyNFCEnabled() {
-		if (!m_nfcAdapter.isEnabled()) {
+		if (!m_nfcManager.getNfcAdapter().isEnabled()) {
 			Toast.makeText(this,
 					"NFC disabled, must enable before Android Beam will work.",
 					Toast.LENGTH_LONG).show();
@@ -142,7 +141,8 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 							// Set the EditText contents based on the received
 							// String
 							final String payloadStr = new String(
-									secondRecord.getPayload(), NDEF_CHARSET);
+									secondRecord.getPayload(),
+									NFCManager.NDEF_CHARSET);
 							m_nfcEditText.setText(payloadStr);
 							Toast.makeText(this,
 									"Received a string via Android Beam",
@@ -189,12 +189,13 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 		final String mime = record.toMimeType();
 		if (null != mime) {
 			// The record has a MIME type, make sure it's correct
-			if (!NDEF_MIME_TYPE.equals(mime)) {
+			if (!NFCManager.NDEF_MIME_TYPE.equals(mime)) {
 				retVal = false;
 				Log.d(TAG, "Checked NdefRecord with unknown MIME type: " + mime);
 				Log.d(TAG,
 						"MIME type via old method: "
-								+ new String(record.getType(), NDEF_CHARSET));
+								+ new String(record.getType(),
+										NFCManager.NDEF_CHARSET));
 			}
 		} else {
 			// No MIME type found, this is not a valid record
@@ -217,8 +218,9 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 
 		// Create an NDEF record with the string from the EditText
 		String text = m_nfcEditText.getText().toString();
-		NdefRecord stringRecord = NdefRecord.createMime(NDEF_MIME_TYPE,
-				text.getBytes(NDEF_CHARSET));
+		NdefRecord stringRecord = NdefRecord.createMime(
+				NFCManager.NDEF_MIME_TYPE,
+				text.getBytes(NFCManager.NDEF_CHARSET));
 
 		// Build an NDEF message with the records created above
 		NdefMessage msg = new NdefMessage(new NdefRecord[] { appRecord,
