@@ -47,7 +47,7 @@ public class MenuScreen implements Screen {
 		quitBtn.getLabel().setFontScale(2f);
 		quitBtn.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				throw new RuntimeException("Quit");
+				parent.menuChoice("quit");
 			}
 		});
 
@@ -85,7 +85,6 @@ public class MenuScreen implements Screen {
 	@Override
 	public void dispose() {
 		stage.dispose();
-		skin.dispose();
 	}
 
 	@Override

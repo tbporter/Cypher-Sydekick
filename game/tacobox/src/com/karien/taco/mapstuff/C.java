@@ -35,6 +35,4 @@ public interface C {
 	// Map properties
 	String SpawnX = "spawnX";
 	String SpawnY = "spawnY";
-	String GoalX = "goalX";
-	String GoalY = "goalY";
 }

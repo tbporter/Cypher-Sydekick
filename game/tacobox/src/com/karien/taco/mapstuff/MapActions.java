@@ -29,13 +29,11 @@ public class MapActions {
 		// Mutate the spawn/x/y/goalx/y so that (0,0) is bottom left
 		MapProperties p = map.getProperties();
 
-		String sgx = (String) p.get(C.GoalX);
-		String sgy = (String) p.get(C.GoalY);
 		String ssx = (String) p.get(C.SpawnX);
 		String ssy = (String) p.get(C.SpawnY);
 
-		if (sgx == null || sgy == null || ssx == null || ssy == null) {
-			throw new RuntimeException("Didn't set goal/spawn correctly!");
+		if (ssx == null || ssy == null) {
+			throw new RuntimeException("Didn't set spawn correctly!");
 		}
 
 		TiledMapTileLayer tilelay = ((TiledMapTileLayer) map.getLayers().get(
@@ -47,8 +45,6 @@ public class MapActions {
 					"I assumed they were squares, but they aren't anymore!");
 		}
 
-		p.put(C.GoalX, Integer.parseInt(sgx));
-		p.put(C.GoalY, height - Integer.parseInt(sgy));
 		p.put(C.SpawnX, Integer.parseInt(ssx));
 		p.put(C.SpawnY, height - Integer.parseInt(ssy));
 

@@ -1,6 +1,7 @@
 package com.karien.tacobox;
 
 import android.os.Bundle;
+import android.os.Debug;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
@@ -13,6 +14,6 @@ public class MainActivity extends AndroidApplication {
 		AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
 		cfg.useGL20 = true;
 
-		initialize(new MyTacoBox(), cfg);
+		initialize(new MyTacoBox(Debug.isDebuggerConnected() || true), cfg);
 	}
 }

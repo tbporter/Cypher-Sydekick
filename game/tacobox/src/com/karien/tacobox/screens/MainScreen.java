@@ -16,6 +16,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
@@ -23,13 +28,19 @@ import com.karien.taco.mapstuff.C;
 import com.karien.taco.mapstuff.MapActions;
 import com.karien.taco.mapstuff.level.Level;
 import com.karien.tacobox.MyTacoBox;
+import com.karien.tacobox.entities.Bullet;
+import com.karien.tacobox.entities.Entity;
 import com.karien.tacobox.entities.Player;
 
-public class MainScreen implements Screen, GestureListener {
+public class MainScreen implements Screen, GestureListener, ContactListener {
+
+	private static final String TAG = "MainScreen";
 
 	private final TiledMap map;
 	private final MapActions acts;
-	private final MyTacoBox callback;
+	private final MyTacoBox parent;
+
+	private final Box2DDebugRenderer debugBox2DRenderer;
 
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
@@ -50,7 +61,7 @@ public class MainScreen implements Screen, GestureListener {
 		// fine. Using a skin is optional but strongly
 		// recommended solely for the convenience of getting a texture, region,
 		// etc as a drawable, tinted drawable, etc.
-		skin = callback.getDefaultSkin();
+		skin = parent.getDefaultSkin();
 
 		// Create Controls
 		mJoystick = new Touchpad[] { new Touchpad(DEADZONE_RADIUS, skin),
@@ -66,13 +77,20 @@ public class MainScreen implements Screen, GestureListener {
 	public MainScreen(Level lvl) {
 		this.map = lvl.map;
 		this.acts = lvl.acts;
-		this.callback = lvl.parent;
+		this.parent = lvl.parent;
+		Entity.setup(map);
+		if (MyTacoBox.DEBUG_MODE) {
+			debugBox2DRenderer = new Box2DDebugRenderer();
+			debugBox2DRenderer.setDrawContacts(true);
+		} else {
+			debugBox2DRenderer = null;
+		}
 	}
 
 	@Override
 	public void render(float delta) {
 		// step
-		this.callback.getWorld().step(delta, 8, 3);
+		MyTacoBox.getWorld().step(delta, 8, 3);
 		stage.act(delta);
 		acts.checkRemoteMessage();
 
@@ -84,12 +102,15 @@ public class MainScreen implements Screen, GestureListener {
 
 		heading.x = mJoystick[1].getKnobPercentX();
 		heading.y = mJoystick[1].getKnobPercentY();
-		if (heading.angle() != 0)
-			mPlayer.setRotation(heading.angle() * MathUtils.degreesToRadians);
+		if (heading.angle() != 0) {
+			float radAngle = heading.angle() * MathUtils.degreesToRadians;
+			mPlayer.setRotation(radAngle);
+			Bullet bullet = mPlayer.shoot();
+		}
 
 		// Update camera
-		camera.position.lerp(new Vector3(mPlayer.getX(), mPlayer.getY(), 0),
-				0.5f);
+		camera.position.lerp(new Vector3(mPlayer.getX() * Entity.TILE_WIDTH,
+				mPlayer.getY() * Entity.TILE_HEIGHT, 0), 0.5f);
 		camera.update();
 
 		// Draw
@@ -98,17 +119,14 @@ public class MainScreen implements Screen, GestureListener {
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(
 				C.TileLayer));
 		drawObjects(C.ActionLayer);
-		mPlayer.draw(renderer.getSpriteBatch());
+		for (Entity e : Entity.mEntities) {
+			e.draw(renderer.getSpriteBatch());
+		}
 		drawObjects(C.ObjectLayer);
 		renderer.getSpriteBatch().end();
 
-		// if (mPlayer.getX() == (Integer) map.getProperties().get("goalX")
-		// && mPlayer.getY() == (Integer) map.getProperties().get("goalY")) {
-		// callback.goalReached();
-		// }
-
-		new Box2DDebugRenderer().render(this.callback.getWorld(),
-				camera.combined);
+		if (MyTacoBox.DEBUG_MODE)
+			debugBox2DRenderer.render(MyTacoBox.getWorld(), camera.combined);
 		stage.draw();
 	}
 
@@ -139,15 +157,16 @@ public class MainScreen implements Screen, GestureListener {
 		createUI();
 
 		mPlayer = new Player(new String[] { "man_back.png", "man_front.png",
-				"man_right.png", "man_left.png" }, map, acts, (Integer) map
-				.getProperties().get(C.SpawnX), (Integer) map.getProperties()
-				.get(C.SpawnY), this.callback.getWorld());
+				"man_right.png", "man_left.png" }, map, acts, 3, 15,
+				MyTacoBox.getWorld());
 
-		camera.position.set(mPlayer.getX() * mPlayer.TILE_WIDTH, mPlayer.getY()
-				* mPlayer.TILE_HEIGHT, 0);
+		camera.position.set(mPlayer.getX() * Entity.TILE_WIDTH, mPlayer.getY()
+				* Entity.TILE_HEIGHT, 0);
 
 		GestureDetector gDetector = new GestureDetector(this);
 		gDetector.setLongPressSeconds(0.25f);
+
+		MyTacoBox.getWorld().setContactListener(this);
 
 		Gdx.input.setInputProcessor(new InputMultiplexer(stage, gDetector));
 	}
@@ -171,27 +190,16 @@ public class MainScreen implements Screen, GestureListener {
 		renderer.dispose();
 		mPlayer.dispose();
 		stage.dispose();
-		skin.dispose();
-	}
-
-	@Override
-	public boolean touchDown(float x, float y, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean tap(float x, float y, int count, int button) {
-		// TODO Auto-generated method stub
-		return false;
+		if (debugBox2DRenderer != null)
+			debugBox2DRenderer.dispose();
 	}
 
 	@Override
 	public boolean longPress(float x, float y) {
 		Vector3 touchPt = new Vector3(x, y, 0);
 		camera.unproject(touchPt);
-		Vector2 tileTouch = new Vector2((int) (touchPt.x / mPlayer.TILE_WIDTH),
-				(int) (touchPt.y / mPlayer.TILE_HEIGHT));
+		Vector2 tileTouch = new Vector2((int) (touchPt.x / Entity.TILE_WIDTH),
+				(int) (touchPt.y / Entity.TILE_HEIGHT));
 
 		System.out.println(String.format(
 				"long press Screen: (%f, %f) World: (%f,%f) Tiles: (%f,%f)", x,
@@ -206,24 +214,18 @@ public class MainScreen implements Screen, GestureListener {
 	}
 
 	@Override
-	public boolean fling(float velocityX, float velocityY, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean pan(float x, float y, float deltaX, float deltaY) {
 		Vector3 touchPt = new Vector3(x, y, 0);
 		camera.unproject(touchPt);
-		Vector2 tileTouch = new Vector2((int) (touchPt.x / mPlayer.TILE_WIDTH),
-				(int) (touchPt.y / mPlayer.TILE_HEIGHT));
+		Vector2 tileTouch = new Vector2((int) (touchPt.x / Entity.TILE_WIDTH),
+				(int) (touchPt.y / Entity.TILE_HEIGHT));
 
 		System.out.println(String.format(
 				"touched Screen: (%f, %f) World: (%f,%f) Tiles: (%f,%f)", x, y,
 				touchPt.x, touchPt.y, tileTouch.x, tileTouch.y));
 
-		int posX = (int) (mPlayer.getX() / mPlayer.TILE_WIDTH);
-		int posY = (int) (mPlayer.getY() / mPlayer.TILE_HEIGHT);
+		int posX = (int) (mPlayer.getX() / Entity.TILE_WIDTH);
+		int posY = (int) (mPlayer.getY() / Entity.TILE_HEIGHT);
 
 		// Check for activation
 		if (Math.abs(posX - tileTouch.x) <= 1
@@ -233,12 +235,6 @@ public class MainScreen implements Screen, GestureListener {
 		}
 
 		return true;
-	}
-
-	@Override
-	public boolean panStop(float x, float y, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
@@ -259,8 +255,70 @@ public class MainScreen implements Screen, GestureListener {
 	}
 
 	@Override
+	public void beginContact(Contact contact) {
+		Fixture fA = contact.getFixtureA();
+		Fixture fB = contact.getFixtureB();
+
+		Gdx.app.log(TAG, "Contact initiated.");
+
+		if (fA.getUserData() == null && fB.getUserData() == null) {
+			// No user data, nothing to do
+			return;
+		}
+
+		Gdx.app.log(TAG, " + Found userdata");
+
+		if (fA.getUserData() instanceof Player
+				|| fB.getUserData() instanceof Player) {
+			Gdx.app.log(TAG, " + Player Collision Detected.");
+		}
+	}
+
+	@Override
+	public void endContact(Contact contact) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void preSolve(Contact contact, Manifold oldManifold) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void postSolve(Contact contact, ContactImpulse impulse) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean panStop(float x, float y, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean fling(float velocityX, float velocityY, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
 	public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
 			Vector2 pointer1, Vector2 pointer2) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(float x, float y, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean tap(float x, float y, int count, int button) {
 		// TODO Auto-generated method stub
 		return false;
 	}

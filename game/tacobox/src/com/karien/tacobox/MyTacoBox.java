@@ -15,10 +15,15 @@ public class MyTacoBox extends Game {
 	private LevelHelper lvls;
 	private GameState state = GameState.Title;
 	private Skin skin;
-	private World world;
+	private static World world;
 
 	public static final int SCREEN_WIDTH = 480;
 	public static final int SCREEN_HEIGHT = 320;
+	public static boolean DEBUG_MODE;
+
+	public MyTacoBox(boolean debuggerConnected) {
+		DEBUG_MODE = debuggerConnected;
+	}
 
 	@Override
 	public void create() {
@@ -40,12 +45,12 @@ public class MyTacoBox extends Game {
 			state = GameState.WaitForAction;
 			break;
 		case WaitForAction:
-			// state = GameState.LoadFirstLevel;
+			state = GameState.LoadFirstLevel;
 			break;
 		case LoadFirstLevel:
+			setScreen(new LoadingScreen());
 			lvls = new LevelHelper(null, this, world);
 			lvls.loadNextLevel();
-			setScreen(new LoadingScreen());
 			state = GameState.WaitLoadFirstLevel;
 			break;
 		case WaitLoadFirstLevel:
@@ -85,12 +90,8 @@ public class MyTacoBox extends Game {
 		super.render();
 	}
 
-	public void goalReached() {
+	public void endGame() {
 		state = GameState.LevelJustFinished;
-	}
-
-	public void died() {
-		throw new RuntimeException("Not implemented!");
 	}
 
 	public void menuChoice(String action, String... params) {
@@ -100,6 +101,14 @@ public class MyTacoBox extends Game {
 						"Invalid state to call this function: " + state);
 			}
 			state = GameState.LoadFirstLevel;
+		} else if (action.equals("quit")) {
+			if (state != GameState.WaitForAction) {
+				throw new RuntimeException(
+						"Invalid state to call this function: " + state);
+			}
+			skin.dispose();
+			world.dispose();
+			Gdx.app.exit();
 		}
 	}
 
@@ -113,7 +122,7 @@ public class MyTacoBox extends Game {
 	/**
 	 * @return the physics world
 	 */
-	public World getWorld() {
+	public static World getWorld() {
 		return world;
 	}
 }

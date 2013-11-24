@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="200" height="200" tilewidth="32" tileheight="32">
  <properties>
-  <property name="goalX" value="14"/>
-  <property name="goalY" value="2"/>
   <property name="spawnX" value="3"/>
   <property name="spawnY" value="15"/>
  </properties>
