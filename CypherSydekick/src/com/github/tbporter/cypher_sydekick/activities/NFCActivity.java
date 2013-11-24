@@ -40,8 +40,7 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 			m_nfcManager = new NFCManager(NfcAdapter.getDefaultAdapter(this),
 					this);
 		} catch (NFCManagerException nme) {
-			Toast.makeText(this, nme.getMessage(),
-					Toast.LENGTH_LONG).show();
+			Toast.makeText(this, nme.getMessage(), Toast.LENGTH_LONG).show();
 			finish();
 			return;
 		}
@@ -116,7 +115,7 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 						final NdefRecord secondRecord = records[1];
 
 						// Validate the record
-						if (checkNdefRecord(secondRecord)) {
+						if (m_nfcManager.checkNdefRecord(secondRecord)) {
 							// Set the EditText contents based on the received
 							// String
 							final String payloadStr = new String(
@@ -151,38 +150,6 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 
 		}
 
-	}
-
-	/**
-	 * Checks if an NdefRecord is the type expected for data exchange.
-	 * 
-	 * @param record
-	 *            The record to check.
-	 * @return true if the record is the type expected, false if not.
-	 */
-	private boolean checkNdefRecord(final NdefRecord record) {
-		boolean retVal = true;
-
-		// Requires API 16:
-		// Check the MIME type
-		final String mime = record.toMimeType();
-		if (null != mime) {
-			// The record has a MIME type, make sure it's correct
-			if (!NFCManager.NDEF_MIME_TYPE.equals(mime)) {
-				retVal = false;
-				Log.d(TAG, "Checked NdefRecord with unknown MIME type: " + mime);
-				Log.d(TAG,
-						"MIME type via old method: "
-								+ new String(record.getType(),
-										NFCManager.NDEF_CHARSET));
-			}
-		} else {
-			// No MIME type found, this is not a valid record
-			retVal = false;
-			Log.d(TAG, "Checked NdefRecord with null MIME type");
-		}
-
-		return retVal;
 	}
 
 	@Override

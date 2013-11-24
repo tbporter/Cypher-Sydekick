@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcAdapter.CreateNdefMessageCallback;
 import android.util.Log;
@@ -84,12 +85,46 @@ public class NFCManager {
 	}
 
 	/**
-	 * Stops the NFC foreground dispatch - Android Beam will no longer be received.
+	 * Stops the NFC foreground dispatch - Android Beam will no longer be
+	 * received.
 	 */
 	public void stopNFCReceive() {
 		Log.d(TAG, "NFC receive stopping");
 
 		// Disable NFC foreground dispatch
 		m_nfcAdapter.disableForegroundDispatch(m_activity);
+	}
+
+	/**
+	 * Checks if an NdefRecord is the type expected for data exchange.
+	 * 
+	 * @param record
+	 *            The record to check.
+	 * @return <tt>true</tt> if the record is the type expected, <tt>false</tt>
+	 *         if not.
+	 */
+	public boolean checkNdefRecord(final NdefRecord record) {
+		boolean retVal = true;
+
+		// Requires API 16:
+		// Check the MIME type
+		final String mime = record.toMimeType();
+		if (null != mime) {
+			// The record has a MIME type, make sure it's correct
+			if (!NFCManager.NDEF_MIME_TYPE.equals(mime)) {
+				retVal = false;
+				Log.d(TAG, "Checked NdefRecord with unknown MIME type: " + mime);
+				Log.d(TAG,
+						"MIME type via old method: "
+								+ new String(record.getType(),
+										NFCManager.NDEF_CHARSET));
+			}
+		} else {
+			// No MIME type found, this is not a valid record
+			retVal = false;
+			Log.d(TAG, "Checked NdefRecord with null MIME type");
+		}
+
+		return retVal;
 	}
 }
