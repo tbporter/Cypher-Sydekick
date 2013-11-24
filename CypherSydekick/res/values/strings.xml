@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Cypher Sydekick</string>
+    <string name="action_settings">Settings</string>
+	<!-- Chat client strings -->
+    <string name="chatclient_title">Chat Client</string>
+    <string name="drawer_title">Friend List</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+	<!-- NFC strings -->
+    <string name="nfcEditText_hint">Enter text to share via Android Beam…</string>
+</resources>
