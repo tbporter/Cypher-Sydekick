@@ -1,4 +1,4 @@
-package com.karien.tacobox.entities;
+package com.bls220.cyphersidekick.entities;
 
 import java.util.ArrayList;
 

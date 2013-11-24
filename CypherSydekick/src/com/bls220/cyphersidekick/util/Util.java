@@ -1,6 +1,6 @@
-package com.karien.taco.util;
+package com.bls220.cyphersidekick.util;
 
-import com.karien.taco.mapstuff.Coord;
+import com.bls220.cyphersidekick.mapstuff.Coord;
 
 public class Util {
 	public static Coord parseCommaCoord(String coord) {

@@ -1,15 +1,15 @@
-package com.karien.taco.mapstuff.level;
+package com.bls220.cyphersidekick.mapstuff.level;
 
 import java.io.IOException;
 
 import com.badlogic.gdx.physics.box2d.World;
-import com.karien.taco.mapstuff.map.MapID;
-import com.karien.tacobox.MyTacoBox;
-import com.karien.tacobox.comm.MsgHandler;
+import com.bls220.cyphersidekick.MySidekick;
+import com.bls220.cyphersidekick.comm.MsgHandler;
+import com.bls220.cyphersidekick.mapstuff.map.MapID;
 
 public class LevelHelper {
 	private final MsgHandler msg;
-	private final MyTacoBox listen;
+	private final MySidekick listen;
 	private final World world;
 
 	/**
@@ -56,7 +56,7 @@ public class LevelHelper {
 		return nextLevel;
 	}
 
-	public LevelHelper(MsgHandler msg, MyTacoBox listen, World world) {
+	public LevelHelper(MsgHandler msg, MySidekick listen, World world) {
 		this.msg = msg;
 		this.listen = listen;
 		this.world = world;

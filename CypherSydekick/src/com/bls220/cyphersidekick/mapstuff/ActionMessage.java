@@ -1,4 +1,4 @@
-package com.karien.taco.mapstuff;
+package com.bls220.cyphersidekick.mapstuff;
 
 /**
  * Abstracted version of a message that is sent between clients regarding

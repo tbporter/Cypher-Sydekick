@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.karien.tacobox.entities;
+package com.bls220.cyphersidekick.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;

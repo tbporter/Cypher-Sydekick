@@ -1,4 +1,4 @@
-package com.karien.taco.mapstuff;
+package com.bls220.cyphersidekick.mapstuff;
 
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;

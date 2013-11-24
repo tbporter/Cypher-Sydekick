@@ -1,4 +1,4 @@
-package com.karien.tacobox.entities;
+package com.bls220.cyphersidekick.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapObject;
@@ -6,9 +6,9 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.karien.taco.mapstuff.C;
-import com.karien.taco.mapstuff.MapActions;
-import com.karien.tacobox.MyTacoBox;
+import com.bls220.cyphersidekick.MySidekick;
+import com.bls220.cyphersidekick.mapstuff.C;
+import com.bls220.cyphersidekick.mapstuff.MapActions;
 
 public class Player extends Entity {
 
@@ -46,7 +46,7 @@ public class Player extends Entity {
 					MathUtils.sin(angle)).nor();
 			bullet = new Bullet(Entity.getTileRegion(17).getTextureRegion(),
 					getX() - 0.5f + heading.x, getY() - 0.5f + heading.y,
-					MyTacoBox.getWorld());
+					MySidekick.getWorld());
 			bullet.setRotation(angle);
 			bullet.setHeading(heading.x, heading.y);
 			shootTime = curTime;

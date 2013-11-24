@@ -1,4 +1,4 @@
-package com.karien.tacobox;
+package com.bls220.cyphersidekick;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -6,12 +6,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.karien.taco.mapstuff.level.LevelHelper;
-import com.karien.tacobox.screens.LoadingScreen;
-import com.karien.tacobox.screens.MainScreen;
-import com.karien.tacobox.screens.MenuScreen;
+import com.bls220.cyphersidekick.mapstuff.level.LevelHelper;
+import com.bls220.cyphersidekick.screens.LoadingScreen;
+import com.bls220.cyphersidekick.screens.MainScreen;
 
-public class MyTacoBox extends Game {
+public class MySidekick extends Game {
 	private LevelHelper lvls;
 	private GameState state = GameState.Title;
 	private Skin skin;
@@ -21,7 +20,7 @@ public class MyTacoBox extends Game {
 	public static final int SCREEN_HEIGHT = 320;
 	public static boolean DEBUG_MODE;
 
-	public MyTacoBox(boolean debuggerConnected) {
+	public MySidekick(boolean debuggerConnected) {
 		DEBUG_MODE = debuggerConnected;
 	}
 
@@ -41,7 +40,7 @@ public class MyTacoBox extends Game {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		switch (state) {
 		case Title:
-			setScreen(new MenuScreen(this));
+			// setScreen(new MenuScreen(this));
 			state = GameState.WaitForAction;
 			break;
 		case WaitForAction:

@@ -1,4 +1,4 @@
-package com.karien.taco.mapstuff;
+package com.bls220.cyphersidekick.mapstuff;
 
 public class Coord {
 	public final int x, y;

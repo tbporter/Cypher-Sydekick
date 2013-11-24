@@ -5,7 +5,7 @@ import android.os.Debug;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.karien.tacobox.MyTacoBox;
+import com.bls220.cyphersidekick.MySidekick;
 
 public class GameActivity extends AndroidApplication {
 	@Override
@@ -15,6 +15,6 @@ public class GameActivity extends AndroidApplication {
 		AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
 		cfg.useGL20 = true;
 
-		initialize(new MyTacoBox(Debug.isDebuggerConnected() || true), cfg);
+		initialize(new MySidekick(Debug.isDebuggerConnected() || true), cfg);
 	}
 }

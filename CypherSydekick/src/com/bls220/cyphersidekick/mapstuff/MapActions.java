@@ -1,4 +1,4 @@
-package com.karien.taco.mapstuff;
+package com.bls220.cyphersidekick.mapstuff;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -9,7 +9,7 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.karien.tacobox.comm.MsgHandler;
+import com.bls220.cyphersidekick.comm.MsgHandler;
 
 public class MapActions {
 	private final HashMap<String, MapObject> objects;

@@ -1,4 +1,4 @@
-package com.karien.tacobox.screens;
+package com.bls220.cyphersidekick.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -11,16 +11,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.karien.tacobox.MyTacoBox;
+import com.bls220.cyphersidekick.MySidekick;
 
 public class MenuScreen implements Screen {
-	private final MyTacoBox parent;
+	private final MySidekick parent;
 
 	private Stage stage;
 	private Skin skin;
 	Label titleLabel;
 
-	public MenuScreen(MyTacoBox callback) {
+	public MenuScreen(MySidekick callback) {
 		parent = callback;
 		skin = parent.getDefaultSkin();
 	}
@@ -68,7 +68,7 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		stage.setViewport(MyTacoBox.SCREEN_WIDTH, MyTacoBox.SCREEN_HEIGHT, true);
+		stage.setViewport(MySidekick.SCREEN_WIDTH, MySidekick.SCREEN_HEIGHT, true);
 	}
 
 	@Override

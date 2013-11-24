@@ -1,4 +1,4 @@
-package com.karien.tacobox.screens;
+package com.bls220.cyphersidekick.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -24,13 +24,13 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.karien.taco.mapstuff.C;
-import com.karien.taco.mapstuff.MapActions;
-import com.karien.taco.mapstuff.level.Level;
-import com.karien.tacobox.MyTacoBox;
-import com.karien.tacobox.entities.Bullet;
-import com.karien.tacobox.entities.Entity;
-import com.karien.tacobox.entities.Player;
+import com.bls220.cyphersidekick.MySidekick;
+import com.bls220.cyphersidekick.entities.Bullet;
+import com.bls220.cyphersidekick.entities.Entity;
+import com.bls220.cyphersidekick.entities.Player;
+import com.bls220.cyphersidekick.mapstuff.C;
+import com.bls220.cyphersidekick.mapstuff.MapActions;
+import com.bls220.cyphersidekick.mapstuff.level.Level;
 
 public class MainScreen implements Screen, GestureListener, ContactListener {
 
@@ -38,7 +38,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 
 	private final TiledMap map;
 	private final MapActions acts;
-	private final MyTacoBox parent;
+	private final MySidekick parent;
 
 	private final Box2DDebugRenderer debugBox2DRenderer;
 
@@ -66,9 +66,9 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		// Create Controls
 		mJoystick = new Touchpad[] { new Touchpad(DEADZONE_RADIUS, skin),
 				new Touchpad(DEADZONE_RADIUS, skin) };
-		float w = MyTacoBox.SCREEN_WIDTH / 7f;
+		float w = MySidekick.SCREEN_WIDTH / 7f;
 		mJoystick[0].setBounds(20, 20, w, w);
-		mJoystick[1].setBounds(MyTacoBox.SCREEN_WIDTH - w, 20, w, w);
+		mJoystick[1].setBounds(MySidekick.SCREEN_WIDTH - w, 20, w, w);
 
 		stage.addActor(mJoystick[0]);
 		stage.addActor(mJoystick[1]);
@@ -79,7 +79,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		this.acts = lvl.acts;
 		this.parent = lvl.parent;
 		Entity.setup(map);
-		if (MyTacoBox.DEBUG_MODE) {
+		if (MySidekick.DEBUG_MODE) {
 			debugBox2DRenderer = new Box2DDebugRenderer();
 			debugBox2DRenderer.setDrawContacts(true);
 		} else {
@@ -90,7 +90,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 	@Override
 	public void render(float delta) {
 		// step
-		MyTacoBox.getWorld().step(delta, 8, 3);
+		MySidekick.getWorld().step(delta, 8, 3);
 		stage.act(delta);
 		acts.checkRemoteMessage();
 
@@ -125,8 +125,8 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		drawObjects(C.ObjectLayer);
 		renderer.getSpriteBatch().end();
 
-		if (MyTacoBox.DEBUG_MODE)
-			debugBox2DRenderer.render(MyTacoBox.getWorld(), camera.combined);
+		if (MySidekick.DEBUG_MODE)
+			debugBox2DRenderer.render(MySidekick.getWorld(), camera.combined);
 		stage.draw();
 	}
 
@@ -144,9 +144,9 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 
 	@Override
 	public void resize(int width, int height) {
-		camera.viewportWidth = MyTacoBox.SCREEN_WIDTH;
-		camera.viewportHeight = MyTacoBox.SCREEN_HEIGHT;
-		stage.setViewport(MyTacoBox.SCREEN_WIDTH, MyTacoBox.SCREEN_HEIGHT, true);
+		camera.viewportWidth = MySidekick.SCREEN_WIDTH;
+		camera.viewportHeight = MySidekick.SCREEN_HEIGHT;
+		stage.setViewport(MySidekick.SCREEN_WIDTH, MySidekick.SCREEN_HEIGHT, true);
 	}
 
 	@Override
@@ -158,7 +158,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 
 		mPlayer = new Player(new String[] { "man_back.png", "man_front.png",
 				"man_right.png", "man_left.png" }, map, acts, 3, 15,
-				MyTacoBox.getWorld());
+				MySidekick.getWorld());
 
 		camera.position.set(mPlayer.getX() * Entity.TILE_WIDTH, mPlayer.getY()
 				* Entity.TILE_HEIGHT, 0);
@@ -166,7 +166,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		GestureDetector gDetector = new GestureDetector(this);
 		gDetector.setLongPressSeconds(0.25f);
 
-		MyTacoBox.getWorld().setContactListener(this);
+		MySidekick.getWorld().setContactListener(this);
 
 		Gdx.input.setInputProcessor(new InputMultiplexer(stage, gDetector));
 	}

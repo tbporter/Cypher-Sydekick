@@ -1,4 +1,4 @@
-package com.karien.tacobox.comm;
+package com.bls220.cyphersidekick.comm;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -6,8 +6,8 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import com.karien.taco.mapstuff.ActionMessage;
-import com.karien.taco.mapstuff.map.MapID;
+import com.bls220.cyphersidekick.mapstuff.ActionMessage;
+import com.bls220.cyphersidekick.mapstuff.map.MapID;
 
 public class MultiplayerComm implements Runnable, MsgHandler {
 	private final Socket sock;

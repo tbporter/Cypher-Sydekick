@@ -1,4 +1,4 @@
-package com.karien.taco.mapstuff.map;
+package com.bls220.cyphersidekick.mapstuff.map;
 
 public enum MapID {
 	Test, Normal, Hard, End;

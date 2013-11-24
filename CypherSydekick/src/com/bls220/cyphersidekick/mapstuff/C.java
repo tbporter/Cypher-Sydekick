@@ -1,4 +1,4 @@
-package com.karien.taco.mapstuff;
+package com.bls220.cyphersidekick.mapstuff;
 
 /**
  * A set of constants to talk to the map so that they are just in one place.

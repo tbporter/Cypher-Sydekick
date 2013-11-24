@@ -1,4 +1,4 @@
-package com.karien.taco.mapstuff.level;
+package com.bls220.cyphersidekick.mapstuff.level;
 
 import pong.client.core.BodyEditorLoader;
 
@@ -11,9 +11,9 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.karien.taco.mapstuff.C;
-import com.karien.tacobox.MyTacoBox;
-import com.karien.tacobox.comm.MsgHandler;
+import com.bls220.cyphersidekick.MySidekick;
+import com.bls220.cyphersidekick.comm.MsgHandler;
+import com.bls220.cyphersidekick.mapstuff.C;
 
 public class RandomLevel extends Level {
 
@@ -23,7 +23,7 @@ public class RandomLevel extends Level {
 	private static final int WALL_ID = 2;
 	private static final int FLOOR_ID = 9;
 
-	public RandomLevel(MyTacoBox parent, MsgHandler remote, World world) {
+	public RandomLevel(MySidekick parent, MsgHandler remote, World world) {
 		super(parent, EMPTY_MAP_PATH, remote);
 		TiledMapTileLayer tileLayer = (TiledMapTileLayer) map.getLayers().get(
 				C.TileLayer);

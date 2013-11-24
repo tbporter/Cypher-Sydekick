@@ -1,8 +1,8 @@
-package com.karien.tacobox.comm;
+package com.bls220.cyphersidekick.comm;
 
 import java.io.IOException;
 
-import com.karien.taco.mapstuff.ActionMessage;
+import com.bls220.cyphersidekick.mapstuff.ActionMessage;
 
 public interface MsgHandler {
 	void postMessage(ActionMessage msg) throws IOException;
