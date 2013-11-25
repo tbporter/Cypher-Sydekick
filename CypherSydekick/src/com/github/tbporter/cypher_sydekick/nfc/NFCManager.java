@@ -10,6 +10,7 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
 import android.nfc.NfcAdapter.CreateNdefMessageCallback;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -55,17 +56,6 @@ public class NFCManager implements CreateNdefMessageCallback {
 	}
 
 	/**
-	 * Returns the NfcAdapter associated with this manager. This method should
-	 * be removed once all NFC operations are moved into this class.
-	 * 
-	 * @return NfcAdapter associated with this manager.
-	 */
-	public NfcAdapter getNfcAdapter() {
-		// TODO: remove this method.
-		return m_nfcAdapter;
-	}
-
-	/**
 	 * Checks if NFC is enabled for the adapter associated with this manager.
 	 * 
 	 * @return <tt>true</tt> if NFC is enabled, <tt>false</tt> if not.
@@ -102,6 +92,80 @@ public class NFCManager implements CreateNdefMessageCallback {
 	}
 
 	/**
+	 * Processes the given Intent if it is one that this manager will handle.
+	 * 
+	 * @param intent
+	 *            The Intent to handle.
+	 * @return <tt>true</tt> if the Intent is handled, <tt>false</tt> if not
+	 *         (i.e. because its Action is not an NFC Action).
+	 */
+	public boolean handleIntent(final Intent intent) {
+		boolean retVal = false;
+
+		// Make sure it's an NFC intent that should be handled
+		final String action = intent.getAction();
+		if (action.equals(NfcAdapter.ACTION_NDEF_DISCOVERED)) {
+
+			// Get the NDEF messages from the intent
+			NdefMessage[] msgs = new NdefMessage[0];
+			Parcelable[] rawMsgs = intent
+					.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+			if (rawMsgs != null) {
+				msgs = new NdefMessage[rawMsgs.length];
+				for (int i = 0; i < rawMsgs.length; i++) {
+					msgs[i] = (NdefMessage) rawMsgs[i];
+				}
+
+				// Process the first message
+				if (1 == msgs.length) {
+					final NdefRecord[] records = msgs[0].getRecords();
+
+					// There should be 2 records
+					if (2 == records.length) {
+
+						// Get the second record
+						final NdefRecord secondRecord = records[1];
+
+						// Validate the record
+						if (checkNdefRecord(secondRecord)) {
+							// Display a Toast with the received string
+							final String payloadStr = new String(
+									secondRecord.getPayload(),
+									NFCManager.NDEF_CHARSET);
+							Toast.makeText(
+									m_activity,
+									"Received a string via Android Beam:\n"
+											+ payloadStr, Toast.LENGTH_LONG)
+									.show();
+
+							Log.d(TAG,
+									"Received NDEF message with payload string: "
+											+ payloadStr);
+
+						} else {
+							Log.d(TAG, "Received invalid NDEF message");
+						}
+
+					} else {
+						Log.d(TAG, "Received " + records.length
+								+ " NDEF record(s), expecting exactly 2");
+					}
+
+				} else {
+					Log.d(TAG, "Received " + msgs.length
+							+ " NDEF messages, expecting exactly 1");
+				}
+
+			} else {
+				Log.d(TAG, "Received NFC intent with no contents.");
+			}
+
+		}
+
+		return retVal;
+	}
+
+	/**
 	 * Checks if an NdefRecord is the type expected for data exchange.
 	 * 
 	 * @param record
@@ -109,7 +173,7 @@ public class NFCManager implements CreateNdefMessageCallback {
 	 * @return <tt>true</tt> if the record is the type expected, <tt>false</tt>
 	 *         if not.
 	 */
-	public boolean checkNdefRecord(final NdefRecord record) {
+	private boolean checkNdefRecord(final NdefRecord record) {
 		boolean retVal = true;
 
 		// Requires API 16:

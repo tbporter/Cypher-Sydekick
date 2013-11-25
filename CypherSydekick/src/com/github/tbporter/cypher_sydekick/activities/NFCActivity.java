@@ -87,64 +87,12 @@ public class NFCActivity extends Activity {
 	public void onNewIntent(final Intent intent) {
 		super.onNewIntent(intent);
 
-		// Make sure it's an NFC intent that should be handled
-		final String action = intent.getAction();
-		if (action.equals(NfcAdapter.ACTION_NDEF_DISCOVERED)) {
+		// Pass the intent to the NFCManager and see if it handles it
+		if (m_nfcManager.handleIntent(intent)) {
 
-			// Get the NDEF messages from the intent
-			NdefMessage[] msgs = new NdefMessage[0];
-			Parcelable[] rawMsgs = intent
-					.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-			if (rawMsgs != null) {
-				msgs = new NdefMessage[rawMsgs.length];
-				for (int i = 0; i < rawMsgs.length; i++) {
-					msgs[i] = (NdefMessage) rawMsgs[i];
-				}
-
-				// Process the first message
-				if (1 == msgs.length) {
-					final NdefRecord[] records = msgs[0].getRecords();
-
-					// There should be 2 records
-					if (2 == records.length) {
-
-						// Get the second record
-						final NdefRecord secondRecord = records[1];
-
-						// Validate the record
-						if (m_nfcManager.checkNdefRecord(secondRecord)) {
-							// Set the EditText contents based on the received
-							// String
-							final String payloadStr = new String(
-									secondRecord.getPayload(),
-									NFCManager.NDEF_CHARSET);
-							m_nfcEditText.setText(payloadStr);
-							Toast.makeText(this,
-									"Received a string via Android Beam",
-									Toast.LENGTH_LONG).show();
-
-							Log.d(TAG,
-									"Received NDEF message with payload string: "
-											+ payloadStr);
-
-						} else {
-							Log.d(TAG, "Received invalid NDEF message");
-						}
-
-					} else {
-						Log.d(TAG, "Received " + records.length
-								+ " NDEF record(s), expecting exactly 2");
-					}
-
-				} else {
-					Log.d(TAG, "Received " + msgs.length
-							+ " NDEF messages, expecting exactly 1");
-				}
-
-			} else {
-				Log.d(TAG, "Received NFC intent with no contents.");
-			}
-
+		}
+		// If the NFCManager doesn't handle this intent, do nothing with it
+		else {
 		}
 
 	}
