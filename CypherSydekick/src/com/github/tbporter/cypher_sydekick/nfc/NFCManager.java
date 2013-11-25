@@ -92,74 +92,86 @@ public class NFCManager implements CreateNdefMessageCallback {
 	}
 
 	/**
-	 * Processes the given Intent if it is one that this manager will handle.
+	 * Checks if the given Intent is one that this manager will handle.
+	 * 
+	 * @param intent
+	 *            The Intent to check.
+	 * @return <tt>true</tt> if the Intent can be handled, <tt>false</tt> if not
+	 *         (i.e. because its Action is not an NFC Action).
+	 */
+	public boolean willHandleIntent(final Intent intent) {
+		boolean retVal = false;
+
+		// Check if it's an NFC intent that should be handled
+		final String action = intent.getAction();
+		if (action.equals(NfcAdapter.ACTION_NDEF_DISCOVERED)) {
+			retVal = true;
+		}
+
+		return retVal;
+	}
+
+	/**
+	 * Parses user information from the given Intent.
 	 * 
 	 * @param intent
 	 *            The Intent to handle.
-	 * @return <tt>true</tt> if the Intent is handled, <tt>false</tt> if not
-	 *         (i.e. because its Action is not an NFC Action).
+	 * @return The string included in the NDEF message or <tt>null</tt> if the
+	 *         Intent could not be parsed.
 	 */
-	public boolean handleIntent(final Intent intent) {
-		boolean retVal = false;
+	public String handleIntent(final Intent intent) {
+		String retVal = null;
 
-		// Make sure it's an NFC intent that should be handled
-		final String action = intent.getAction();
-		if (action.equals(NfcAdapter.ACTION_NDEF_DISCOVERED)) {
+		// Get the NDEF messages from the intent
+		NdefMessage[] msgs = new NdefMessage[0];
+		Parcelable[] rawMsgs = intent
+				.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+		if (rawMsgs != null) {
+			msgs = new NdefMessage[rawMsgs.length];
+			for (int i = 0; i < rawMsgs.length; i++) {
+				msgs[i] = (NdefMessage) rawMsgs[i];
+			}
 
-			// Get the NDEF messages from the intent
-			NdefMessage[] msgs = new NdefMessage[0];
-			Parcelable[] rawMsgs = intent
-					.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-			if (rawMsgs != null) {
-				msgs = new NdefMessage[rawMsgs.length];
-				for (int i = 0; i < rawMsgs.length; i++) {
-					msgs[i] = (NdefMessage) rawMsgs[i];
-				}
+			// Process the first message
+			if (1 == msgs.length) {
+				final NdefRecord[] records = msgs[0].getRecords();
 
-				// Process the first message
-				if (1 == msgs.length) {
-					final NdefRecord[] records = msgs[0].getRecords();
+				// There should be 2 records
+				if (2 == records.length) {
 
-					// There should be 2 records
-					if (2 == records.length) {
+					// Get the second record
+					final NdefRecord secondRecord = records[1];
 
-						// Get the second record
-						final NdefRecord secondRecord = records[1];
+					// Validate the record
+					if (checkNdefRecord(secondRecord)) {
+						// Display a Toast with the received string
+						retVal = new String(secondRecord.getPayload(),
+								NFCManager.NDEF_CHARSET);
+						Toast.makeText(
+								m_activity,
+								"Received a string via Android Beam:\n"
+										+ retVal, Toast.LENGTH_LONG).show();
 
-						// Validate the record
-						if (checkNdefRecord(secondRecord)) {
-							// Display a Toast with the received string
-							final String payloadStr = new String(
-									secondRecord.getPayload(),
-									NFCManager.NDEF_CHARSET);
-							Toast.makeText(
-									m_activity,
-									"Received a string via Android Beam:\n"
-											+ payloadStr, Toast.LENGTH_LONG)
-									.show();
-
-							Log.d(TAG,
-									"Received NDEF message with payload string: "
-											+ payloadStr);
-
-						} else {
-							Log.d(TAG, "Received invalid NDEF message");
-						}
+						Log.d(TAG,
+								"Received NDEF message with payload string: "
+										+ retVal);
 
 					} else {
-						Log.d(TAG, "Received " + records.length
-								+ " NDEF record(s), expecting exactly 2");
+						Log.d(TAG, "Received invalid NDEF message");
 					}
 
 				} else {
-					Log.d(TAG, "Received " + msgs.length
-							+ " NDEF messages, expecting exactly 1");
+					Log.d(TAG, "Received " + records.length
+							+ " NDEF record(s), expecting exactly 2");
 				}
 
 			} else {
-				Log.d(TAG, "Received NFC intent with no contents.");
+				Log.d(TAG, "Received " + msgs.length
+						+ " NDEF messages, expecting exactly 1");
 			}
 
+		} else {
+			Log.d(TAG, "Received NFC intent with no contents.");
 		}
 
 		return retVal;

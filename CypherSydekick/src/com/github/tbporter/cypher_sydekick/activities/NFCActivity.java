@@ -88,8 +88,11 @@ public class NFCActivity extends Activity {
 		super.onNewIntent(intent);
 
 		// Pass the intent to the NFCManager and see if it handles it
-		if (m_nfcManager.handleIntent(intent)) {
-
+		if (m_nfcManager.willHandleIntent(intent)) {
+			final String receivedStr = m_nfcManager.handleIntent(intent);
+			Toast.makeText(this,
+					"NFCActivity received string:\n" + receivedStr,
+					Toast.LENGTH_LONG).show();
 		}
 		// If the NFCManager doesn't handle this intent, do nothing with it
 		else {
