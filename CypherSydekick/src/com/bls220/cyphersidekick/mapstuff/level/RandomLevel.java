@@ -3,9 +3,11 @@ package com.bls220.cyphersidekick.mapstuff.level;
 import pong.client.core.BodyEditorLoader;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSets;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -13,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.bls220.cyphersidekick.MySidekick;
 import com.bls220.cyphersidekick.comm.MsgHandler;
+import com.bls220.cyphersidekick.entities.Enemy;
 import com.bls220.cyphersidekick.mapstuff.C;
 
 public class RandomLevel extends Level {
@@ -22,6 +25,7 @@ public class RandomLevel extends Level {
 
 	private static final int WALL_ID = 2;
 	private static final int FLOOR_ID = 9;
+	private static final int ENEMY_1_ID = 3;
 
 	public RandomLevel(MySidekick parent, MsgHandler remote, World world) {
 		super(parent, EMPTY_MAP_PATH, remote);
@@ -69,6 +73,15 @@ public class RandomLevel extends Level {
 			tileLayer.setCell(x, tileLayer.getHeight() - 1, wallCell);
 			createStaticTileBody(loader, world, "square").setTransform(
 					x + 0.5f, (tileLayer.getHeight() - 1) + 0.5f, 0);
+		}
+
+		// Place enemies
+		TextureRegion enemyTexReg = tileSets.getTile(ENEMY_1_ID)
+				.getTextureRegion();
+		for (int i = 0; i < 300; i++) {
+			new Enemy(enemyTexReg,
+					MathUtils.random(1, tileLayer.getWidth() - 2),
+					MathUtils.random(1, tileLayer.getHeight() - 2), world);
 		}
 	}
 

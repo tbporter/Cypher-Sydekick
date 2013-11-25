@@ -81,7 +81,6 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		this.map = lvl.map;
 		this.acts = lvl.acts;
 		this.parent = lvl.parent;
-		Entity.setup(map);
 		if (MySidekick.DEBUG_MODE) {
 			debugBox2DRenderer = new Box2DDebugRenderer();
 			debugBox2DRenderer.setDrawContacts(true);
