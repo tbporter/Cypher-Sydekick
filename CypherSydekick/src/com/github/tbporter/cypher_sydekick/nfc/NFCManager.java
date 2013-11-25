@@ -30,6 +30,9 @@ public class NFCManager implements CreateNdefMessageCallback {
 	/** Activity this manager is associated with. */
 	private final Activity m_activity;
 
+	/** Current UserInfo to be broadcast over NFC. */
+	private UserInfo m_user;
+
 	/**
 	 * Creates a new NFCManager using the given NfcAdapter and associated with
 	 * the given Activity.
@@ -57,6 +60,12 @@ public class NFCManager implements CreateNdefMessageCallback {
 		m_nfcAdapter.setNdefPushMessageCallback(this, m_activity);
 	}
 
+	public NFCManager(final NfcAdapter nfcAdapter, final Activity activity,
+			final UserInfo user) throws NFCManagerException {
+		this(nfcAdapter, activity);
+		m_user = user;
+	}
+
 	/**
 	 * Checks if NFC is enabled for the adapter associated with this manager.
 	 * 
@@ -64,6 +73,16 @@ public class NFCManager implements CreateNdefMessageCallback {
 	 */
 	public boolean isNFCEnabled() {
 		return m_nfcAdapter.isEnabled();
+	}
+
+	/**
+	 * Sets the current user information to broadcast over NFC.
+	 * 
+	 * @param user
+	 *            UserInfo to broadcast.
+	 */
+	public void setCurrentUser(final UserInfo user) {
+		m_user = user;
 	}
 
 	/**
@@ -216,28 +235,38 @@ public class NFCManager implements CreateNdefMessageCallback {
 
 		NdefMessage retVal = null;
 
-		// Create an NDEF Android Application Record so that this app will open
-		// when the message is received.
-		final NdefRecord appRecord = NdefRecord
-				.createApplicationRecord(m_activity.getApplicationContext()
-						.getPackageName());
+		// Make sure there's a user set to send
+		if (null != m_user) {
 
-		// Create an NDEF record with the string to transmit
-		final UserInfo user = new UserInfo("username", "key");
-		final String serializedUser = user.serializeToString();
-		if (null != serializedUser) {
-			final NdefRecord stringRecord = NdefRecord.createMime(
-					NFCManager.NDEF_MIME_TYPE, user.serializeToString()
-							.getBytes(NFCManager.NDEF_CHARSET));
+			// Create an NDEF Android Application Record so that this app will
+			// open
+			// when the message is received.
+			final NdefRecord appRecord = NdefRecord
+					.createApplicationRecord(m_activity.getApplicationContext()
+							.getPackageName());
 
-			// Build an NDEF message with the records created above
-			retVal = new NdefMessage(
-					new NdefRecord[] { appRecord, stringRecord });
+			// Create an NDEF record with the string to transmit
+			final String serializedUser = m_user.serializeToString();
+			if (null != serializedUser) {
+				final NdefRecord stringRecord = NdefRecord.createMime(
+						NFCManager.NDEF_MIME_TYPE,
+						serializedUser.getBytes(NFCManager.NDEF_CHARSET));
+
+				// Build an NDEF message with the records created above
+				retVal = new NdefMessage(new NdefRecord[] { appRecord,
+						stringRecord });
+
+			} else {
+				Log.e(TAG,
+						"Serialization error in createNdefMessage, no NDEF message created.");
+				Toast.makeText(m_activity, "Error sharing user information.",
+						Toast.LENGTH_LONG).show();
+			}
 
 		} else {
-			Log.e(TAG,
-					"Serialization error in createNdefMessage, no NDEF message created.");
-			Toast.makeText(m_activity, "Error sharing user information.",
+			Log.d(TAG, "createNdefMessage called with no user set.");
+			Toast.makeText(m_activity,
+					"No user information available to share.",
 					Toast.LENGTH_LONG).show();
 		}
 

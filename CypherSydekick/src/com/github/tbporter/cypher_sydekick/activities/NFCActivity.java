@@ -32,6 +32,10 @@ public class NFCActivity extends Activity {
 			finish();
 			return;
 		}
+		
+		// Set the active user whose info should be shared over NFC
+		// TODO: Send a real user
+		m_nfcManager.setCurrentUser(new UserInfo("username", "key"));
 
 		// Notify the user if they have not enabled NFC
 		checkAndNotifyNFCEnabled();
@@ -74,7 +78,9 @@ public class NFCActivity extends Activity {
 
 		// Pass the intent to the NFCManager and see if it handles it
 		if (m_nfcManager.willHandleIntent(intent)) {
+			// Parse the intent with the NFCManager
 			final UserInfo receivedUser = m_nfcManager.handleIntent(intent);
+
 			// Make sure the UserInfo was parsed successfully
 			if (null != receivedUser) {
 				Toast.makeText(
@@ -86,6 +92,7 @@ public class NFCActivity extends Activity {
 				Toast.makeText(this, "Error receiving user information",
 						Toast.LENGTH_LONG).show();
 			}
+
 		}
 		// If the NFCManager doesn't handle this intent, do nothing with it
 		else {
