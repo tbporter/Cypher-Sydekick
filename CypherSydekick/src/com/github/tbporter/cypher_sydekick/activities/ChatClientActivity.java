@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -236,7 +238,7 @@ public class ChatClientActivity extends Activity {
 		}
 	}
 
-	/* The click listner for ListView in the navigation drawer */
+	/* The click listener for ListView in the navigation drawer */
 	private class DrawerItemClickListener implements
 			ListView.OnItemClickListener {
 		@Override
@@ -279,8 +281,12 @@ public class ChatClientActivity extends Activity {
 
 	/** Fragment for the Chat **/
 	public static class ChatFragment extends Fragment {
-		private ListView conversationListView;
-		private ArrayList<ConversationItem> conversationItems = new ArrayList<ConversationItem>();
+		private ListView conversationListView_;
+		private ArrayList<ConversationItem> conversationItems_ = new ArrayList<ConversationItem>();
+		private ImageButton sendButton_;
+		private EditText messageField_;
+		
+		
 		public ChatFragment() {
 			// Empty constructor required for fragment subclasses
 		}
@@ -292,14 +298,28 @@ public class ChatClientActivity extends Activity {
 					false);
 			
 			// Setup the adapter for the conversation list view			
-			conversationListView = (ListView) rootView.findViewById(R.id.listView_conversation);
+			conversationListView_ = (ListView) rootView.findViewById(R.id.listView_conversation);
 			ConversationItem newItem = new ConversationItem();
 			newItem.setMessage("Message");
 			newItem.setSubtitle("Subtitle");
 			newItem.setIcon(R.drawable.ic_launcher);
-			conversationItems.add(newItem);
-			ConversationAdapter newAdapter = new ConversationAdapter(getActivity(), conversationItems);
-			conversationListView.setAdapter(newAdapter);
+			conversationItems_.add(newItem);
+			ConversationAdapter newAdapter = new ConversationAdapter(getActivity(), conversationItems_);
+			conversationListView_.setAdapter(newAdapter);
+			
+			sendButton_ = (ImageButton) rootView.findViewById(R.id.btn_sendMessage);
+			messageField_ = (EditText) rootView.findViewById(R.id.editText_message);
+
+			sendButton_.setOnClickListener(new View.OnClickListener() {
+	             public void onClick(View v) {
+	            	ConversationItem newItem = new ConversationItem();
+	     			newItem.setMessage(messageField_.getText().toString());
+	     			newItem.setSubtitle("My Username");
+	     			newItem.setIcon(R.drawable.ic_launcher);
+	     			conversationItems_.add(newItem);
+	     			messageField_.setText("");
+	             }
+	        });
 			
 			return rootView;
 		}
