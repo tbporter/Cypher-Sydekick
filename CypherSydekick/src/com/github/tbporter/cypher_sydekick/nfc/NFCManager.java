@@ -8,11 +8,13 @@ import android.content.Intent;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
-import android.nfc.NfcEvent;
 import android.nfc.NfcAdapter.CreateNdefMessageCallback;
+import android.nfc.NfcEvent;
 import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.github.tbporter.cypher_sydekick.users.UserInfo;
 
 public class NFCManager implements CreateNdefMessageCallback {
 	private static final String TAG = "NFCManager";
@@ -116,11 +118,11 @@ public class NFCManager implements CreateNdefMessageCallback {
 	 * 
 	 * @param intent
 	 *            The Intent to handle.
-	 * @return The string included in the NDEF message or <tt>null</tt> if the
+	 * @return The UserInfo included in the NDEF message or <tt>null</tt> if the
 	 *         Intent could not be parsed.
 	 */
-	public String handleIntent(final Intent intent) {
-		String retVal = null;
+	public UserInfo handleIntent(final Intent intent) {
+		UserInfo retVal = null;
 
 		// Get the NDEF messages from the intent
 		NdefMessage[] msgs = new NdefMessage[0];
@@ -145,16 +147,20 @@ public class NFCManager implements CreateNdefMessageCallback {
 					// Validate the record
 					if (checkNdefRecord(secondRecord)) {
 						// Display a Toast with the received string
-						retVal = new String(secondRecord.getPayload(),
+						final String username = new String(
+								secondRecord.getPayload(),
 								NFCManager.NDEF_CHARSET);
 						Toast.makeText(
 								m_activity,
 								"Received a string via Android Beam:\n"
-										+ retVal, Toast.LENGTH_LONG).show();
+										+ username, Toast.LENGTH_LONG).show();
 
 						Log.d(TAG,
 								"Received NDEF message with payload string: "
-										+ retVal);
+										+ username);
+
+						// Build the UserInfo object to return
+						retVal = new UserInfo(username, null);
 
 					} else {
 						Log.d(TAG, "Received invalid NDEF message");

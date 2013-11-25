@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import com.github.tbporter.cypher_sydekick.R;
 import com.github.tbporter.cypher_sydekick.nfc.NFCManager;
 import com.github.tbporter.cypher_sydekick.nfc.NFCManagerException;
+import com.github.tbporter.cypher_sydekick.users.UserInfo;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -89,10 +90,12 @@ public class NFCActivity extends Activity {
 
 		// Pass the intent to the NFCManager and see if it handles it
 		if (m_nfcManager.willHandleIntent(intent)) {
-			final String receivedStr = m_nfcManager.handleIntent(intent);
-			Toast.makeText(this,
-					"NFCActivity received string:\n" + receivedStr,
-					Toast.LENGTH_LONG).show();
+			final UserInfo receivedUser = m_nfcManager.handleIntent(intent);
+			Toast.makeText(
+					this,
+					"NFCActivity received string:\n"
+							+ receivedUser.getUsername(), Toast.LENGTH_LONG)
+					.show();
 		}
 		// If the NFCManager doesn't handle this intent, do nothing with it
 		else {
