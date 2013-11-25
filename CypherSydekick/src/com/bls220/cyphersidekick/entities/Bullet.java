@@ -46,7 +46,7 @@ public class Bullet extends Entity {
 		super(textReg, x, y, world);
 		mBody.setBullet(true); // More accurate collision detection
 		Fixture fixture = mBody.getFixtureList().get(0);
-		fixture.setDensity(100);
+		fixture.setDensity(0.1f);
 		fixture.setRestitution(1);
 		fixture.setFriction(0);
 
@@ -57,7 +57,7 @@ public class Bullet extends Entity {
 
 		fixture.setFilterData(filter);
 		mBody.setLinearDamping(0);
-		mSpeed = 400000f;
+		mSpeed = 20f;
 	}
 
 	/**
@@ -73,6 +73,11 @@ public class Bullet extends Entity {
 		super.onCollisionStart(contact, otherFixture);
 		shouldDelete = true;
 
+	}
+
+	@Override
+	protected void updateBody() {
+		mBody.setLinearVelocity(getHeading().scl(mSpeed));
 	}
 
 }

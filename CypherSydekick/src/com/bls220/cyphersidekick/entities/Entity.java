@@ -62,6 +62,17 @@ public class Entity {
 		this(textReg, 0, 0, world);
 	}
 
+	/**
+	 * 
+	 * @param textReg
+	 *            - sprite image
+	 * @param x
+	 *            - in tiles
+	 * @param y
+	 *            - in tiles
+	 * @param world
+	 *            - the world
+	 */
 	public Entity(TextureRegion textReg, float x, float y, World world) {
 		mHeading = new Vector2();
 
@@ -77,7 +88,7 @@ public class Entity {
 		fd.filter.maskBits = EEnityCategories.ALL.getValue();
 
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(TILE_WIDTH / 2, TILE_HEIGHT / 2);
+		shape.setAsBox(0.5f, 0.5f);
 		fd.shape = shape;
 
 		mBody = world.createBody(bd);
@@ -112,9 +123,15 @@ public class Entity {
 		return TILES.getTile(id);
 	}
 
+	/**
+	 * 
+	 * @param x
+	 *            - in tiles (meters)
+	 * @param y
+	 *            - in tiles (meters)
+	 */
 	public void setPosition(float x, float y) {
-		mBody.setTransform(x * TILE_WIDTH + TILE_WIDTH / 2, y * TILE_HEIGHT
-				+ TILE_HEIGHT / 2, 0);
+		mBody.setTransform(x + 0.5f, y + 0.5f, 0);
 	}
 
 	public Vector2 getHeading() {
@@ -130,31 +147,38 @@ public class Entity {
 	}
 
 	/**
-	 * @return X pos in pixels
+	 * @return X pos in tiles
 	 */
 	public float getX() {
-		return mBody.getPosition().x / TILE_WIDTH;
+		return (mBody.getPosition().x - 0.5f);
 	}
 
 	/**
-	 * @return Y pos in pixels
+	 * @return Y pos in tiles
 	 */
 	public float getY() {
-		return mBody.getPosition().y / TILE_HEIGHT;
+		return (mBody.getPosition().y - 0.5f);
+	}
+
+	protected void updateSprite() {
+		mSprite.setPosition(getX() * TILE_WIDTH, getY() * TILE_HEIGHT);
+		mSprite.setRotation(mBody.getAngle() * MathUtils.radiansToDegrees);
+	}
+
+	/**
+	 * Apply forces to body.
+	 */
+	protected void updateBody() {
+		mBody.applyLinearImpulse(getHeading().scl(mSpeed),
+				mBody.getWorldPoint(mBody.getLocalCenter()), true);
 	}
 
 	public void update(float delta) {
-
-		// Apply forces
-		mBody.applyLinearImpulse(getHeading().scl(mSpeed),
-				mBody.getWorldPoint(mBody.getLocalCenter()), true);
+		// Update Body
+		updateBody();
 
 		// Update image
-		Vector2 bodyPos = mBody.getPosition();
-		mSprite.setPosition(bodyPos.x - TILE_WIDTH / 2, bodyPos.y - TILE_HEIGHT
-				/ 2);
-		mSprite.setRotation(mBody.getAngle() * MathUtils.radiansToDegrees);
-
+		updateSprite();
 	}
 
 	public void draw(SpriteBatch spriteBatch) {

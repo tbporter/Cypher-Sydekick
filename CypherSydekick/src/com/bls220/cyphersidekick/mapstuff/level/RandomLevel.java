@@ -55,26 +55,20 @@ public class RandomLevel extends Level {
 		for (int y = 0; y < tileLayer.getHeight(); y++) {
 			tileLayer.setCell(0, y, wallCell);
 			createStaticTileBody(loader, world, "square").setTransform(
-					0 * TILE_WIDTH + TILE_WIDTH / 2,
-					y * TILE_HEIGHT + TILE_HEIGHT / 2, 0);
+					0 + 0.5f, y + 0.5f, 0);
 
 			tileLayer.setCell(tileLayer.getWidth() - 1, y, wallCell);
 			createStaticTileBody(loader, world, "square").setTransform(
-					(tileLayer.getWidth() - 1) * TILE_WIDTH + TILE_WIDTH / 2,
-					y * TILE_HEIGHT + TILE_HEIGHT / 2, 0);
+					(tileLayer.getWidth() - 1) + 0.5f, y + 0.5f, 0);
 		}
 		for (int x = 0; x < tileLayer.getWidth(); x++) {
 			tileLayer.setCell(x, 0, wallCell);
 			createStaticTileBody(loader, world, "square").setTransform(
-					x * TILE_WIDTH + TILE_WIDTH / 2,
-					0 * TILE_HEIGHT + TILE_HEIGHT / 2, 0);
+					x + 0.5f, 0 + 0.5f, 0);
 
 			tileLayer.setCell(x, tileLayer.getHeight() - 1, wallCell);
-			createStaticTileBody(loader, world, "square")
-					.setTransform(
-							x * TILE_WIDTH + TILE_WIDTH / 2,
-							(tileLayer.getHeight() - 1) * TILE_HEIGHT
-									+ TILE_HEIGHT / 2, 0);
+			createStaticTileBody(loader, world, "square").setTransform(
+					x + 0.5f, (tileLayer.getHeight() - 1) + 0.5f, 0);
 		}
 	}
 
@@ -95,7 +89,7 @@ public class RandomLevel extends Level {
 		Body body = world.createBody(bd);
 
 		// 4. Create the body fixture automatically by using the loader.
-		loader.attachFixture(body, name, fd, TILE_WIDTH);
+		loader.attachFixture(body, name, fd, 1);
 		return body;
 	}
 }

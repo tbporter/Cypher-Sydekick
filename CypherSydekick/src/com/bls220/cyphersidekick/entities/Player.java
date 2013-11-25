@@ -15,7 +15,7 @@ public class Player extends Entity {
 	final MapActions mActions;
 	MapObject mGrabbedObj;
 
-	private static final float SPEED = 48000f;
+	private static final float SPEED = 8f;
 
 	private long shootTime;
 
@@ -45,7 +45,7 @@ public class Player extends Entity {
 			Vector2 heading = new Vector2(MathUtils.cos(angle),
 					MathUtils.sin(angle)).nor().scl(1.2f);
 			bullet = new Bullet(Entity.getTileRegion(17).getTextureRegion(),
-					getX() - 0.5f + heading.x, getY() - 0.5f + heading.y,
+					getX() + heading.x, getY() + heading.y,
 					MySidekick.getWorld());
 			bullet.setRotation(angle);
 			bullet.setHeading(heading.x, heading.y);
