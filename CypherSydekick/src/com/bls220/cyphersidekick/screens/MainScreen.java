@@ -93,7 +93,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 	@Override
 	public void render(float delta) {
 		// step
-		MySidekick.getWorld().step(delta, 8, 3);
+		MySidekick.getWorld().step(Math.min(delta, 1 / 30f), 8, 3);
 		for (Entity e : Entity.mEntities) {
 			// check deletion
 			if (e.shouldDelete) {

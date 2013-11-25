@@ -34,7 +34,20 @@ public class Entity {
 	public static ArrayList<Entity> mEntities;
 	private static TiledMapTileSet TILES;
 
-	public boolean shouldDelete;
+	public boolean shouldDelete; // bodies must be removed when world = unlocked
+
+	public static enum EEnityCategories {
+		BOUNDARY(0x1), BULLET(0x2), ENEMY(0x4), PLAYER(0x8), ALL(0xFFFF);
+		private final short category;
+
+		EEnityCategories(int val) {
+			this.category = (short) val;
+		}
+
+		public short getValue() {
+			return category;
+		}
+	}
 
 	public Entity(String texturePath, World world) {
 		this(texturePath, 0, 0, world);
@@ -60,6 +73,8 @@ public class Entity {
 		fd.density = 10;
 		fd.friction = 0.9f;
 		fd.restitution = 0.3f;
+		fd.filter.categoryBits = EEnityCategories.BOUNDARY.getValue();
+		fd.filter.maskBits = EEnityCategories.ALL.getValue();
 
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(TILE_WIDTH / 2, TILE_HEIGHT / 2);

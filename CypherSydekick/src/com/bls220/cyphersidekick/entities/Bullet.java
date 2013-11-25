@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -45,9 +46,16 @@ public class Bullet extends Entity {
 		super(textReg, x, y, world);
 		mBody.setBullet(true); // More accurate collision detection
 		Fixture fixture = mBody.getFixtureList().get(0);
-		fixture.setDensity(1);
+		fixture.setDensity(100);
 		fixture.setRestitution(1);
 		fixture.setFriction(0);
+
+		Filter filter = fixture.getFilterData();
+		filter.categoryBits = EEnityCategories.BULLET.getValue();
+		filter.maskBits = (short) (EEnityCategories.ALL.getValue() & ~EEnityCategories.BULLET
+				.getValue());
+
+		fixture.setFilterData(filter);
 		mBody.setLinearDamping(0);
 		mSpeed = 400000f;
 	}
