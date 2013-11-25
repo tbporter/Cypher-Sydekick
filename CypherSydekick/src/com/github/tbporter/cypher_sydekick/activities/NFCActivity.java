@@ -21,7 +21,7 @@ import android.view.Menu;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class NFCActivity extends Activity implements CreateNdefMessageCallback {
+public class NFCActivity extends Activity {
 	private static String TAG = "NFCActivity";
 
 	/** NFCManager to handle NFC operations. */
@@ -47,9 +47,6 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 
 		// Notify the user if they have not enabled NFC
 		checkAndNotifyNFCEnabled();
-
-		// Set this class as the callback to create an NDEF push message
-		m_nfcManager.getNfcAdapter().setNdefPushMessageCallback(this, this);
 
 		// Get views by id
 		m_nfcEditText = (EditText) findViewById(R.id.nfcEditText);
@@ -150,30 +147,6 @@ public class NFCActivity extends Activity implements CreateNdefMessageCallback {
 
 		}
 
-	}
-
-	@Override
-	public NdefMessage createNdefMessage(NfcEvent event) {
-		Log.d(TAG, "Building NDEF message");
-
-		// Create an NDEF Android Application Record so that this app will open
-		// when the message is received.
-		NdefRecord appRecord = NdefRecord
-				.createApplicationRecord(getApplicationContext()
-						.getPackageName());
-
-		// Create an NDEF record with the string from the EditText
-		String text = m_nfcEditText.getText().toString();
-		NdefRecord stringRecord = NdefRecord.createMime(
-				NFCManager.NDEF_MIME_TYPE,
-				text.getBytes(NFCManager.NDEF_CHARSET));
-
-		// Build an NDEF message with the records created above
-		NdefMessage msg = new NdefMessage(new NdefRecord[] { appRecord,
-				stringRecord });
-
-		// Return the NDEF message to broadcast
-		return msg;
 	}
 
 	@Override

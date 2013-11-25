@@ -5,13 +5,15 @@ import java.nio.charset.Charset;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.nfc.NfcEvent;
 import android.nfc.NfcAdapter.CreateNdefMessageCallback;
 import android.util.Log;
 import android.widget.Toast;
 
-public class NFCManager {
+public class NFCManager implements CreateNdefMessageCallback {
 	private static final String TAG = "NFCManager";
 
 	/** MIME type for messages shared over NFC. */
@@ -46,6 +48,10 @@ public class NFCManager {
 		if (null == m_nfcAdapter) {
 			throw new NFCManagerException("NFC is not available.");
 		}
+
+		// Set this class as the callback to create an NDEF push message for the
+		// associated Activity
+		m_nfcAdapter.setNdefPushMessageCallback(this, m_activity);
 	}
 
 	/**
@@ -126,5 +132,29 @@ public class NFCManager {
 		}
 
 		return retVal;
+	}
+
+	@Override
+	public NdefMessage createNdefMessage(NfcEvent event) {
+		Log.d(TAG, "Building NDEF message");
+
+		// Create an NDEF Android Application Record so that this app will open
+		// when the message is received.
+		final NdefRecord appRecord = NdefRecord
+				.createApplicationRecord(m_activity.getApplicationContext()
+						.getPackageName());
+
+		// Create an NDEF record with the string to transmit
+		final String text = "text";
+		final NdefRecord stringRecord = NdefRecord.createMime(
+				NFCManager.NDEF_MIME_TYPE,
+				text.getBytes(NFCManager.NDEF_CHARSET));
+
+		// Build an NDEF message with the records created above
+		final NdefMessage msg = new NdefMessage(new NdefRecord[] { appRecord,
+				stringRecord });
+
+		// Return the NDEF message to broadcast
+		return msg;
 	}
 }
