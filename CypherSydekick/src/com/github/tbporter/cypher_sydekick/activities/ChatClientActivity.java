@@ -1,5 +1,7 @@
 package com.github.tbporter.cypher_sydekick.activities;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +29,7 @@ import com.github.tbporter.cypher_sydekick.R;
 import com.github.tbporter.cypher_sydekick.nfc.NFCManager;
 import com.github.tbporter.cypher_sydekick.nfc.NFCManagerException;
 import com.github.tbporter.cypher_sydekick.users.UserInfo;
+import com.github.tbporter.cypher_sydekick.chat.*;
 
 public class ChatClientActivity extends Activity {
 
@@ -114,6 +118,16 @@ public class ChatClientActivity extends Activity {
 		/*
 		 * if (savedInstanceState == null) { selectItem(0); }
 		 */
+		
+	        
+        /*conversationListView.setOnItemClickListener(new OnItemClickListener() {
+	         @Override
+	         public void onItemClick(AdapterView<?> a, View v, int position, long id) { 
+	          Object o = lv1.getItemAtPosition(position);
+	          SearchResults fullObject = (SearchResults)o;
+	          Toast.makeText(ListViewBlogPost.this, "You have chosen: " + " " + fullObject.getName(), Toast.LENGTH_LONG).show();
+	         }  
+	        });*/
 	}
 
 	@Override
@@ -265,7 +279,8 @@ public class ChatClientActivity extends Activity {
 
 	/** Fragment for the Chat **/
 	public static class ChatFragment extends Fragment {
-
+		private ListView conversationListView;
+		private ArrayList<ConversationItem> conversationItems = new ArrayList<ConversationItem>();
 		public ChatFragment() {
 			// Empty constructor required for fragment subclasses
 		}
@@ -275,6 +290,17 @@ public class ChatClientActivity extends Activity {
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_chat, container,
 					false);
+			
+			// Setup the adapter for the conversation list view			
+			conversationListView = (ListView) rootView.findViewById(R.id.listView_conversation);
+			ConversationItem newItem = new ConversationItem();
+			newItem.setMessage("Message");
+			newItem.setSubtitle("Subtitle");
+			newItem.setIcon(R.drawable.ic_launcher);
+			conversationItems.add(newItem);
+			ConversationAdapter newAdapter = new ConversationAdapter(getActivity(), conversationItems);
+			conversationListView.setAdapter(newAdapter);
+			
 			return rootView;
 		}
 
