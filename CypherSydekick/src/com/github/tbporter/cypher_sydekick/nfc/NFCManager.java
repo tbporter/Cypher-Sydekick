@@ -214,6 +214,8 @@ public class NFCManager implements CreateNdefMessageCallback {
 	public NdefMessage createNdefMessage(NfcEvent event) {
 		Log.d(TAG, "Building NDEF message");
 
+		NdefMessage retVal = null;
+
 		// Create an NDEF Android Application Record so that this app will open
 		// when the message is received.
 		final NdefRecord appRecord = NdefRecord
@@ -222,15 +224,24 @@ public class NFCManager implements CreateNdefMessageCallback {
 
 		// Create an NDEF record with the string to transmit
 		final UserInfo user = new UserInfo("username", "key");
-		final NdefRecord stringRecord = NdefRecord.createMime(
-				NFCManager.NDEF_MIME_TYPE,
-				user.serializeToString().getBytes(NFCManager.NDEF_CHARSET));
+		final String serializedUser = user.serializeToString();
+		if (null != serializedUser) {
+			final NdefRecord stringRecord = NdefRecord.createMime(
+					NFCManager.NDEF_MIME_TYPE, user.serializeToString()
+							.getBytes(NFCManager.NDEF_CHARSET));
 
-		// Build an NDEF message with the records created above
-		final NdefMessage msg = new NdefMessage(new NdefRecord[] { appRecord,
-				stringRecord });
+			// Build an NDEF message with the records created above
+			retVal = new NdefMessage(
+					new NdefRecord[] { appRecord, stringRecord });
+
+		} else {
+			Log.e(TAG,
+					"Serialization error in createNdefMessage, no NDEF message created.");
+			Toast.makeText(m_activity, "Error sharing user information.",
+					Toast.LENGTH_LONG).show();
+		}
 
 		// Return the NDEF message to broadcast
-		return msg;
+		return retVal;
 	}
 }

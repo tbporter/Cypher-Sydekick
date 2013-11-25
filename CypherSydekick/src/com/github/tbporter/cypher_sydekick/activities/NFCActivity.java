@@ -1,35 +1,22 @@
 package com.github.tbporter.cypher_sydekick.activities;
 
-import java.nio.charset.Charset;
+import android.app.Activity;
+import android.content.Intent;
+import android.nfc.NfcAdapter;
+import android.os.Bundle;
+import android.view.Menu;
+import android.widget.Toast;
 
 import com.github.tbporter.cypher_sydekick.R;
 import com.github.tbporter.cypher_sydekick.nfc.NFCManager;
 import com.github.tbporter.cypher_sydekick.nfc.NFCManagerException;
 import com.github.tbporter.cypher_sydekick.users.UserInfo;
 
-import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
-import android.nfc.NfcAdapter;
-import android.nfc.NfcAdapter.CreateNdefMessageCallback;
-import android.nfc.NfcEvent;
-import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.Log;
-import android.view.Menu;
-import android.widget.EditText;
-import android.widget.Toast;
-
 public class NFCActivity extends Activity {
 	private static String TAG = "NFCActivity";
 
 	/** NFCManager to handle NFC operations. */
 	NFCManager m_nfcManager;
-
-	// Views
-	private EditText m_nfcEditText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +35,6 @@ public class NFCActivity extends Activity {
 
 		// Notify the user if they have not enabled NFC
 		checkAndNotifyNFCEnabled();
-
-		// Get views by id
-		m_nfcEditText = (EditText) findViewById(R.id.nfcEditText);
 	}
 
 	@Override
@@ -91,11 +75,17 @@ public class NFCActivity extends Activity {
 		// Pass the intent to the NFCManager and see if it handles it
 		if (m_nfcManager.willHandleIntent(intent)) {
 			final UserInfo receivedUser = m_nfcManager.handleIntent(intent);
-			Toast.makeText(
-					this,
-					"NFCActivity received User:\n"
-							+ receivedUser.toString(), Toast.LENGTH_LONG)
-					.show();
+			// Make sure the UserInfo was parsed successfully
+			if (null != receivedUser) {
+				Toast.makeText(
+						this,
+						"Received user information:\n"
+								+ receivedUser.toString(), Toast.LENGTH_LONG)
+						.show();
+			} else {
+				Toast.makeText(this, "Error receiving user information",
+						Toast.LENGTH_LONG).show();
+			}
 		}
 		// If the NFCManager doesn't handle this intent, do nothing with it
 		else {
