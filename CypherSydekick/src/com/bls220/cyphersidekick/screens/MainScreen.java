@@ -140,7 +140,8 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		renderer.getSpriteBatch().end();
 
 		if (MySidekick.DEBUG_MODE)
-			debugBox2DRenderer.render(MySidekick.getWorld(), camera.combined);
+			debugBox2DRenderer.render(MySidekick.getWorld(), camera.combined
+					.cpy().scl(Entity.TILE_WIDTH));
 		stage.draw();
 	}
 
