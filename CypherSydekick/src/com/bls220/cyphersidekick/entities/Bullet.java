@@ -52,8 +52,7 @@ public class Bullet extends Entity {
 
 		Filter filter = fixture.getFilterData();
 		filter.categoryBits = EEnityCategories.BULLET.getValue();
-		filter.maskBits = (short) (EEnityCategories.ALL.getValue() & ~EEnityCategories.BULLET
-				.getValue());
+		filter.maskBits &= ~EEnityCategories.BULLET.getValue();
 
 		fixture.setFilterData(filter);
 		mBody.setLinearDamping(0);

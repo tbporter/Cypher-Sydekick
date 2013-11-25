@@ -5,6 +5,8 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.bls220.cyphersidekick.MySidekick;
 import com.bls220.cyphersidekick.mapstuff.C;
@@ -33,6 +35,11 @@ public class Player extends Entity {
 		mBody.setFixedRotation(true);
 		mSpeed = SPEED;
 
+		Fixture fixture = mBody.getFixtureList().get(0);
+		Filter filter = fixture.getFilterData();
+		filter.categoryBits = EEnityCategories.PLAYER.getValue();
+		fixture.setFilterData(filter);
+
 		mActions = actions;
 		mGrabbedObj = null;
 	}
@@ -59,7 +66,7 @@ public class Player extends Entity {
 		if (mGrabbedObj == null) {
 			// Find obj that the player is facing
 			MapObject obj = null;
-			int posX = (int) (getX() / TILE_WIDTH), posY = (int) (getY() / TILE_HEIGHT);
+			int posX = (int) (getX()), posY = (int) (getY());
 
 			// TODO: find object in front of player
 
