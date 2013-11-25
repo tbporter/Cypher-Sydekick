@@ -1,4 +1,4 @@
-package com.github.tbporter.cypher_sydekick;
+package com.github.tbporter.cypher_sydekick.activities;
 
 import android.os.Bundle;
 import android.os.Debug;

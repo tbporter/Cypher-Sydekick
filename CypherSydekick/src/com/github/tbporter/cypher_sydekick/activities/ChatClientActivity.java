@@ -1,4 +1,6 @@
-package com.github.tbporter.cypher_sydekick;
+package com.github.tbporter.cypher_sydekick.activities;
+
+import com.github.tbporter.cypher_sydekick.R;
 
 import android.app.Activity;
 import android.app.Fragment;
