@@ -299,11 +299,6 @@ public class ChatClientActivity extends Activity {
 			
 			// Setup the adapter for the conversation list view			
 			conversationListView_ = (ListView) rootView.findViewById(R.id.listView_conversation);
-			ConversationItem newItem = new ConversationItem();
-			newItem.setMessage("Message");
-			newItem.setSubtitle("Subtitle");
-			newItem.setIcon(R.drawable.ic_launcher);
-			conversationItems_.add(newItem);
 			ConversationAdapter newAdapter = new ConversationAdapter(getActivity(), conversationItems_);
 			conversationListView_.setAdapter(newAdapter);
 			
@@ -315,8 +310,9 @@ public class ChatClientActivity extends Activity {
 	            	ConversationItem newItem = new ConversationItem();
 	     			newItem.setMessage(messageField_.getText().toString());
 	     			newItem.setSubtitle("My Username");
-	     			newItem.setIcon(R.drawable.ic_launcher);
+	     			newItem.setIcon(R.drawable.ic_action_person);
 	     			conversationItems_.add(newItem);
+	     			// TODO Here is where we should fire the AsyncTaskto send the message
 	     			messageField_.setText("");
 	             }
 	        });
