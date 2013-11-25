@@ -146,21 +146,15 @@ public class NFCManager implements CreateNdefMessageCallback {
 
 					// Validate the record
 					if (checkNdefRecord(secondRecord)) {
-						// Display a Toast with the received string
-						final String username = new String(
+						// Deserialize and return the received UserInfo
+						final String payloadString = new String(
 								secondRecord.getPayload(),
 								NFCManager.NDEF_CHARSET);
-						Toast.makeText(
-								m_activity,
-								"Received a string via Android Beam:\n"
-										+ username, Toast.LENGTH_LONG).show();
+						retVal = UserInfo.deserializeFromString(payloadString);
 
 						Log.d(TAG,
 								"Received NDEF message with payload string: "
-										+ username);
-
-						// Build the UserInfo object to return
-						retVal = new UserInfo(username, null);
+										+ payloadString);
 
 					} else {
 						Log.d(TAG, "Received invalid NDEF message");
@@ -227,10 +221,10 @@ public class NFCManager implements CreateNdefMessageCallback {
 						.getPackageName());
 
 		// Create an NDEF record with the string to transmit
-		final String text = "text";
+		final UserInfo user = new UserInfo("username", "key");
 		final NdefRecord stringRecord = NdefRecord.createMime(
 				NFCManager.NDEF_MIME_TYPE,
-				text.getBytes(NFCManager.NDEF_CHARSET));
+				user.serializeToString().getBytes(NFCManager.NDEF_CHARSET));
 
 		// Build an NDEF message with the records created above
 		final NdefMessage msg = new NdefMessage(new NdefRecord[] { appRecord,

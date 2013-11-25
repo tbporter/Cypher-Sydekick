@@ -93,8 +93,8 @@ public class NFCActivity extends Activity {
 			final UserInfo receivedUser = m_nfcManager.handleIntent(intent);
 			Toast.makeText(
 					this,
-					"NFCActivity received string:\n"
-							+ receivedUser.getUsername(), Toast.LENGTH_LONG)
+					"NFCActivity received User:\n"
+							+ receivedUser.toString(), Toast.LENGTH_LONG)
 					.show();
 		}
 		// If the NFCManager doesn't handle this intent, do nothing with it
