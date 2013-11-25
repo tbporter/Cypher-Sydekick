@@ -1,5 +1,7 @@
 package com.bls220.cyphersidekick.screens;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
@@ -25,7 +27,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.bls220.cyphersidekick.MySidekick;
-import com.bls220.cyphersidekick.entities.Bullet;
 import com.bls220.cyphersidekick.entities.Entity;
 import com.bls220.cyphersidekick.entities.Player;
 import com.bls220.cyphersidekick.mapstuff.C;
@@ -45,6 +46,8 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
 	private float lastZoomDistance;
+
+	private ArrayList<Entity> tmpDelList = new ArrayList<Entity>();
 
 	Player mPlayer;
 
@@ -91,6 +94,17 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 	public void render(float delta) {
 		// step
 		MySidekick.getWorld().step(delta, 8, 3);
+		for (Entity e : Entity.mEntities) {
+			// check deletion
+			if (e.shouldDelete) {
+				tmpDelList.add(e);
+				MySidekick.getWorld().destroyBody(e.getBody());
+			}
+		}
+		for (Entity e : tmpDelList) {
+			Entity.mEntities.remove(e);
+		}
+		tmpDelList.clear();
 		stage.act(delta);
 		acts.checkRemoteMessage();
 
@@ -105,7 +119,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		if (heading.angle() != 0) {
 			float radAngle = heading.angle() * MathUtils.degreesToRadians;
 			mPlayer.setRotation(radAngle);
-			Bullet bullet = mPlayer.shoot();
+			mPlayer.shoot();
 		}
 
 		// Update camera
@@ -146,7 +160,8 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 	public void resize(int width, int height) {
 		camera.viewportWidth = MySidekick.SCREEN_WIDTH;
 		camera.viewportHeight = MySidekick.SCREEN_HEIGHT;
-		stage.setViewport(MySidekick.SCREEN_WIDTH, MySidekick.SCREEN_HEIGHT, true);
+		stage.setViewport(MySidekick.SCREEN_WIDTH, MySidekick.SCREEN_HEIGHT,
+				true);
 	}
 
 	@Override
@@ -268,16 +283,43 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 
 		Gdx.app.log(TAG, " + Found userdata");
 
-		if (fA.getUserData() instanceof Player
-				|| fB.getUserData() instanceof Player) {
-			Gdx.app.log(TAG, " + Player Collision Detected.");
+		if (fA.getUserData() instanceof Entity) {
+			((Entity) fA.getUserData()).onCollisionStart(contact, fB);
+		}
+		if (fB.getUserData() instanceof Entity) {
+			((Entity) fB.getUserData()).onCollisionStart(contact, fA);
 		}
 	}
 
 	@Override
 	public void endContact(Contact contact) {
-		// TODO Auto-generated method stub
 
+		if (contact == null) {
+			return;
+		}
+
+		Fixture fA = contact.getFixtureA();
+		Fixture fB = contact.getFixtureB();
+
+		Gdx.app.log(TAG, "Contact ended.");
+
+		if (fA == null || fB == null) {
+			return;
+		}
+
+		if (fA.getUserData() == null && fB.getUserData() == null) {
+			// No user data, nothing to do
+			return;
+		}
+
+		Gdx.app.log(TAG, " + Found userdata");
+
+		if (fA.getUserData() instanceof Entity) {
+			((Entity) fA.getUserData()).onCollisionEnd(contact, fB);
+		}
+		if (fB.getUserData() instanceof Entity) {
+			((Entity) fB.getUserData()).onCollisionEnd(contact, fA);
+		}
 	}
 
 	@Override

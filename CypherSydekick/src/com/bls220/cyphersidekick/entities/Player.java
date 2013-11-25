@@ -43,7 +43,7 @@ public class Player extends Entity {
 		if (curTime - SHOOT_DELAY >= shootTime) {
 			float angle = mBody.getAngle();
 			Vector2 heading = new Vector2(MathUtils.cos(angle),
-					MathUtils.sin(angle)).nor();
+					MathUtils.sin(angle)).nor().scl(1.2f);
 			bullet = new Bullet(Entity.getTileRegion(17).getTextureRegion(),
 					getX() - 0.5f + heading.x, getY() - 0.5f + heading.y,
 					MySidekick.getWorld());

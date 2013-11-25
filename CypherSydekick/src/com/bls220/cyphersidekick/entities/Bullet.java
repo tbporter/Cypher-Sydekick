@@ -6,6 +6,7 @@ package com.bls220.cyphersidekick.entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -57,6 +58,13 @@ public class Bullet extends Entity {
 	 */
 	public Bullet(TextureRegion textReg, World world) {
 		this(textReg, 0, 0, world);
+	}
+
+	@Override
+	public void onCollisionStart(Contact contact, Fixture otherFixture) {
+		super.onCollisionStart(contact, otherFixture);
+		shouldDelete = true;
+
 	}
 
 }

@@ -16,6 +16,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -31,6 +33,8 @@ public class Entity {
 	public static float TILE_WIDTH, TILE_HEIGHT;
 	public static ArrayList<Entity> mEntities;
 	private static TiledMapTileSet TILES;
+
+	public boolean shouldDelete;
 
 	public Entity(String texturePath, World world) {
 		this(texturePath, 0, 0, world);
@@ -85,6 +89,10 @@ public class Entity {
 		mEntities = new ArrayList<Entity>(20);
 	}
 
+	public Body getBody() {
+		return mBody;
+	}
+
 	public static final TiledMapTile getTileRegion(int id) {
 		return TILES.getTile(id);
 	}
@@ -137,6 +145,14 @@ public class Entity {
 	public void draw(SpriteBatch spriteBatch) {
 		update(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		mSprite.draw(spriteBatch);
+	}
+
+	public void onCollisionStart(Contact contact, Fixture otherFixture) {
+
+	}
+
+	public void onCollisionEnd(Contact contact, Fixture otherFixture) {
+
 	}
 
 	public void dispose() {
