@@ -1,6 +1,7 @@
 package com.github.tbporter.cypher_sydekick.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -201,18 +202,13 @@ public class ChatClientActivity extends Activity {
 		// Handle action buttons
 		switch (item.getItemId()) {
 		case R.id.action_add_person:
-			/*
-			 * final AlertDialog.Builder alert = new AlertDialog.Builder(this);
-			 * alert.setTitle("Adding new friend"); alert.setMessage(
-			 * "Bump phones together and press Android Beam button to share public key pairs and add friend."
-			 * );
-			 * 
-			 * alert.setNegativeButton("Dismiss", null); final AlertDialog
-			 * helpDialog = alert.create(); helpDialog.show();
-			 */
-			// Open the NFC activity
-			Intent nfcIntent = new Intent(this, NFCActivity.class);
-			startActivity(nfcIntent);
+			// Show a dialog explaining how to add a friend
+			final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			alert.setTitle("Adding new friend");
+			alert.setMessage("Bump phones together and press Android Beam button to share public key pairs and add friend.");
+			alert.setNegativeButton("Dismiss", null);
+			final AlertDialog helpDialog = alert.create();
+			helpDialog.show();
 
 			return true;
 		case R.id.action_game:

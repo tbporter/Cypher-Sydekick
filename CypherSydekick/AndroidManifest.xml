@@ -28,10 +28,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.github.tbporter.cypher_sydekick.activities.NFCActivity"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
             android:name="com.github.tbporter.cypher_sydekick.activities.GameActivity"
             android:label="@string/app_name" android:screenOrientation="landscape">
         </activity>
