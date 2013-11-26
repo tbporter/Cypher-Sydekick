@@ -1,5 +1,7 @@
 package com.github.tbporter.cypher_sydekick.activities;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -26,6 +31,7 @@ import com.github.tbporter.cypher_sydekick.R;
 import com.github.tbporter.cypher_sydekick.nfc.NFCManager;
 import com.github.tbporter.cypher_sydekick.nfc.NFCManagerException;
 import com.github.tbporter.cypher_sydekick.users.UserInfo;
+import com.github.tbporter.cypher_sydekick.chat.*;
 
 public class ChatClientActivity extends Activity {
 
@@ -114,6 +120,16 @@ public class ChatClientActivity extends Activity {
 		/*
 		 * if (savedInstanceState == null) { selectItem(0); }
 		 */
+		
+	        
+        /*conversationListView.setOnItemClickListener(new OnItemClickListener() {
+	         @Override
+	         public void onItemClick(AdapterView<?> a, View v, int position, long id) { 
+	          Object o = lv1.getItemAtPosition(position);
+	          SearchResults fullObject = (SearchResults)o;
+	          Toast.makeText(ListViewBlogPost.this, "You have chosen: " + " " + fullObject.getName(), Toast.LENGTH_LONG).show();
+	         }  
+	        });*/
 	}
 
 	@Override
@@ -222,7 +238,7 @@ public class ChatClientActivity extends Activity {
 		}
 	}
 
-	/* The click listner for ListView in the navigation drawer */
+	/* The click listener for ListView in the navigation drawer */
 	private class DrawerItemClickListener implements
 			ListView.OnItemClickListener {
 		@Override
@@ -265,7 +281,12 @@ public class ChatClientActivity extends Activity {
 
 	/** Fragment for the Chat **/
 	public static class ChatFragment extends Fragment {
-
+		private ListView conversationListView_;
+		private ArrayList<ConversationItem> conversationItems_ = new ArrayList<ConversationItem>();
+		private ImageButton sendButton_;
+		private EditText messageField_;
+		
+		
 		public ChatFragment() {
 			// Empty constructor required for fragment subclasses
 		}
@@ -275,6 +296,27 @@ public class ChatClientActivity extends Activity {
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_chat, container,
 					false);
+			
+			// Setup the adapter for the conversation list view			
+			conversationListView_ = (ListView) rootView.findViewById(R.id.listView_conversation);
+			ConversationAdapter newAdapter = new ConversationAdapter(getActivity(), conversationItems_);
+			conversationListView_.setAdapter(newAdapter);
+			
+			sendButton_ = (ImageButton) rootView.findViewById(R.id.btn_sendMessage);
+			messageField_ = (EditText) rootView.findViewById(R.id.editText_message);
+
+			sendButton_.setOnClickListener(new View.OnClickListener() {
+	             public void onClick(View v) {
+	            	ConversationItem newItem = new ConversationItem();
+	     			newItem.setMessage(messageField_.getText().toString());
+	     			newItem.setSubtitle("My Username");
+	     			newItem.setIcon(R.drawable.ic_action_person);
+	     			conversationItems_.add(newItem);
+	     			// TODO Here is where we should fire the AsyncTaskto send the message
+	     			messageField_.setText("");
+	             }
+	        });
+			
 			return rootView;
 		}
 
