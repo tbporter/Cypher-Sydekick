@@ -5,6 +5,7 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
@@ -89,6 +90,28 @@ public class Player extends Entity {
 
 		// TODO: activate object in front of player
 
+	}
+
+	/**
+	 * @see com.bls220.cyphersidekick.entities.Entity#onCollisionStart(com.badlogic.gdx.physics.box2d.Contact,
+	 *      com.badlogic.gdx.physics.box2d.Fixture)
+	 */
+	@Override
+	public void onCollisionStart(Contact contact, Fixture otherFixture) {
+		super.onCollisionStart(contact, otherFixture);
+		Object userData = otherFixture.getUserData();
+		if (userData instanceof Bullet || userData instanceof Enemy) {
+			// TODO: do Damage
+		}
+	}
+
+	/**
+	 * @see com.bls220.cyphersidekick.entities.Entity#onCollisionEnd(com.badlogic.gdx.physics.box2d.Contact,
+	 *      com.badlogic.gdx.physics.box2d.Fixture)
+	 */
+	@Override
+	public void onCollisionEnd(Contact contact, Fixture otherFixture) {
+		super.onCollisionEnd(contact, otherFixture);
 	}
 
 }

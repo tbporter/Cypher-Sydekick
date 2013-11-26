@@ -17,6 +17,8 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 public class Bullet extends Entity {
 
+	float mDamage;
+
 	/**
 	 * @param texturePath
 	 * @param world
@@ -46,7 +48,7 @@ public class Bullet extends Entity {
 		super(textReg, x, y, world);
 		mBody.setBullet(true); // More accurate collision detection
 		Fixture fixture = mBody.getFixtureList().get(0);
-		fixture.setDensity(0.1f);
+		fixture.setDensity(0);
 		fixture.setRestitution(1);
 		fixture.setFriction(0);
 
@@ -57,6 +59,7 @@ public class Bullet extends Entity {
 		fixture.setFilterData(filter);
 		mBody.setLinearDamping(0);
 		mSpeed = 20f;
+		mDamage = 20f;
 	}
 
 	/**
@@ -67,11 +70,15 @@ public class Bullet extends Entity {
 		this(textReg, 0, 0, world);
 	}
 
+	public float getDamage() {
+		return mDamage;
+	}
+
 	@Override
 	public void onCollisionStart(Contact contact, Fixture otherFixture) {
 		super.onCollisionStart(contact, otherFixture);
 		shouldDelete = true;
-
+		contact.setEnabled(false); // Disable bullets pushing objects
 	}
 
 	@Override

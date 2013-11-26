@@ -17,6 +17,11 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 public class Enemy extends Entity {
 
+	float mHealth;
+
+	private static final float MAX_HEALTH = 100;
+	private static final float SPEED = 7;
+
 	/**
 	 * @param texturePath
 	 * @param world
@@ -54,9 +59,10 @@ public class Enemy extends Entity {
 		filter.categoryBits = EEnityCategories.ENEMY.getValue();
 		filter.maskBits = (short) (EEnityCategories.ALL.getValue() & ~EEnityCategories.ENEMY
 				.getValue());
-
 		fixture.setFilterData(filter);
-		mSpeed = 7f;
+
+		mSpeed = SPEED;
+		mHealth = MAX_HEALTH;
 	}
 
 	/**
@@ -68,14 +74,27 @@ public class Enemy extends Entity {
 	}
 
 	@Override
+	/**
+	 * @see com.bls220.cyphersidekick.entities.Entity#onCollisionStart(com.badlogic.gdx.physics.box2d.Contact,
+	 *      com.badlogic.gdx.physics.box2d.Fixture)
+	 */
 	public void onCollisionStart(Contact contact, Fixture otherFixture) {
 		super.onCollisionStart(contact, otherFixture);
 		Object userData = otherFixture.getUserData();
-		if (userData instanceof Entity)
-			shouldDelete = true;
+		if (userData instanceof Bullet) {
+			// Do Damage
+			mHealth -= ((Bullet) userData).getDamage();
+			if (mHealth <= 0) {
+				shouldDelete = true;
+			}
+		}
 	}
 
 	@Override
+	/**
+	 * @see com.bls220.cyphersidekick.entities.Entity#onCollisionEnd(com.badlogic.gdx.physics.box2d.Contact,
+	 *      com.badlogic.gdx.physics.box2d.Fixture)
+	 */
 	public void onCollisionEnd(Contact contact, Fixture otherFixture) {
 		super.onCollisionEnd(contact, otherFixture);
 	}
