@@ -18,11 +18,13 @@ public class Player extends Entity {
 	final MapActions mActions;
 	MapObject mGrabbedObj;
 
-	private static final float SPEED = 8f;
+	private float mHealth;
 
 	private long shootTime;
 
-	private static final long SHOOT_DELAY = 500; // ms
+	private static final float SPEED = 4f; // m/s
+	private static final long SHOOT_DELAY = 400; // ms
+	private static final float MAX_HEALTH = 100f;
 
 	public Player(String[] spritePaths, TiledMap map, MapActions actions,
 			World world) {
@@ -34,7 +36,6 @@ public class Player extends Entity {
 		super(spritePaths[1], x, y, world);
 		Gdx.app.log("Player", String.format("Player spawned at (%d, %d)", x, y));
 		mBody.setFixedRotation(true);
-		mSpeed = SPEED;
 
 		Fixture fixture = mBody.getFixtureList().get(0);
 		Filter filter = fixture.getFilterData();
@@ -43,6 +44,8 @@ public class Player extends Entity {
 
 		mActions = actions;
 		mGrabbedObj = null;
+		mSpeed = SPEED;
+		mHealth = MAX_HEALTH;
 	}
 
 	public Bullet shoot() {
@@ -92,6 +95,10 @@ public class Player extends Entity {
 
 	}
 
+	public float getHealth() {
+		return mHealth;
+	}
+
 	/**
 	 * @see com.bls220.cyphersidekick.entities.Entity#onCollisionStart(com.badlogic.gdx.physics.box2d.Contact,
 	 *      com.badlogic.gdx.physics.box2d.Fixture)
@@ -100,8 +107,10 @@ public class Player extends Entity {
 	public void onCollisionStart(Contact contact, Fixture otherFixture) {
 		super.onCollisionStart(contact, otherFixture);
 		Object userData = otherFixture.getUserData();
-		if (userData instanceof Bullet || userData instanceof Enemy) {
-			// TODO: do Damage
+		if (userData instanceof Harmful) {
+			// Do Damage
+			mHealth -= ((Harmful) userData).getDamage();
+			mSpeed = SPEED;
 		}
 	}
 

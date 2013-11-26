@@ -15,9 +15,11 @@ import com.badlogic.gdx.physics.box2d.World;
  * @author bsmith
  * 
  */
-public class Bullet extends Entity {
+public class Bullet extends Entity implements Harmful {
 
 	float mDamage;
+
+	private final float SPEED = 10f;
 
 	/**
 	 * @param texturePath
@@ -58,7 +60,7 @@ public class Bullet extends Entity {
 
 		fixture.setFilterData(filter);
 		mBody.setLinearDamping(0);
-		mSpeed = 20f;
+		mSpeed = SPEED;
 		mDamage = 20f;
 	}
 
@@ -68,10 +70,6 @@ public class Bullet extends Entity {
 	 */
 	public Bullet(TextureRegion textReg, World world) {
 		this(textReg, 0, 0, world);
-	}
-
-	public float getDamage() {
-		return mDamage;
 	}
 
 	@Override
@@ -84,6 +82,11 @@ public class Bullet extends Entity {
 	@Override
 	protected void updateBody() {
 		mBody.setLinearVelocity(getHeading().scl(mSpeed));
+	}
+
+	@Override
+	public float getDamage() {
+		return mDamage;
 	}
 
 }

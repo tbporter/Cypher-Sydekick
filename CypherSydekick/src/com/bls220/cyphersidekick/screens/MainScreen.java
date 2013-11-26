@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.maps.MapObject;
@@ -26,7 +28,9 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.bls220.cyphersidekick.GameState;
 import com.bls220.cyphersidekick.MySidekick;
+import com.bls220.cyphersidekick.entities.Enemy;
 import com.bls220.cyphersidekick.entities.Entity;
 import com.bls220.cyphersidekick.entities.Player;
 import com.bls220.cyphersidekick.mapstuff.C;
@@ -41,9 +45,11 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 	private final MapActions acts;
 	private final MySidekick parent;
 
-	private final Box2DDebugRenderer debugBox2DRenderer;
+	private final FPSLogger fpsLogger;
 
+	private Box2DDebugRenderer debugBox2DRenderer;
 	private OrthogonalTiledMapRenderer renderer;
+
 	private OrthographicCamera camera;
 	private float lastZoomDistance;
 
@@ -54,6 +60,9 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 	private Stage stage;
 	private Skin skin;
 	private Touchpad mJoystick[];
+
+	private TextureRegion healthBarTR;
+	private TextureRegion healthMaskTR;
 
 	private static final float DEADZONE_RADIUS = 10f;
 
@@ -81,16 +90,12 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		this.map = lvl.map;
 		this.acts = lvl.acts;
 		this.parent = lvl.parent;
-		if (MySidekick.DEBUG_MODE) {
-			debugBox2DRenderer = new Box2DDebugRenderer();
-			debugBox2DRenderer.setDrawContacts(true);
-		} else {
-			debugBox2DRenderer = null;
-		}
+		this.fpsLogger = new FPSLogger();
 	}
 
 	@Override
 	public void render(float delta) {
+		fpsLogger.log();
 		// step
 		MySidekick.getWorld().step(Math.min(delta, 1 / 30f), 8, 3);
 		for (Entity e : Entity.mEntities) {
@@ -121,6 +126,12 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 			mPlayer.shoot();
 		}
 
+		// Check for player death
+		if (mPlayer.getHealth() <= 0) {
+			// TODO: trigger death
+			parent.state = GameState.Title;
+		}
+
 		// Update camera
 		camera.position.lerp(new Vector3(mPlayer.getX() * Entity.TILE_WIDTH,
 				mPlayer.getY() * Entity.TILE_HEIGHT, 0), 0.5f);
@@ -134,6 +145,19 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		drawObjects(C.ActionLayer);
 		for (Entity e : Entity.mEntities) {
 			e.draw(renderer.getSpriteBatch());
+			if (e instanceof Enemy) {
+				// Draw Health Bars
+				float startX = e.getX() * Entity.TILE_WIDTH;
+				float startY = (e.getY() + 1) * Entity.TILE_HEIGHT + 5;
+				renderer.getSpriteBatch().draw(healthBarTR, startX, startY,
+						Entity.TILE_WIDTH, 5);
+				renderer.getSpriteBatch().draw(
+						healthMaskTR,
+						startX,
+						startY,
+						(1 - ((Enemy) e).getHealth() / Enemy.MAX_HEALTH)
+								* Entity.TILE_WIDTH, 5);
+			}
 		}
 		drawObjects(C.ObjectLayer);
 		renderer.getSpriteBatch().end();
@@ -168,8 +192,17 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 	public void show() {
 		renderer = new OrthogonalTiledMapRenderer(map);
 		camera = new OrthographicCamera();
+		if (MySidekick.DEBUG_MODE) {
+			debugBox2DRenderer = new Box2DDebugRenderer();
+			debugBox2DRenderer.setDrawContacts(true);
+		} else {
+			debugBox2DRenderer = null;
+		}
 
 		createUI();
+
+		healthBarTR = map.getTileSets().getTile(26).getTextureRegion();
+		healthMaskTR = map.getTileSets().getTile(25).getTextureRegion();
 
 		mPlayer = new Player(new String[] { "man_back.png", "man_front.png",
 				"man_right.png", "man_left.png" }, map, acts, 3, 15,
@@ -205,6 +238,8 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		renderer.dispose();
 		mPlayer.dispose();
 		stage.dispose();
+		healthBarTR.getTexture().dispose();
+		healthMaskTR.getTexture().dispose();
 		if (debugBox2DRenderer != null)
 			debugBox2DRenderer.dispose();
 	}

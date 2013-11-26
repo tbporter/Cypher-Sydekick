@@ -9,10 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bls220.cyphersidekick.mapstuff.level.LevelHelper;
 import com.bls220.cyphersidekick.screens.LoadingScreen;
 import com.bls220.cyphersidekick.screens.MainScreen;
+import com.bls220.cyphersidekick.screens.MenuScreen;
 
 public class MySidekick extends Game {
 	private LevelHelper lvls;
-	private GameState state = GameState.Title;
+	public GameState state = GameState.LoadFirstLevel;
 	private Skin skin;
 	private static World world;
 
@@ -40,11 +41,11 @@ public class MySidekick extends Game {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		switch (state) {
 		case Title:
-			// setScreen(new MenuScreen(this));
+			setScreen(new MenuScreen(this));
 			state = GameState.WaitForAction;
 			break;
 		case WaitForAction:
-			state = GameState.LoadFirstLevel;
+			// Wait
 			break;
 		case LoadFirstLevel:
 			setScreen(new LoadingScreen());

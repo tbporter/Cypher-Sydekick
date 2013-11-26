@@ -1,0 +1,23 @@
+Objective:
+	To create a circle of trust by gaining "objects" from friends (NPCs).
+	When the circle of trust is completed, a passage opens allowing the player to proceed to the next level.
+
+Design:
+	Central room contains Pillars/Crystals/Tubes/IDK that need activating.
+	Pillars/Crystals/Tubes/IDK are arranged in a circle.
+
+
+TODO:
+	HAP!	Expand Tileset
+		HUD
+		Enemy Health Bar
+		Central room
+		Create NPCs
+		Player Interactions
+	Travis	AI
+	Travis	Map Generation
+
+Optional TODO:
+		More Precise collision ( Using physics body editor )
+		Animation
+		Particles?

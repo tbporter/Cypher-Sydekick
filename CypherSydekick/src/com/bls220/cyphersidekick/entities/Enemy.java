@@ -15,12 +15,13 @@ import com.badlogic.gdx.physics.box2d.World;
  * @author bsmith
  * 
  */
-public class Enemy extends Entity {
+public class Enemy extends Entity implements Harmful {
 
 	float mHealth;
+	float mDamage;
 
-	private static final float MAX_HEALTH = 100;
-	private static final float SPEED = 7;
+	public static final float MAX_HEALTH = 100;
+	private static final float SPEED = 2;
 
 	/**
 	 * @param texturePath
@@ -50,6 +51,7 @@ public class Enemy extends Entity {
 	public Enemy(TextureRegion textReg, float x, float y, World world) {
 		super(textReg, x, y, world);
 		mBody.setBullet(true); // More accurate collision detection
+		mBody.setFixedRotation(true);
 		Fixture fixture = mBody.getFixtureList().get(0);
 		fixture.setDensity(0.1f);
 		fixture.setRestitution(1);
@@ -63,6 +65,7 @@ public class Enemy extends Entity {
 
 		mSpeed = SPEED;
 		mHealth = MAX_HEALTH;
+		mDamage = 5f;
 	}
 
 	/**
@@ -97,6 +100,15 @@ public class Enemy extends Entity {
 	 */
 	public void onCollisionEnd(Contact contact, Fixture otherFixture) {
 		super.onCollisionEnd(contact, otherFixture);
+	}
+
+	@Override
+	public float getDamage() {
+		return mDamage;
+	}
+
+	public float getHealth() {
+		return mHealth;
 	}
 
 }
