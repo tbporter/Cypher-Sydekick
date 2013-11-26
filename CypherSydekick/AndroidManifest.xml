@@ -23,13 +23,15 @@
             android:windowSoftInputMode="adjustResize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name="com.github.tbporter.cypher_sydekick.activities.GameActivity"
-            android:label="@string/app_name" android:screenOrientation="landscape">
+            android:label="@string/game_name" android:screenOrientation="landscape">
+             <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
