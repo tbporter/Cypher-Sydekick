@@ -10,7 +10,6 @@ Design:
 TODO:
 	HAP!	Expand Tileset
 		HUD
-		Enemy Health Bar
 		Central room
 		Create NPCs
 		Player Interactions
