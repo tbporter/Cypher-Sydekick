@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpStatus;
 
+import com.github.tbporter.cypher_sydekick.chat.ChatMessage;
 import com.github.tbporter.cypher_sydekick.database.DatabaseManager;
 import com.github.tbporter.cypher_sydekick.database.DatabaseManagerException;
 
@@ -65,22 +66,29 @@ public class MessagesServlet extends HttpServlet {
 					// Check the provided action
 					switch (action) {
 					case ACTION_SEND:
-						// Replace this placeholder with the actual send method,
-						// something like:
-						// sendMessage(sender, recipient, message)
-						out.write("Sending a message from " + sender + " to "
-								+ recipient + ".  Message contents:\n"
-								+ message);
-						resp.setStatus(STATUS_SUCCESS);
+						ChatMessage newMessage = new ChatMessage(recipient, sender, message);
+						if(DatabaseManager.addMessage(newMessage)){
+							out.write("Sending a message from " + sender + " to "
+									+ recipient + ".  Message contents:\n"
+									+ message);
+							resp.setStatus(STATUS_SUCCESS);
+						}
+						else{
+							out.write("Error: Unable to add new message to the database.");
+							// Response status is by default set to STATUS_ERROR
+						}
 						break;
 
 					case ACTION_RECEIVE:
-						// Replace this placeholder with the actual receive
-						// method, something like:
-						// String message = receiveMessage(sender, recipient)
-						out.write("Receiving a message from " + sender + " to "
-								+ recipient + ".");
-						resp.setStatus(STATUS_SUCCESS);
+						ChatMessage receivedMessage = DatabaseManager.getMessage(recipient, sender);
+						if(receivedMessage != null){
+							out.write("Receiving a message from " + sender + " to "
+									+ recipient + ".\n" + receivedMessage.getContents());
+							resp.setStatus(STATUS_SUCCESS);
+						}
+						else{
+							out.write("Error: No new messages to receive.");
+						}
 						break;
 
 					default:
