@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.nfc.NfcAdapter;
@@ -54,14 +55,7 @@ public class ChatClientActivity extends Activity {
 		setContentView(R.layout.activity_chat_client);
 		
 		// TODO add the login dialog and check if new user needs to be created or not
-		final EditText usernameInput = new EditText(this);
-		usernameInput.setHint("Username");
-		final AlertDialog.Builder newUserAlert = new AlertDialog.Builder(this);
-		newUserAlert.setTitle("Create a new username");
-		newUserAlert.setView(usernameInput);
-		newUserAlert.setPositiveButton("Create", null);
-		final AlertDialog newUserDialog = newUserAlert.create();
-		newUserDialog.show();
+		showLoginDialog();
 
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction()
@@ -134,6 +128,24 @@ public class ChatClientActivity extends Activity {
 		// Drawer is initially open
 		mDrawerLayout.openDrawer(mDrawerList);
 	}
+	
+	// Method that shows the login dialog
+	private void showLoginDialog(){
+		final EditText usernameInput = new EditText(this);
+		usernameInput.setHint("Username");
+		final AlertDialog.Builder newUserAlert = new AlertDialog.Builder(this);
+		newUserAlert.setTitle("Create a new username");
+		newUserAlert.setView(usernameInput);
+		newUserAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Write code for what to do after create is pressed
+                Toast.makeText(getApplicationContext(), "Add new user pressed: " + usernameInput.getText().toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+		final AlertDialog newUserDialog = newUserAlert.create();
+		newUserDialog.show();
+	}
+	
 
 	@Override
 	protected void onPause() {
