@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.nfc.NfcAdapter;
@@ -52,6 +53,9 @@ public class ChatClientActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_client);
+		
+		// TODO add the login dialog and check if new user needs to be created or not
+		showLoginDialog();
 
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction()
@@ -121,16 +125,27 @@ public class ChatClientActivity extends Activity {
 		 * if (savedInstanceState == null) { selectItem(0); }
 		 */
 		
-	        
-        /*conversationListView.setOnItemClickListener(new OnItemClickListener() {
-	         @Override
-	         public void onItemClick(AdapterView<?> a, View v, int position, long id) { 
-	          Object o = lv1.getItemAtPosition(position);
-	          SearchResults fullObject = (SearchResults)o;
-	          Toast.makeText(ListViewBlogPost.this, "You have chosen: " + " " + fullObject.getName(), Toast.LENGTH_LONG).show();
-	         }  
-	        });*/
+		// Drawer is initially open
+		mDrawerLayout.openDrawer(mDrawerList);
 	}
+	
+	// Method that shows the login dialog
+	private void showLoginDialog(){
+		final EditText usernameInput = new EditText(this);
+		usernameInput.setHint("Username");
+		final AlertDialog.Builder newUserAlert = new AlertDialog.Builder(this);
+		newUserAlert.setTitle("Create a new username");
+		newUserAlert.setView(usernameInput);
+		newUserAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Write code for what to do after create is pressed
+                Toast.makeText(getApplicationContext(), "Add new user pressed: " + usernameInput.getText().toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+		final AlertDialog newUserDialog = newUserAlert.create();
+		newUserDialog.show();
+	}
+	
 
 	@Override
 	protected void onPause() {
@@ -252,6 +267,7 @@ public class ChatClientActivity extends Activity {
 		mDrawerList.setItemChecked(position, true);
 		mDrawerLayout.closeDrawer(mDrawerList);
 		setTitle(mDrawerList.getItemAtPosition(position).toString());
+		// TODO here is where a new user is selected to chat with
 	}
 
 	@Override
@@ -312,6 +328,7 @@ public class ChatClientActivity extends Activity {
 	     			newItem.setSubtitle("My Username");
 	     			newItem.setIcon(R.drawable.ic_action_person);
 	     			conversationItems_.add(newItem);
+	     			
 	     			// TODO Here is where we should fire the AsyncTaskto send the message
 	     			messageField_.setText("");
 	             }
