@@ -19,13 +19,22 @@ import com.github.tbporter.cypher_sydekick.database.DatabaseManagerException;
  */
 public class RootServlet extends HttpServlet {
 	/** Header for HTML pages. */
-	private static final String HTML_HEAD = "<!DOCTYPE html>\n<html>\n<body>\n";
+	private static final String HTML_HEAD = "<!DOCTYPE html>\n<html>\n<body><center>Cypher Sydekick Webserver Utility</center>\n<table border=\"1\" cellpadding=\"15\" align=\"center\"><tr><td>/users</td><td>/messages</td></tr><tr>\n";
 	/** Footer for HTML pages. */
-	private static final String HTML_FOOT = "\n</body>\n</html>";
+	private static final String HTML_FOOT = "\n</tr></table>\n</body>\n</html>";
 
 	/** HTML string for "Add User" form. */
 	private static final String HTML_ADD_USER_FORM = "<form action=\"users\" method=\"post\">\nUsername: <input type=\"text\" name=\"username\">\n<input type=\"submit\" value=\"Add User\">\n</form>\n";
 
+	/** HTML string for the Messages form. */
+	private static final String HTML_MESSAGES_FORM = "<center>\n<form action=\"messages\" method=\"post\">\n"
+			+ "Sender: <input type=\"text\" name=\"sender\">\n   "
+			+ "Recipient: <input type=\"text\" name=\"recipient\">\n"
+			+ "<br>Message:"
+			+ "<br><textarea name=\"message\" rows=\"5\" cols=\"30\"></textarea>\n"
+			+ "<br><input type=\"submit\" name=\"action\" value=\"send\">\n"
+			+ "<input type=\"submit\" name=\"action\" value=\"receive\">\n</form>\n</center>\n";
+	
 	/**
 	 * Writes the "add user" form and list of users.
 	 */
@@ -37,9 +46,11 @@ public class RootServlet extends HttpServlet {
 
 		out.write(HTML_HEAD);
 
+		
 		// Place the add user form at the top
+		out.write("<td>"); // Create a new column 
 		out.write(HTML_ADD_USER_FORM);
-
+		
 		// Print all current users below the form
 		out.write("<b>Current users:</b><br>\n");
 		try {
@@ -51,7 +62,12 @@ public class RootServlet extends HttpServlet {
 		} catch (DatabaseManagerException e) {
 			out.write("<i>Unable to read user list.</i><br>\n");
 		}
-
+		out.write("</td>"); // End column
+		
+		out.write("<td>"); // Create a new column
+		out.write(HTML_MESSAGES_FORM);
+		out.write("</td>"); // End column
+		
 		out.write(HTML_FOOT);
 	}
 
