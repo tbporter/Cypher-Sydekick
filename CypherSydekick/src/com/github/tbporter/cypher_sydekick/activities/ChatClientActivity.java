@@ -120,16 +120,7 @@ public class ChatClientActivity extends Activity {
 		/*
 		 * if (savedInstanceState == null) { selectItem(0); }
 		 */
-		
-	        
-        /*conversationListView.setOnItemClickListener(new OnItemClickListener() {
-	         @Override
-	         public void onItemClick(AdapterView<?> a, View v, int position, long id) { 
-	          Object o = lv1.getItemAtPosition(position);
-	          SearchResults fullObject = (SearchResults)o;
-	          Toast.makeText(ListViewBlogPost.this, "You have chosen: " + " " + fullObject.getName(), Toast.LENGTH_LONG).show();
-	         }  
-	        });*/
+
 	}
 
 	@Override
@@ -312,6 +303,7 @@ public class ChatClientActivity extends Activity {
 	     			newItem.setSubtitle("My Username");
 	     			newItem.setIcon(R.drawable.ic_action_person);
 	     			conversationItems_.add(newItem);
+	     			
 	     			// TODO Here is where we should fire the AsyncTaskto send the message
 	     			messageField_.setText("");
 	             }
