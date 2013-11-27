@@ -88,6 +88,7 @@ public class MessagesServlet extends HttpServlet {
 						}
 						else{
 							out.write("Error: No new messages to receive.");
+							// Response status is by default set to STATUS_ERROR
 						}
 						break;
 
