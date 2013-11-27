@@ -171,7 +171,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 	public void drawObjects(String layerID) {
 		for (MapObject obj : map.getLayers().get(layerID).getObjects()) {
 			MapProperties props = obj.getProperties();
-			if ((Boolean) props.get(C.Visible)) {
+			if (obj.isVisible()) {
 				int gid = (Integer) props.get("gid");
 				TiledMapTile tile = map.getTileSets().getTile(gid);
 				renderer.getSpriteBatch().draw(tile.getTextureRegion(),
@@ -204,9 +204,13 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		healthBarTR = map.getTileSets().getTile(26).getTextureRegion();
 		healthMaskTR = map.getTileSets().getTile(25).getTextureRegion();
 
+		int mapWidth = ((TiledMapTileLayer) map.getLayers().get(0)).getWidth();
+		int mapHeight = ((TiledMapTileLayer) map.getLayers().get(0))
+				.getHeight();
+
 		mPlayer = new Player(new String[] { "man_back.png", "man_front.png",
-				"man_right.png", "man_left.png" }, map, acts, 3, 15,
-				MySidekick.getWorld());
+				"man_right.png", "man_left.png" }, map, acts, mapWidth / 2,
+				mapHeight / 2, MySidekick.getWorld());
 
 		camera.position.set(mPlayer.getX() * Entity.TILE_WIDTH, mPlayer.getY()
 				* Entity.TILE_HEIGHT, 0);
