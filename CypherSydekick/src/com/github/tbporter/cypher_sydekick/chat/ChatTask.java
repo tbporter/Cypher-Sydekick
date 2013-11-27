@@ -11,6 +11,7 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 	private String recipient_;
 	
 	// Only need to make one instance of this class since the conversation items list array ref remains the same
+	// Might have to add an instance of the Crypt class if we want to do encryption and decription in this class
 	public ChatTask(ArrayList<ConversationItem> convItems){
 		activityConversationItems_ = convItems;
 	}

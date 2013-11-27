@@ -120,7 +120,9 @@ public class ChatClientActivity extends Activity {
 		/*
 		 * if (savedInstanceState == null) { selectItem(0); }
 		 */
-
+		
+		// Drawer is initially open
+		mDrawerLayout.openDrawer(mDrawerList);
 	}
 
 	@Override
@@ -243,6 +245,7 @@ public class ChatClientActivity extends Activity {
 		mDrawerList.setItemChecked(position, true);
 		mDrawerLayout.closeDrawer(mDrawerList);
 		setTitle(mDrawerList.getItemAtPosition(position).toString());
+		// TODO here is where a new user is selected to chat with
 	}
 
 	@Override
