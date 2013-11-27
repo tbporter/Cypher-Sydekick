@@ -52,6 +52,16 @@ public class ChatClientActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_client);
+		
+		// TODO add the login dialog and check if new user needs to be created or not
+		final EditText usernameInput = new EditText(this);
+		usernameInput.setHint("Username");
+		final AlertDialog.Builder newUserAlert = new AlertDialog.Builder(this);
+		newUserAlert.setTitle("Create a new username");
+		newUserAlert.setView(usernameInput);
+		newUserAlert.setPositiveButton("Create", null);
+		final AlertDialog newUserDialog = newUserAlert.create();
+		newUserDialog.show();
 
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction()
