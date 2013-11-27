@@ -30,9 +30,10 @@ public class RandomLevel extends Level {
 	private static final int WALL_ID = 2;
 	private static final int FLOOR_ID = 9;
 	private static final int ENEMY_1_ID = 3;
+	private static final int NPC_ID = 1;
 
-	private static final int PILLAR_OFF_TOP = 19;
-	private static final int PILLAR_OFF_BOTTOM = 27;
+	private static final int PILLAR_OFF_TOP_ID = 19;
+	private static final int PILLAR_OFF_BOTTOM_ID = 27;
 
 	public RandomLevel(MySidekick parent, MsgHandler remote, World world) {
 		super(parent, EMPTY_MAP_PATH, remote);
@@ -127,10 +128,10 @@ public class RandomLevel extends Level {
 		floorCell.setTile(tileSets.getTile(FLOOR_ID));
 
 		Cell pillarTopCell = new Cell();
-		pillarTopCell.setTile(tileSets.getTile(PILLAR_OFF_TOP));
+		pillarTopCell.setTile(tileSets.getTile(PILLAR_OFF_TOP_ID));
 
 		Cell pillarBottomCell = new Cell();
-		pillarBottomCell.setTile(tileSets.getTile(PILLAR_OFF_BOTTOM));
+		pillarBottomCell.setTile(tileSets.getTile(PILLAR_OFF_BOTTOM_ID));
 
 		// Generate walls
 		int mapHeight = tileLayer.getHeight();
@@ -146,7 +147,7 @@ public class RandomLevel extends Level {
 					(center.x + 5) + 0.5f, y + 0.5f, 0);
 		}
 		for (int x = (int) (center.x - 5); x < center.x + 6; x++) {
-			if (x != center.x && x != center.x - 1) {
+			if (x != center.x) {
 				tileLayer.setCell(x, (int) (center.y - 5), wallCell);
 				createStaticTileBody(loader, world, "square").setTransform(
 						x + 0.5f, (center.y - 5) + 0.5f, 0);
@@ -158,31 +159,87 @@ public class RandomLevel extends Level {
 		}
 
 		// Place pillars
-		makePillar(center.x, center.y + 2, objectLayer.getObjects(), loader,
+		makePillar(1, center.x, center.y + 2, objectLayer.getObjects(), loader,
 				world);
-		makePillar(center.x - 2, center.y + 1, objectLayer.getObjects(),
+		makePillar(2, center.x - 2, center.y + 1, objectLayer.getObjects(),
 				loader, world);
-		makePillar(center.x - 1.5f, center.y - 1, objectLayer.getObjects(),
+		makePillar(3, center.x - 1.5f, center.y - 1, objectLayer.getObjects(),
 				loader, world);
-		makePillar(center.x + 2f, center.y + 1f, objectLayer.getObjects(),
+		makePillar(4, center.x + 2f, center.y + 1f, objectLayer.getObjects(),
 				loader, world);
-		makePillar(center.x + 1.5f, center.y - 1f, objectLayer.getObjects(),
+		makePillar(5, center.x + 1.5f, center.y - 1f, objectLayer.getObjects(),
 				loader, world);
+
+		// Make NPC
+		for (int i = 1; i < 6; i++) {
+			makeNPC(i, center.x - 10 + (2 * i - 1), center.y + 7,
+					objectLayer.getObjects(), loader, world);
+		}
+	}
+
+	/**
+	 * Create an npc object on the map
+	 * 
+	 * @param pillarNum
+	 *            - the pillar this npc controls
+	 * @param tileX
+	 *            - npc x pos in tiles
+	 * @param tileY
+	 *            - npc y pos in tiles
+	 * @param objs
+	 *            - the maps objects
+	 * @param loader
+	 *            - body loader to load body
+	 * @param world
+	 *            - physics world
+	 */
+	private void makeNPC(int pillarNum, float tileX, float tileY,
+			MapObjects objs, BodyEditorLoader loader, World world) {
+
+		MapObject npc = new MapObject();
+
+		npc.getProperties().put("x", (int) (tileX * TILE_WIDTH));
+		npc.getProperties().put("y", (int) (tileY * TILE_HEIGHT));
+		npc.getProperties().put("gid", NPC_ID);
+		npc.getProperties().put("type", "npc");
+		npc.getProperties().put("pillarNum", pillarNum);
+		createStaticTileBody(loader, world, "square").setTransform(
+				tileX + 0.5f, tileY + 0.5f, 0);
+
+		objs.add(npc);
 
 	}
 
-	private void makePillar(float tileX, float tileY, MapObjects objs,
-			BodyEditorLoader loader, World world) {
+	/**
+	 * Create a pillar object on the map
+	 * 
+	 * @param pillarNum
+	 *            - the number of this pillar
+	 * @param tileX
+	 *            - pillar x pos in tiles
+	 * @param tileY
+	 *            - pillar y pos in tiles
+	 * @param objs
+	 *            - the maps objects
+	 * @param loader
+	 *            - body loader to load body
+	 * @param world
+	 *            - physics world
+	 */
+	private void makePillar(int pillarNum, float tileX, float tileY,
+			MapObjects objs, BodyEditorLoader loader, World world) {
 		MapObject pillarTop = new MapObject();
 		MapObject pillarBottom = new MapObject();
 
 		pillarTop.getProperties().put("x", (int) (tileX * TILE_WIDTH));
 		pillarTop.getProperties().put("y", (int) ((tileY + 1) * TILE_HEIGHT));
-		pillarTop.getProperties().put("gid", PILLAR_OFF_TOP);
+		pillarTop.getProperties().put("pillarNum", pillarNum);
+		pillarTop.getProperties().put("gid", PILLAR_OFF_TOP_ID);
 
 		pillarBottom.getProperties().put("x", (int) (tileX * TILE_WIDTH));
 		pillarBottom.getProperties().put("y", (int) (tileY * TILE_HEIGHT));
-		pillarBottom.getProperties().put("gid", PILLAR_OFF_BOTTOM);
+		pillarBottom.getProperties().put("gid", PILLAR_OFF_BOTTOM_ID);
+		pillarBottom.getProperties().put("pillarNum", pillarNum);
 		createStaticTileBody(loader, world, "pillar").setTransform(
 				tileX + 0.5f, tileY + 0.5f, 0);
 

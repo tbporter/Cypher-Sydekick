@@ -1,26 +1,24 @@
 package com.bls220.cyphersidekick.mapstuff;
 
 import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.MapProperties;
 
 public enum MapAction {
 	appear {
 		@Override
 		void doit(MapObject obj) {
-			obj.getProperties().put(C.Visible, true);
+			obj.setVisible(true);
 		}
 	},
 	disappear {
 		@Override
 		void doit(MapObject obj) {
-			obj.getProperties().put(C.Visible, false);
+			obj.setVisible(false);
 		}
 	},
 	toggle {
 		@Override
 		void doit(MapObject obj) {
-			MapProperties p = obj.getProperties();
-			p.put(C.Visible, !p.get(C.Visible, boolean.class));
+			obj.setVisible(!obj.isVisible());
 		}
 	};
 
