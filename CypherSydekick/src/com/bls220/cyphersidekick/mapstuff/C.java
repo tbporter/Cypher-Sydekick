@@ -10,7 +10,6 @@ public interface C {
 
 	// Object properties
 	String Blocked = "blocked";
-	String Visible = "visible";
 	String Moveable = "moveable";
 
 	boolean defaultBlocked = true;

@@ -74,7 +74,7 @@ public class MapActions {
 				objects.put((String) id, o);
 			}
 
-			setDefaults(props);
+			setDefaults(o);
 		}
 
 		l = map.getLayers().get(C.ObjectLayer);
@@ -99,7 +99,7 @@ public class MapActions {
 				System.out.println("Got action on obj at " + c);
 			}
 
-			setDefaults(props);
+			setDefaults(o);
 		}
 
 		return new MapActions(objects, actable, remote);
@@ -131,7 +131,7 @@ public class MapActions {
 		}
 
 		MapProperties props = obj.getProperties();
-		if (!(Boolean) props.get(C.Visible)) {
+		if (!obj.isVisible()) {
 			System.out.println("Ignoring because invisible!");
 			return;
 		}
@@ -176,10 +176,11 @@ public class MapActions {
 		msg.act.doit(objects.get(msg.id));
 	}
 
-	private static void setDefaults(MapProperties p) {
-		setBoolDefault(p, C.Visible, C.defaultVisible);
-		setBoolDefault(p, C.Blocked, C.defaultBlocked);
-		setBoolDefault(p, C.Moveable, C.defaultMoveable);
+	private static void setDefaults(MapObject o) {
+		MapProperties props = o.getProperties();
+		o.setVisible(true);
+		setBoolDefault(props, C.Blocked, C.defaultBlocked);
+		setBoolDefault(props, C.Moveable, C.defaultMoveable);
 	}
 
 	private static void setBoolDefault(MapProperties p, String name, boolean def) {

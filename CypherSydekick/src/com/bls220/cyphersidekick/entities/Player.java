@@ -87,12 +87,23 @@ public class Player extends Entity {
 		}
 	}
 
-	public void activate() {
-		int posX = (int) (getX() / TILE_WIDTH), posY = (int) (getY() / TILE_HEIGHT);
-		mActions.activate(posX, posY);
-
-		// TODO: activate object in front of player
-
+	public void activate(Vector2 tileTouch, TiledMap map) {
+		// Look for object at touch position
+		Vector2 screenTouch = tileTouch.cpy().scl(TILE_WIDTH);
+		Gdx.app.log("Player", String.format(" + Activating (%f, %f)",
+				screenTouch.x, screenTouch.y));
+		for (MapObject o : map.getLayers().get(C.ObjectLayer).getObjects()) {
+			if ((Integer) o.getProperties().get("x") == screenTouch.x
+					&& (Integer) o.getProperties().get("y") == screenTouch.y) {
+				String type = (String) o.getProperties().get("type");
+				if (type == null)
+					break;
+				if (type.equals("npc")) {
+					Gdx.app.log("Player", "Activating NPC");
+					// TODO: Activate NPC
+				}
+			}
+		}
 	}
 
 	public float getHealth() {

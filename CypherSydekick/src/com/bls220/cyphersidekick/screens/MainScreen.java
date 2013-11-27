@@ -260,9 +260,16 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 				y, touchPt.x, touchPt.y, tileTouch.x, tileTouch.y));
 
 		// Check for activation
-		if (Math.abs(mPlayer.getX() - tileTouch.x) <= 1
-				&& Math.abs(mPlayer.getY() - tileTouch.y) <= 1) {
-			mPlayer.grab();
+		int posX = (int) (mPlayer.getX() + 0.5f);
+		int posY = (int) (mPlayer.getY() + 0.5f);
+		Vector2 diffPos = new Vector2(Math.abs(posX - tileTouch.x),
+				Math.abs(posY - tileTouch.y));
+		Gdx.app.log(TAG, String.format("Distance from Touch: (%f,%f)",
+				diffPos.x, diffPos.y));
+		if (diffPos.x <= 1 && diffPos.y <= 1) {
+			Gdx.app.log(TAG, "Activating...");
+			mPlayer.activate(tileTouch, map);
+			return true;
 		}
 		return true;
 	}
@@ -277,16 +284,6 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		System.out.println(String.format(
 				"touched Screen: (%f, %f) World: (%f,%f) Tiles: (%f,%f)", x, y,
 				touchPt.x, touchPt.y, tileTouch.x, tileTouch.y));
-
-		int posX = (int) (mPlayer.getX() / Entity.TILE_WIDTH);
-		int posY = (int) (mPlayer.getY() / Entity.TILE_HEIGHT);
-
-		// Check for activation
-		if (Math.abs(posX - tileTouch.x) <= 1
-				&& Math.abs(posY - tileTouch.y) <= 1) {
-			mPlayer.activate();
-			return true;
-		}
 
 		return true;
 	}
