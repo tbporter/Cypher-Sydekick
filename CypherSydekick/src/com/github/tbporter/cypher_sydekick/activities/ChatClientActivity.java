@@ -57,7 +57,6 @@ public class ChatClientActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_client);
 		
-		// TODO add the login dialog and check if new user needs to be created or not
 		showLoginDialog();
 
 		FragmentManager fragmentManager = getFragmentManager();
