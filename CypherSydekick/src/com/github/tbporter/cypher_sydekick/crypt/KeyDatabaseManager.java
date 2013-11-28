@@ -73,7 +73,7 @@ public class KeyDatabaseManager {
 		Statement stmt = c.createStatement();
 		String sql = "CREATE TABLE IF NOT EXISTS class"
 				+ "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-				+ " name TEXT NOT NULL, " + " key TEXT NOT NULL, "
+				+ " name TEXT NOT NULL, " + " key BLOB NOT NULL, "
 				+ " blocked INT NOT NULL)";
 		stmt.executeUpdate(sql);
 		stmt.close();
@@ -94,7 +94,7 @@ public class KeyDatabaseManager {
 		stmt.close();
 	}
 
-	public static void addFriend(Connection c, String name, String key)
+	public static void addFriend(Connection c, String name, byte[] key)
 			throws SQLException {
 		Statement stmt = c.createStatement();
 		if (findKey(c, key) != 0) {
@@ -178,7 +178,7 @@ public class KeyDatabaseManager {
 		return idList;
 	}
 
-	public static int findKey(Connection c, String key) throws SQLException {
+	public static int findKey(Connection c, byte[] key) throws SQLException {
 		Statement getData = c.createStatement();
 		int retrievedData = 0;
 
@@ -195,6 +195,30 @@ public class KeyDatabaseManager {
 		getData.close();
 
 		return retrievedData;
+	}
+	
+	// TODO: validate that this works and implement it to return the key in bytes
+	public static byte[] getKey(Connection c, String username){
+		
+		int retrievedData = 0;
+		byte[] key = null;
+		
+		try {
+			Statement getData = c.createStatement();
+			ResultSet rs = getData.executeQuery("SELECT id FROM class WHERE name='"
+					+ username + "';");
+			retrievedData = rs.getInt("id");
+			key = rs.getBytes("name");
+			getData.close();
+		} catch (Exception e) {
+			// Turned this message off for now because it pops up each time when
+			// adding a friend...
+			// System.err.println(e.getClass().getName() + ": " +
+			// e.getMessage());
+		}
+		
+
+		return key;
 	}
 
 	public static ArrayList<ArrayList<Object>> ResultsToArray(ResultSet rs)
