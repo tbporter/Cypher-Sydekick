@@ -1,5 +1,7 @@
 package com.github.tbporter.cypher_sydekick.activities;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -33,6 +35,7 @@ import com.github.tbporter.cypher_sydekick.nfc.NFCManager;
 import com.github.tbporter.cypher_sydekick.nfc.NFCManagerException;
 import com.github.tbporter.cypher_sydekick.users.UserInfo;
 import com.github.tbporter.cypher_sydekick.chat.*;
+import com.github.tbporter.cypher_sydekick.crypt.Crypt;
 
 public class ChatClientActivity extends Activity {
 
@@ -139,7 +142,16 @@ public class ChatClientActivity extends Activity {
 		newUserAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Write code for what to do after create is pressed
-                Toast.makeText(getApplicationContext(), "Add new user pressed: " + usernameInput.getText().toString(), Toast.LENGTH_SHORT).show();
+        		try {
+        			Crypt.init(ChatClientActivity.this.getBaseContext());
+        		} catch (IOException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		}
+        		
+        		String pubKeyString = new String(Crypt.getPublicKey(), Charset.forName("US-ASCII"));
+
+            	Toast.makeText(getApplicationContext(), "Add new user pressed: " + usernameInput.getText().toString() + "\nKey: " + pubKeyString, Toast.LENGTH_SHORT).show();
             }
         });
 		final AlertDialog newUserDialog = newUserAlert.create();
