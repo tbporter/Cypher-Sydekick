@@ -1,5 +1,8 @@
 package com.github.tbporter.cypher_sydekick.activities;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -8,6 +11,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -38,7 +42,9 @@ import com.github.tbporter.cypher_sydekick.chat.*;
 import com.github.tbporter.cypher_sydekick.crypt.Crypt;
 
 public class ChatClientActivity extends Activity {
-
+	static final String USERNAME_FILE = "cypher-sidekick-username";
+	private String username_ = "";
+	
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -57,7 +63,22 @@ public class ChatClientActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_client);
 		
-		showLoginDialog();
+		File usernameFile = getFileStreamPath(USERNAME_FILE);
+		if(usernameFile.exists()){
+			byte[] usernameBytes = new byte[(int)usernameFile.length()];
+			try {
+				FileInputStream in = openFileInput(USERNAME_FILE);
+				in.read(usernameBytes);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			username_ = new String(usernameBytes, Charset.forName("US-ASCII"));
+			Toast.makeText(this, "Hello " + username_, Toast.LENGTH_LONG).show();
+		}
+		else{
+			showLoginDialog();
+		}
 
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction()
@@ -143,6 +164,13 @@ public class ChatClientActivity extends Activity {
                 // TODO Write code for what to do after create is pressed
         		try {
         			Crypt.init(ChatClientActivity.this.getBaseContext());
+        			
+        			username_ = usernameInput.getText().toString();
+        			
+        			// Create username file with the username
+        			FileOutputStream out = openFileOutput(USERNAME_FILE, Context.MODE_PRIVATE);
+                	out.write(username_.getBytes());
+            		out.close();
         		} catch (IOException e) {
         			// TODO Auto-generated catch block
         			e.printStackTrace();
