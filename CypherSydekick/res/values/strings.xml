@@ -4,6 +4,7 @@
     <string name="app_name">Cypher Sidekick Chat</string>
     <string name="game_name">Cypher Sidekick Game</string>
     <string name="action_settings">Settings</string>
+    <string name="action_newuser">Create New User</string>
 	<!-- Chat client strings -->
     <string name="chatclient_title">Chat Client</string>
     <string name="drawer_title">Friend List</string>

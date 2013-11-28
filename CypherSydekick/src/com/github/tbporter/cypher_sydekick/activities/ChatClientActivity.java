@@ -62,7 +62,8 @@ public class ChatClientActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_client);
-		
+
+		// Check to show the loginDialog or not
 		File usernameFile = getFileStreamPath(USERNAME_FILE);
 		if(usernameFile.exists()){
 			byte[] usernameBytes = new byte[(int)usernameFile.length()];
@@ -286,6 +287,9 @@ public class ChatClientActivity extends Activity {
 			Intent gameIntent = new Intent(this, GameActivity.class);
 			startActivity(gameIntent);
 
+			return true;
+		case R.id.action_newuser:
+			showLoginDialog();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
