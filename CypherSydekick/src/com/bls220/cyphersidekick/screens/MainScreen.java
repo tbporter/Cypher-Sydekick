@@ -26,8 +26,11 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.bls220.cyphersidekick.GameState;
 import com.bls220.cyphersidekick.MySidekick;
 import com.bls220.cyphersidekick.entities.Enemy;
@@ -60,6 +63,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 	private Stage stage;
 	private Skin skin;
 	private Touchpad mJoystick[];
+	private Label msgBox;
 
 	private TextureRegion healthBarTR;
 	private TextureRegion healthMaskTR;
@@ -67,7 +71,8 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 	private static final float DEADZONE_RADIUS = 10f;
 
 	public void createUI() {
-		stage = new Stage();
+		stage = new Stage(MySidekick.SCREEN_WIDTH, MySidekick.SCREEN_HEIGHT,
+				true);
 
 		// A skin can be loaded via JSON or defined programmatically, either is
 		// fine. Using a skin is optional but strongly
@@ -75,15 +80,28 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		// etc as a drawable, tinted drawable, etc.
 		skin = parent.getDefaultSkin();
 
+		Table table = new Table(skin);
+		table.setFillParent(true);
+		table.align(Align.bottom | Align.left);
+		// table.debug();
+		stage.addActor(table);
+
 		// Create Controls
 		mJoystick = new Touchpad[] { new Touchpad(DEADZONE_RADIUS, skin),
 				new Touchpad(DEADZONE_RADIUS, skin) };
 		float w = MySidekick.SCREEN_WIDTH / 7f;
-		mJoystick[0].setBounds(20, 20, w, w);
-		mJoystick[1].setBounds(MySidekick.SCREEN_WIDTH - w, 20, w, w);
+		mJoystick[0].setSize(w, w);
+		mJoystick[1].setSize(w, w);
 
-		stage.addActor(mJoystick[0]);
-		stage.addActor(mJoystick[1]);
+		// Create message area
+		msgBox = new Label("Stuff Goes Here.", skin);
+		msgBox.getStyle().background = skin.getDrawable("msgBack");
+		msgBox.setAlignment(Align.center);
+
+		// populate table
+		table.add(mJoystick[0]).align(Align.bottom).size(w).pad(20);
+		table.add(msgBox).expandX().fill();
+		table.add(mJoystick[1]).align(Align.bottom).size(w).pad(20);
 	}
 
 	public MainScreen(Level lvl) {
@@ -91,6 +109,10 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		this.acts = lvl.acts;
 		this.parent = lvl.parent;
 		this.fpsLogger = new FPSLogger();
+	}
+
+	public void setMsgBoxText(CharSequence msg) {
+		msgBox.setText(msg);
 	}
 
 	@Override
@@ -166,6 +188,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 			debugBox2DRenderer.render(MySidekick.getWorld(), camera.combined
 					.cpy().scl(Entity.TILE_WIDTH));
 		stage.draw();
+		Table.drawDebug(stage);
 	}
 
 	public void drawObjects(String layerID) {

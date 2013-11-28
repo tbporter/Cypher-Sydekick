@@ -38,7 +38,7 @@ public class MenuScreen implements Screen {
 		stage.addActor(container);
 
 		// Create labels
-		titleLabel = new Label("TacoBox", skin);
+		titleLabel = new Label(MySidekick.TITLE, skin);
 		titleLabel.setFontScale(3f);
 		titleLabel.setAlignment(Align.center);
 
@@ -68,7 +68,8 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		stage.setViewport(MySidekick.SCREEN_WIDTH, MySidekick.SCREEN_HEIGHT, true);
+		stage.setViewport(MySidekick.SCREEN_WIDTH, MySidekick.SCREEN_HEIGHT,
+				true);
 	}
 
 	@Override

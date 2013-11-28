@@ -7,7 +7,8 @@ com.badlogic.gdx.graphics.Color: {
         black: { a: 1, b: 0, g: 0, r: 0 }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
-        dialogDim: { name: white, color: { r: 0, g: 0, b: 0, a: 0.45 } }
+        dialogDim: { name: white, color: { r: 0, g: 0, b: 0, a: 0.45 } },
+        msgBack: { name: white, color: { r: 0, g: 0, b: 0, a: 0.85 } }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
         default: { down: default-round-down, up: default-round },

@@ -17,6 +17,7 @@ public class MySidekick extends Game {
 	private Skin skin;
 	private static World world;
 
+	public static final String TITLE = "Cypher Sidekick";
 	public static final int SCREEN_WIDTH = 480;
 	public static final int SCREEN_HEIGHT = 320;
 	public static boolean DEBUG_MODE;

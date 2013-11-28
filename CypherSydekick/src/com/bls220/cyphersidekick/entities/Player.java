@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.bls220.cyphersidekick.MySidekick;
 import com.bls220.cyphersidekick.mapstuff.C;
 import com.bls220.cyphersidekick.mapstuff.MapActions;
+import com.bls220.cyphersidekick.screens.MainScreen;
 
 public class Player extends Entity {
 
@@ -101,6 +102,11 @@ public class Player extends Entity {
 				if (type.equals("npc")) {
 					Gdx.app.log("Player", "Activating NPC");
 					// TODO: Activate NPC
+					((MainScreen) (((MySidekick) Gdx.app
+							.getApplicationListener()).getScreen()))
+							.setMsgBoxText("NPC "
+									+ o.getProperties().get("pillarNum")
+									+ " activated");
 				}
 			}
 		}
