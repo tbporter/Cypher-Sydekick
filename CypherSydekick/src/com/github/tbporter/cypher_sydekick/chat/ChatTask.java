@@ -1,19 +1,24 @@
 package com.github.tbporter.cypher_sydekick.chat;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 import android.os.AsyncTask;
 
 public class ChatTask extends AsyncTask<String, Void, String> {
-
+	static final String SERVER_URL_DEFAULT = "http://ayelix.dnsdynamic.com/";
 	private ArrayList<ConversationItem> activityConversationItems_;
 	private String sender_;
 	private String recipient_;
 	
 	// Only need to make one instance of this class since the conversation items list array ref remains the same
 	// Might have to add an instance of the Crypt class if we want to do encryption and decription in this class
-	public ChatTask(ArrayList<ConversationItem> convItems){
-		activityConversationItems_ = convItems;
+	public ChatTask(){//ArrayList<ConversationItem> convItems){
+		//activityConversationItems_ = convItems;
 	}
 	
 	// The two following methods are called when chatting with a new user is initiated
@@ -33,13 +38,29 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 	@Override
 	protected String doInBackground(String... params) {
 		// TODO Auto-generated method stub
-		
-		if(params[0].equals("send")){	// send
-			
+		String url;
+		try {
+			if(params[0].equals("send-message")){	// send
+				
+			}
+			else if(params[0].equals("receive-message")){	// receive
+				
+			}
+			else{	// add user
+				url = SERVER_URL_DEFAULT + "users?username=" + params[0];
+				HttpURLConnection connection = (HttpURLConnection)(new URL(url).openConnection());
+	            connection.setRequestMethod("GET");
+	            connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.114 Safari/537.36");
+	    		connection.connect();
+	    		String content = getContents(connection);
+	    		connection.disconnect();
+			}
+		} catch (IOException e) {
+		    // TODO Auto-generated catch block
+		        e.printStackTrace();
 		}
-		else{	// receive
-			
-		}
+
 		return null;
 	}
 
@@ -47,4 +68,16 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 	protected void onPostExecute(String result) {
 
 	}
+	
+	private String getContents(HttpURLConnection connection) throws IOException {
+        BufferedReader inReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+        StringBuilder htmlStringBuilder = new StringBuilder();
+        String htmlBuffer;
+        while((htmlBuffer = inReader.readLine()) != null){
+            htmlStringBuilder.append(htmlBuffer);
+        }
+
+        return htmlStringBuilder.toString();
+    }
 }

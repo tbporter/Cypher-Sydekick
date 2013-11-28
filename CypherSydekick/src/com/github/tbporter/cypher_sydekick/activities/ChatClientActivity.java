@@ -45,6 +45,8 @@ public class ChatClientActivity extends Activity {
 	static final String USERNAME_FILE = "cypher-sidekick-username";
 	private String username_ = "";
 	
+	private ChatTask chatTask_;
+	
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -63,6 +65,8 @@ public class ChatClientActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_client);
 
+		chatTask_ = new ChatTask();
+		
 		// Check to show the loginDialog or not
 		File usernameFile = getFileStreamPath(USERNAME_FILE);
 		if(usernameFile.exists()){
@@ -172,6 +176,8 @@ public class ChatClientActivity extends Activity {
         			FileOutputStream out = openFileOutput(USERNAME_FILE, Context.MODE_PRIVATE);
                 	out.write(username_.getBytes());
             		out.close();
+            		
+            		chatTask_.execute(username_);
         		} catch (IOException e) {
         			// TODO Auto-generated catch block
         			e.printStackTrace();
