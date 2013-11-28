@@ -20,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.bls220.cyphersidekick.MySidekick;
 import com.bls220.cyphersidekick.comm.MsgHandler;
 import com.bls220.cyphersidekick.entities.Enemy;
+import com.bls220.cyphersidekick.entities.Portal;
 import com.bls220.cyphersidekick.mapstuff.C;
 
 public class RandomLevel extends Level {
@@ -27,8 +28,14 @@ public class RandomLevel extends Level {
 	private final static String EMPTY_MAP_PATH = "maps/blank.tmx";
 	private final float TILE_WIDTH, TILE_HEIGHT;
 
-	private static final int WALL_ID = 2;
-	private static final int FLOOR_ID = 9;
+	private static final int WALL_ORANGE_ID = 2;
+	private static final int WALL_GREEN_ID = 1;
+
+	private static final int FLOOR_BLUE_ID = 9;
+	private static final int FLOOR_RED_ID = 10;
+
+	private static final int PORTAL_ID = Portal.PORTAL_ID;
+
 	private static final int ENEMY_1_ID = 3;
 	private static final int NPC_ID = 1;
 
@@ -49,16 +56,16 @@ public class RandomLevel extends Level {
 			TiledMapTileLayer tileLayer, MapLayer objectLayer, World world) {
 
 		Cell dirtCell = new Cell();
-		dirtCell.setTile(tileSets.getTile(FLOOR_ID));
+		dirtCell.setTile(tileSets.getTile(FLOOR_RED_ID));
 
 		Cell wallCell = new Cell();
-		wallCell.setTile(tileSets.getTile(WALL_ID));
+		wallCell.setTile(tileSets.getTile(WALL_ORANGE_ID));
 
 		BodyEditorLoader loader = new BodyEditorLoader(
 				Gdx.files.internal("test.json"));
 
 		// Generate ground
-		for (int y = 0; y < tileLayer.getHeight() + 4; y++) {
+		for (int y = 0; y < tileLayer.getHeight(); y++) {
 			for (int x = 0; x < tileLayer.getWidth(); x++) {
 				tileLayer.setCell(x, y, dirtCell);
 			}
@@ -95,6 +102,14 @@ public class RandomLevel extends Level {
 
 		// Make central room
 		generateCentralRoom(tileSets, tileLayer, objectLayer, world, loader);
+
+		// Make NPC
+		String name = "Travis"; // TODO: pick friends name from db
+		for (int i = 1; i < 6; i++) {
+			makeNPC(name + i, i, tileLayer.getWidth() / 2 - 5 + (2 * i - 1),
+					tileLayer.getHeight() / 2 + 7, objectLayer.getObjects(),
+					loader, world);
+		}
 	}
 
 	private Body createStaticTileBody(BodyEditorLoader loader, World world,
@@ -122,10 +137,10 @@ public class RandomLevel extends Level {
 			TiledMapTileLayer tileLayer, MapLayer objectLayer, World world,
 			BodyEditorLoader loader) {
 		Cell wallCell = new Cell();
-		wallCell.setTile(tileSets.getTile(WALL_ID));
+		wallCell.setTile(tileSets.getTile(WALL_GREEN_ID));
 
 		Cell floorCell = new Cell();
-		floorCell.setTile(tileSets.getTile(FLOOR_ID));
+		floorCell.setTile(tileSets.getTile(FLOOR_BLUE_ID));
 
 		Cell pillarTopCell = new Cell();
 		pillarTopCell.setTile(tileSets.getTile(PILLAR_OFF_TOP_ID));
@@ -133,29 +148,43 @@ public class RandomLevel extends Level {
 		Cell pillarBottomCell = new Cell();
 		pillarBottomCell.setTile(tileSets.getTile(PILLAR_OFF_BOTTOM_ID));
 
-		// Generate walls
 		int mapHeight = tileLayer.getHeight();
 		int mapWidth = tileLayer.getWidth();
 		Vector2 center = new Vector2(mapWidth / 2, mapHeight / 2);
-		for (int y = (int) (center.y - 4); y < center.y + 5; y++) {
-			tileLayer.setCell((int) (center.x - 5), y, wallCell);
-			createStaticTileBody(loader, world, "square").setTransform(
-					(center.x - 5) + 0.5f, y + 0.5f, 0);
+		int roomWidth = 10;
 
-			tileLayer.setCell((int) (center.x + 5), y, wallCell);
-			createStaticTileBody(loader, world, "square").setTransform(
-					(center.x + 5) + 0.5f, y + 0.5f, 0);
+		// Generate ground
+		for (int y = (int) (center.y - roomWidth / 2); y < center.y + roomWidth
+				/ 2; y++) {
+			for (int x = (int) (center.x - roomWidth / 2); x < center.x
+					+ roomWidth / 2; x++) {
+				tileLayer.setCell(x, y, floorCell);
+			}
 		}
-		for (int x = (int) (center.x - 5); x < center.x + 6; x++) {
+
+		// Generate walls
+		for (int y = (int) (center.y - roomWidth / 2 + 1); y < center.y
+				+ roomWidth / 2; y++) {
+			tileLayer.setCell((int) (center.x - roomWidth / 2), y, wallCell);
+			createStaticTileBody(loader, world, "square").setTransform(
+					(center.x - roomWidth / 2) + 0.5f, y + 0.5f, 0);
+
+			tileLayer.setCell((int) (center.x + roomWidth / 2), y, wallCell);
+			createStaticTileBody(loader, world, "square").setTransform(
+					(center.x + roomWidth / 2) + 0.5f, y + 0.5f, 0);
+		}
+		for (int x = (int) (center.x - roomWidth / 2); x < center.x + roomWidth
+				/ 2 + 1; x++) {
 			if (x != center.x) {
-				tileLayer.setCell(x, (int) (center.y - 5), wallCell);
+				tileLayer
+						.setCell(x, (int) (center.y - roomWidth / 2), wallCell);
 				createStaticTileBody(loader, world, "square").setTransform(
-						x + 0.5f, (center.y - 5) + 0.5f, 0);
+						x + 0.5f, (center.y - roomWidth / 2) + 0.5f, 0);
 			}
 
-			tileLayer.setCell(x, (int) (center.y + 5), wallCell);
+			tileLayer.setCell(x, (int) (center.y + roomWidth / 2), wallCell);
 			createStaticTileBody(loader, world, "square").setTransform(
-					x + 0.5f, (center.y + 5) + 0.5f, 0);
+					x + 0.5f, (center.y + roomWidth / 2) + 0.5f, 0);
 		}
 
 		// Place pillars
@@ -170,11 +199,18 @@ public class RandomLevel extends Level {
 		makePillar(5, center.x + 1.5f, center.y - 1f, objectLayer.getObjects(),
 				loader, world);
 
-		// Make NPC
-		for (int i = 1; i < 6; i++) {
-			makeNPC(i, center.x - 10 + (2 * i - 1), center.y + 7,
-					objectLayer.getObjects(), loader, world);
-		}
+		// Make exit portal
+		float tileX = tileLayer.getWidth() / 2;
+		float tileY = tileLayer.getHeight() / 2;
+		MapObject portal = new MapObject();
+		portal.getProperties().put("x", (int) (tileX * TILE_WIDTH));
+		portal.getProperties().put("y", (int) (tileY * TILE_HEIGHT));
+		portal.getProperties().put("gid", PORTAL_ID);
+		portal.getProperties().put("type", "portal");
+		portal.setName("portal");
+		portal.setVisible(false);
+
+		objectLayer.getObjects().add(portal);
 	}
 
 	/**
@@ -193,7 +229,7 @@ public class RandomLevel extends Level {
 	 * @param world
 	 *            - physics world
 	 */
-	private void makeNPC(int pillarNum, float tileX, float tileY,
+	private void makeNPC(String name, int pillarNum, float tileX, float tileY,
 			MapObjects objs, BodyEditorLoader loader, World world) {
 
 		MapObject npc = new MapObject();
@@ -202,7 +238,9 @@ public class RandomLevel extends Level {
 		npc.getProperties().put("y", (int) (tileY * TILE_HEIGHT));
 		npc.getProperties().put("gid", NPC_ID);
 		npc.getProperties().put("type", "npc");
+		npc.getProperties().put("used", false);
 		npc.getProperties().put("pillarNum", pillarNum);
+		npc.setName(name);
 		createStaticTileBody(loader, world, "square").setTransform(
 				tileX + 0.5f, tileY + 0.5f, 0);
 

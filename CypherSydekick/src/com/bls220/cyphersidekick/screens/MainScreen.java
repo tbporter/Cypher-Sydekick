@@ -33,8 +33,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.bls220.cyphersidekick.GameState;
 import com.bls220.cyphersidekick.MySidekick;
-import com.bls220.cyphersidekick.entities.Enemy;
 import com.bls220.cyphersidekick.entities.Entity;
+import com.bls220.cyphersidekick.entities.Living;
 import com.bls220.cyphersidekick.entities.Player;
 import com.bls220.cyphersidekick.mapstuff.C;
 import com.bls220.cyphersidekick.mapstuff.MapActions;
@@ -44,7 +44,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 
 	private static final String TAG = "MainScreen";
 
-	private final TiledMap map;
+	public final TiledMap map;
 	private final MapActions acts;
 	private final MySidekick parent;
 
@@ -71,8 +71,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 	private static final float DEADZONE_RADIUS = 10f;
 
 	public void createUI() {
-		stage = new Stage(MySidekick.SCREEN_WIDTH, MySidekick.SCREEN_HEIGHT,
-				true);
+		stage = new Stage();
 
 		// A skin can be loaded via JSON or defined programmatically, either is
 		// fine. Using a skin is optional but strongly
@@ -167,7 +166,9 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		drawObjects(C.ActionLayer);
 		for (Entity e : Entity.mEntities) {
 			e.draw(renderer.getSpriteBatch());
-			if (e instanceof Enemy) {
+			// This is here to save from having multiple texure resources
+			if (e instanceof Living) {
+				Living living = (Living) e;
 				// Draw Health Bars
 				float startX = e.getX() * Entity.TILE_WIDTH;
 				float startY = (e.getY() + 1) * Entity.TILE_HEIGHT + 5;
@@ -177,7 +178,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 						healthMaskTR,
 						startX,
 						startY,
-						(1 - ((Enemy) e).getHealth() / Enemy.MAX_HEALTH)
+						(1 - living.getHealth() / living.getMaxHealth())
 								* Entity.TILE_WIDTH, 5);
 			}
 		}

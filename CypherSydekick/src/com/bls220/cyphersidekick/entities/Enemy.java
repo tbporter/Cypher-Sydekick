@@ -15,7 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
  * @author bsmith
  * 
  */
-public class Enemy extends Entity implements Harmful {
+public class Enemy extends Entity implements Harmful, Living {
 
 	float mHealth;
 	float mDamage;
@@ -107,8 +107,19 @@ public class Enemy extends Entity implements Harmful {
 		return mDamage;
 	}
 
+	@Override
 	public float getHealth() {
 		return mHealth;
+	}
+
+	@Override
+	public void setHealth(float newHealth) {
+		mHealth = newHealth;
+	}
+
+	@Override
+	public float getMaxHealth() {
+		return MAX_HEALTH;
 	}
 
 }

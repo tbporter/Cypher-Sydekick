@@ -2,7 +2,6 @@ package com.bls220.cyphersidekick.mapstuff.level;
 
 import java.io.IOException;
 
-import com.badlogic.gdx.physics.box2d.World;
 import com.bls220.cyphersidekick.MySidekick;
 import com.bls220.cyphersidekick.comm.MsgHandler;
 import com.bls220.cyphersidekick.mapstuff.map.MapID;
@@ -10,7 +9,6 @@ import com.bls220.cyphersidekick.mapstuff.map.MapID;
 public class LevelHelper {
 	private final MsgHandler msg;
 	private final MySidekick listen;
-	private final World world;
 
 	/**
 	 * Lock must be held to access this variable.
@@ -23,6 +21,7 @@ public class LevelHelper {
 			throw new RuntimeException("Already loading a level!");
 		}
 		loading = true;
+		MySidekick.createWorld();
 		new lvlLoader(nextMapPath()).run();
 		// new Thread(new lvlLoader("maps/lightTest.tmx")).start();
 	}
@@ -56,10 +55,9 @@ public class LevelHelper {
 		return nextLevel;
 	}
 
-	public LevelHelper(MsgHandler msg, MySidekick listen, World world) {
+	public LevelHelper(MsgHandler msg, MySidekick listen) {
 		this.msg = msg;
 		this.listen = listen;
-		this.world = world;
 	}
 
 	private class lvlLoader implements Runnable {
@@ -71,7 +69,7 @@ public class LevelHelper {
 
 		@Override
 		public void run() {
-			Level ll = new RandomLevel(listen, msg, world);
+			Level ll = new RandomLevel(listen, msg, MySidekick.getWorld());
 
 			synchronized (LevelHelper.this) {
 				nextLevel = ll;

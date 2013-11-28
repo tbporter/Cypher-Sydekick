@@ -2,7 +2,9 @@ package com.bls220.cyphersidekick.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -14,18 +16,21 @@ import com.bls220.cyphersidekick.mapstuff.C;
 import com.bls220.cyphersidekick.mapstuff.MapActions;
 import com.bls220.cyphersidekick.screens.MainScreen;
 
-public class Player extends Entity {
+public class Player extends Entity implements Living {
 
 	final MapActions mActions;
-	MapObject mGrabbedObj;
 
 	private float mHealth;
 
 	private long shootTime;
 
+	private int mPillarCount;
+
 	private static final float SPEED = 4f; // m/s
 	private static final long SHOOT_DELAY = 400; // ms
 	private static final float MAX_HEALTH = 100f;
+
+	private static final String TAG = "Player";
 
 	public Player(String[] spritePaths, TiledMap map, MapActions actions,
 			World world) {
@@ -35,7 +40,7 @@ public class Player extends Entity {
 	public Player(String[] spritePaths, TiledMap map, MapActions actions,
 			int x, int y, World world) {
 		super(spritePaths[1], x, y, world);
-		Gdx.app.log("Player", String.format("Player spawned at (%d, %d)", x, y));
+		Gdx.app.log(TAG, String.format("Player spawned at (%d, %d)", x, y));
 		mBody.setFixedRotation(true);
 
 		Fixture fixture = mBody.getFixtureList().get(0);
@@ -44,11 +49,15 @@ public class Player extends Entity {
 		fixture.setFilterData(filter);
 
 		mActions = actions;
-		mGrabbedObj = null;
 		mSpeed = SPEED;
 		mHealth = MAX_HEALTH;
 	}
 
+	/**
+	 * Causes the player to shoot a bullet
+	 * 
+	 * @return - the bullet that was shot
+	 */
 	public Bullet shoot() {
 		long curTime = System.currentTimeMillis();
 		Bullet bullet = null;
@@ -66,54 +75,73 @@ public class Player extends Entity {
 		return bullet;
 	}
 
-	public void grab() {
-		// Toggle grab
-		if (mGrabbedObj == null) {
-			// Find obj that the player is facing
-			MapObject obj = null;
-			int posX = (int) (getX()), posY = (int) (getY());
-
-			// TODO: find object in front of player
-
-			// Is the object moveable
-			if (obj != null) {
-				boolean moveable = (Boolean) obj.getProperties()
-						.get(C.Moveable);
-				if (moveable) {
-					mGrabbedObj = obj;
-				}
-			}
-		} else {
-			mGrabbedObj = null;
-		}
-	}
-
+	/**
+	 * Handles players interaction with other objects, excluding physics
+	 * 
+	 * @param tileTouch
+	 *            - Which tile is to be activated
+	 * @param map
+	 *            - The current level's map
+	 */
 	public void activate(Vector2 tileTouch, TiledMap map) {
 		// Look for object at touch position
 		Vector2 screenTouch = tileTouch.cpy().scl(TILE_WIDTH);
-		Gdx.app.log("Player", String.format(" + Activating (%f, %f)",
-				screenTouch.x, screenTouch.y));
+		Gdx.app.log(TAG, String.format(" + Activating (%f, %f)", screenTouch.x,
+				screenTouch.y));
+		MainScreen screen = (MainScreen) ((MySidekick) Gdx.app
+				.getApplicationListener()).getScreen();
+		// Look for objects to interact with
 		for (MapObject o : map.getLayers().get(C.ObjectLayer).getObjects()) {
-			if ((Integer) o.getProperties().get("x") == screenTouch.x
-					&& (Integer) o.getProperties().get("y") == screenTouch.y) {
-				String type = (String) o.getProperties().get("type");
-				if (type == null)
-					break;
-				if (type.equals("npc")) {
-					Gdx.app.log("Player", "Activating NPC");
-					// TODO: Activate NPC
-					((MainScreen) (((MySidekick) Gdx.app
-							.getApplicationListener()).getScreen()))
-							.setMsgBoxText("NPC "
-									+ o.getProperties().get("pillarNum")
-									+ " activated");
+			MapProperties props = o.getProperties();
+			String type = (String) props.get("type");
+			if (type == null)
+				continue; // Can't determine type of object
+			if ((Integer) props.get("x") == screenTouch.x
+					&& (Integer) props.get("y") == screenTouch.y
+					&& o.isVisible()) {
+				if (type.equals("npc")) { // NPC
+					Gdx.app.log(TAG, "Activating NPC");
+					// Activate NPC
+					String npcName = o.getName();
+					// TODO: check if user has key
+					boolean hasKey = true;
+					if (hasKey) {
+						screen.setMsgBoxText(npcName
+								+ ": Happy travels comrade.");
+						if ((Boolean) (props.get("used")) == false) {
+							// TODO: activate a pillar
+							Gdx.app.log(
+									TAG,
+									"Activating pillar "
+											+ props.get("pillarNum"));
+							mPillarCount += 1;
+						}
+						props.put("used", true);
+					} else {
+						((MainScreen) (((MySidekick) Gdx.app
+								.getApplicationListener()).getScreen()))
+								.setMsgBoxText(npcName
+										+ " doesn't trust you, yet.");
+					}
 				}
 			}
 		}
-	}
-
-	public float getHealth() {
-		return mHealth;
+		if (mPillarCount >= 5) {
+			MapObject portal = map.getLayers().get(C.ObjectLayer).getObjects()
+					.get("portal");
+			if (portal != null) {
+				Gdx.app.log(TAG, "Unlocking portal");
+				portal.setVisible(true);
+				// Make entity for collision purposes
+				TiledMapTileLayer tileLayer = ((TiledMapTileLayer) screen.map
+						.getLayers().get(C.TileLayer));
+				Vector2 center = new Vector2(tileLayer.getWidth() / 2,
+						tileLayer.getHeight() / 2);
+				new Portal(screen.map.getTileSets().getTile(Portal.PORTAL_ID)
+						.getTextureRegion(), center.x, center.y,
+						MySidekick.getWorld());
+			}
+		}
 	}
 
 	/**
@@ -138,6 +166,21 @@ public class Player extends Entity {
 	@Override
 	public void onCollisionEnd(Contact contact, Fixture otherFixture) {
 		super.onCollisionEnd(contact, otherFixture);
+	}
+
+	@Override
+	public float getHealth() {
+		return mHealth;
+	}
+
+	@Override
+	public void setHealth(float newHealth) {
+		mHealth = newHealth;
+	}
+
+	@Override
+	public float getMaxHealth() {
+		return MAX_HEALTH;
 	}
 
 }

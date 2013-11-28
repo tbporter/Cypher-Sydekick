@@ -33,7 +33,6 @@ public class MySidekick extends Game {
 		// recommended solely for the convenience of getting a texture, region,
 		// etc as a drawable, tinted drawable, etc.
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
-		world = new World(new Vector2(0, 0), true);
 	}
 
 	@Override
@@ -50,7 +49,7 @@ public class MySidekick extends Game {
 			break;
 		case LoadFirstLevel:
 			setScreen(new LoadingScreen());
-			lvls = new LevelHelper(null, this, world);
+			lvls = new LevelHelper(null, this);
 			lvls.loadNextLevel();
 			state = GameState.WaitLoadFirstLevel;
 			break;
@@ -125,5 +124,11 @@ public class MySidekick extends Game {
 	 */
 	public static World getWorld() {
 		return world;
+	}
+
+	public static void createWorld() {
+		if (world != null)
+			world.dispose();
+		world = new World(new Vector2(0, 0), true);
 	}
 }
