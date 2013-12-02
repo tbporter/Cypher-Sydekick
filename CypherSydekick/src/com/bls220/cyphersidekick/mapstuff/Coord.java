@@ -37,4 +37,8 @@ public class Coord {
 	public String toString() {
 		return "(" + x + ", " + y + ")";
 	}
+	
+	static double dist(Coord a, Coord b){
+		return Math.sqrt((a.x-b.x)^2+(a.y-b.y)^2);
+	}
 }

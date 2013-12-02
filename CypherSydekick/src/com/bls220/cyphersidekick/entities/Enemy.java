@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
+import com.bls220.cyphersidekick.screens.MainScreen;
 
 /**
  * @author bsmith
@@ -102,6 +103,14 @@ public class Enemy extends Entity implements Harmful, Living {
 		super.onCollisionEnd(contact, otherFixture);
 	}
 
+	
+	
+	@Override
+	public void update(float delta){
+		Player p = MainScreen.mPlayer;
+		setHeading(p.getX() - this.getX(),p.getY() - this.getY());
+		super.update(delta);
+	}
 	@Override
 	public float getDamage() {
 		return mDamage;
@@ -121,5 +130,7 @@ public class Enemy extends Entity implements Harmful, Living {
 	public float getMaxHealth() {
 		return MAX_HEALTH;
 	}
+	
+	
 
 }

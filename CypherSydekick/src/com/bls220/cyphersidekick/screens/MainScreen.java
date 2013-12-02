@@ -58,7 +58,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 
 	private ArrayList<Entity> tmpDelList = new ArrayList<Entity>();
 
-	Player mPlayer;
+	public static Player mPlayer;
 
 	private Stage stage;
 	private Skin skin;

@@ -213,4 +213,7 @@ public class Entity {
 	public void dispose() {
 		mSprite.getTexture().dispose();
 	}
+	static public double getDist(Entity a, Entity b){
+		return Math.sqrt(Math.pow(((double) a.getX()-b.getX()),2)+Math.pow(((double) a.getY()-b.getY()),2));
+	}
 }
