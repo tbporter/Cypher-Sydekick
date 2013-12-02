@@ -40,11 +40,13 @@ import com.github.tbporter.cypher_sydekick.nfc.NFCManagerException;
 import com.github.tbporter.cypher_sydekick.users.UserInfo;
 import com.github.tbporter.cypher_sydekick.chat.*;
 import com.github.tbporter.cypher_sydekick.crypt.Crypt;
+import com.github.tbporter.cypher_sydekick.crypt.KeyDatabaseManager;
 
 public class ChatClientActivity extends Activity {
 	static final String USERNAME_FILE = "cypher-sidekick-username";
 	private String username_ = "";
 	private String pubKeyString_ = "";
+	private KeyDatabaseManager keyManager_;
 	
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
@@ -81,6 +83,8 @@ public class ChatClientActivity extends Activity {
 		else{
 			showLoginDialog();
 		}
+		
+		KeyDatabaseManager keyManager_ = new KeyDatabaseManager();
 
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction()
@@ -348,9 +352,14 @@ public class ChatClientActivity extends Activity {
 		private ImageButton sendButton_;
 		private EditText messageField_;
 		
+		private String recipientUsername_;
 		
 		public ChatFragment() {
 			// Empty constructor required for fragment subclasses
+		}
+		
+		public void setRecipientUsername(String username){
+			recipientUsername_ = username;
 		}
 
 		@Override

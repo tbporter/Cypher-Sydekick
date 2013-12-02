@@ -22,11 +22,12 @@ public class KeyDatabaseManager {
 
 			// Test variables. Change these to whatever you would like to test
 			// functionality
+			/*
 			int id = 4;
 			int getId;
 			String name = "Jane";
 			String key = "FEED9090";
-
+			 */
 			// Test functions. All the functions perform as expected. You can
 			// start with a sample data
 			// table, or add in entries yourself, or make a table of your own
@@ -73,7 +74,7 @@ public class KeyDatabaseManager {
 		Statement stmt = c.createStatement();
 		String sql = "CREATE TABLE IF NOT EXISTS class"
 				+ "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-				+ " name TEXT NOT NULL, " + " key BLOB NOT NULL, "
+				+ " name TEXT NOT NULL, " + " key TEXT NOT NULL, "
 				+ " blocked INT NOT NULL)";
 		stmt.executeUpdate(sql);
 		stmt.close();
@@ -94,9 +95,12 @@ public class KeyDatabaseManager {
 		stmt.close();
 	}
 
-	public static void addFriend(Connection c, String name, byte[] key)
+	public static void addFriend(String name, String key)
 			throws SQLException {
+		
+		Connection c = connection_;
 		Statement stmt = c.createStatement();
+		
 		if (findKey(c, key) != 0) {
 			System.err.println("Error: Couldn't add friend " + name
 					+ " because that friend already exists");
@@ -178,7 +182,7 @@ public class KeyDatabaseManager {
 		return idList;
 	}
 
-	public static int findKey(Connection c, byte[] key) throws SQLException {
+	public static int findKey(Connection c, String key) throws SQLException {
 		Statement getData = c.createStatement();
 		int retrievedData = 0;
 
@@ -198,17 +202,16 @@ public class KeyDatabaseManager {
 	}
 	
 	// TODO: validate that this works and implement it to return the key in bytes
-	public static byte[] getKey(Connection c, String username){
+	public static String getKey(String username){
+		String key = "";
 		
-		int retrievedData = 0;
-		byte[] key = null;
+		Connection c = connection_;
 		
 		try {
 			Statement getData = c.createStatement();
 			ResultSet rs = getData.executeQuery("SELECT id FROM class WHERE name='"
 					+ username + "';");
-			retrievedData = rs.getInt("id");
-			key = rs.getBytes("name");
+			key = rs.getString("name");
 			getData.close();
 		} catch (Exception e) {
 			// Turned this message off for now because it pops up each time when
