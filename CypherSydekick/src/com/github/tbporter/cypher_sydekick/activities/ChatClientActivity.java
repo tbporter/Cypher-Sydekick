@@ -44,8 +44,7 @@ import com.github.tbporter.cypher_sydekick.crypt.Crypt;
 public class ChatClientActivity extends Activity {
 	static final String USERNAME_FILE = "cypher-sidekick-username";
 	private String username_ = "";
-	
-	private ChatTask chatTask_;
+	private String pubKeyString_ = "";
 	
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
@@ -64,8 +63,6 @@ public class ChatClientActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_client);
-
-		chatTask_ = new ChatTask();
 		
 		// Check to show the loginDialog or not
 		File usernameFile = getFileStreamPath(USERNAME_FILE);
@@ -144,7 +141,7 @@ public class ChatClientActivity extends Activity {
 
 		// Set the active user whose info should be shared over NFC
 		// TODO: Send real user information
-		m_nfcManager.setCurrentUser(new UserInfo("username", "key"));
+		m_nfcManager.setCurrentUser(new UserInfo(username_, pubKeyString_));
 
 		// Notify the user if they have not enabled NFC
 		checkAndNotifyNFCEnabled();
@@ -177,15 +174,15 @@ public class ChatClientActivity extends Activity {
                 	out.write(username_.getBytes());
             		out.close();
             		
-            		chatTask_.execute(username_);
+            		new ChatTask().execute(username_);
         		} catch (IOException e) {
         			// TODO Auto-generated catch block
         			e.printStackTrace();
         		}
         		
-        		String pubKeyString = new String(Crypt.getPublicKey(), Charset.forName("US-ASCII"));
+        		pubKeyString_ = new String(Crypt.getPublicKey(), Charset.forName("US-ASCII"));
 
-            	Toast.makeText(getApplicationContext(), "Add new user pressed: " + usernameInput.getText().toString() + "\nKey: " + pubKeyString, Toast.LENGTH_SHORT).show();
+            	Toast.makeText(getApplicationContext(), "Add new user pressed: " + usernameInput.getText().toString() + "\nKey: " + pubKeyString_, Toast.LENGTH_SHORT).show();
             }
         });
 		final AlertDialog newUserDialog = newUserAlert.create();
