@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -54,7 +55,7 @@ public class ChatClientActivity extends Activity {
 
 	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
-	private String[] mFriendsArray;
+	private ArrayList<String> mFriendsArray = new ArrayList<String>();
 
 	private ChatFragment chatFragment_ = new ChatFragment();
 
@@ -92,9 +93,9 @@ public class ChatClientActivity extends Activity {
 
 		mTitle = getResources().getString(R.string.chatclient_title);
 		mDrawerTitle = getResources().getString(R.string.drawer_title);
-		mFriendsArray = new String[] { "user1", "user2", "user3", "user4",
+		/*mFriendsArray = new String[] { "user1", "user2", "user3", "user4",
 				"user5", "user6", "user7", "user8", "user9", "user10",
-				"user11", "user12", "user13", "user14" };
+				"user11", "user12", "user13", "user14" };*/
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -233,7 +234,18 @@ public class ChatClientActivity extends Activity {
 		if (m_nfcManager.willHandleIntent(intent)) {
 			// Parse the intent with the NFCManager
 			final UserInfo receivedUser = m_nfcManager.handleIntent(intent);
-
+			
+			// Add the new friend to the sql database
+			try {
+				keyManager_.addFriend(receivedUser.getUsername(), receivedUser.getPublicKey());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			// Add the new user to the drawer
+			mFriendsArray.add(receivedUser.getUsername());
+			
 			// Make sure the UserInfo was parsed successfully
 			if (null != receivedUser) {
 				Toast.makeText(
