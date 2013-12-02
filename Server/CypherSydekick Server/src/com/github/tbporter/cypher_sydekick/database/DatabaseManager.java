@@ -87,7 +87,22 @@ public final class DatabaseManager {
 	 *             if table dropping fails
 	 */
 	public static void dropAllTables() throws DatabaseManagerException {
-		Debug.printMsg(TAG, "dropAllTables()");
+		if (isDatabaseOpen()) {
+			try {
+				Statement s = s_connection.createStatement();
+				s.executeUpdate(DatabaseConstants.USERS_TABLE_DROP);
+				s.executeUpdate(DatabaseConstants.MESSAGES_TABLE_DROP);
+				s.close();
+
+			} catch (SQLException sqle) {
+				sqle.printStackTrace();
+				throw new DatabaseManagerException(
+						"SQL exception during table deletion.");
+			}
+
+		} else {
+			throw new DatabaseManagerException("Database not open.");
+		}
 	}
 
 	/**
@@ -125,6 +140,9 @@ public final class DatabaseManager {
 					// No results found
 					retVal = null;
 				}
+				
+				result.close();
+				ps.close();
 
 			} catch (SQLException sqle) {
 				throw new DatabaseManagerException(
@@ -152,18 +170,20 @@ public final class DatabaseManager {
 
 			final String sql = "SELECT * FROM "
 					+ DatabaseConstants.USERS_TABLE_NAME + ";";
-			ResultSet results;
 
 			// Search the table for user(s) with the given name
 			try {
 				Statement s = s_connection.createStatement();
-				results = s.executeQuery(sql);
+				ResultSet results = s.executeQuery(sql);
 
 				// Convert the ResultSet to a list
 				while (results.next()) {
 					retVal.add(results
 							.getString(DatabaseConstants.USERNAME_COLUMN_LABEL));
 				}
+				
+				results.close();
+				s.close();
 
 			} catch (SQLException sqle) {
 				throw new DatabaseManagerException(
@@ -315,6 +335,9 @@ public final class DatabaseManager {
 					// No results found
 					msg = null;
 				}
+				
+				result.close();
+				ps.close();
 
 			} catch (SQLException sqle) {
 				sqle.printStackTrace();

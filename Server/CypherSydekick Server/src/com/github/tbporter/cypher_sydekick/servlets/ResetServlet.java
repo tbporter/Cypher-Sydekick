@@ -11,8 +11,11 @@ import org.eclipse.jetty.http.HttpStatus;
 
 import com.github.tbporter.cypher_sydekick.database.DatabaseManager;
 import com.github.tbporter.cypher_sydekick.database.DatabaseManagerException;
+import com.github.tbporter.cypher_sydekick.debugging.Debug;
 
 public class ResetServlet extends HttpServlet {
+	private static final String TAG = "ResetServlet";
+	
 	/** Parameter key for reset password. */
 	private static final String PARAM_PASSWORD = "password";
 
@@ -39,9 +42,14 @@ public class ResetServlet extends HttpServlet {
 		// Make sure parameters were provided
 		if ((null != password) && !password.isEmpty()) {
 			if (passwordValid(password)) {
-				// Drop all tables
 				try {
+					// Drop all tables then re-create them
 					DatabaseManager.dropAllTables();
+					Debug.printMsg(TAG, "Dropped all tables.");
+					DatabaseManager.createUserTable();
+					Debug.printMsg(TAG, "Created users table.");
+					DatabaseManager.createMessagesTable();
+					Debug.printMsg(TAG, "Created messages table.");
 					
 					// Indicate success
 					resp.setStatus(STATUS_SUCCESS);
