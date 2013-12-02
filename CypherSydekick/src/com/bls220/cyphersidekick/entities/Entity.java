@@ -21,12 +21,13 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.bls220.cyphersidekick.entities.ai.AI;
 
 public class Entity {
 
 	protected Vector2 mHeading;
 	protected float mSpeed;
-
+	protected AI mAI;
 	protected Body mBody;
 	protected Sprite mSprite;
 
@@ -174,6 +175,11 @@ public class Entity {
 	}
 
 	public void update(float delta) {
+		
+		//Do any ai calculations if the entity has it
+		if(mAI != null)
+			mAI.update();
+		
 		// Update Body
 		updateBody();
 
@@ -215,5 +221,9 @@ public class Entity {
 	}
 	static public double getDist(Entity a, Entity b){
 		return Math.sqrt(Math.pow(((double) a.getX()-b.getX()),2)+Math.pow(((double) a.getY()-b.getY()),2));
+	}
+	
+	public void setAI(AI ai){
+		mAI = ai;
 	}
 }
