@@ -56,7 +56,8 @@ public class ChatClientActivity extends Activity {
 	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
 	private ArrayList<String> mFriendsArray = new ArrayList<String>();
-
+	private ArrayAdapter<String> mDrawerAdapter;
+	
 	private ChatFragment chatFragment_ = new ChatFragment();
 
 	/** NFCManager to handle NFC operations. */
@@ -74,11 +75,15 @@ public class ChatClientActivity extends Activity {
 			try {
 				FileInputStream in = openFileInput(USERNAME_FILE);
 				in.read(usernameBytes);
+				Crypt.init(ChatClientActivity.this.getBaseContext());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			username_ = new String(usernameBytes, Charset.forName("US-ASCII"));
+			
+			pubKeyString_ = new String(Crypt.getPublicKey(), Charset.forName("US-ASCII"));
+			
 			Toast.makeText(this, "Hello " + username_, Toast.LENGTH_LONG).show();
 		}
 		else{
@@ -96,6 +101,8 @@ public class ChatClientActivity extends Activity {
 		/*mFriendsArray = new String[] { "user1", "user2", "user3", "user4",
 				"user5", "user6", "user7", "user8", "user9", "user10",
 				"user11", "user12", "user13", "user14" };*/
+		mFriendsArray.add("TestUser");
+		
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -104,8 +111,8 @@ public class ChatClientActivity extends Activity {
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
 				GravityCompat.START);
 		// set up the drawer's list view with items and click listener
-		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-				R.layout.drawer_list_item, mFriendsArray));
+		mDrawerAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, mFriendsArray);
+		mDrawerList.setAdapter(mDrawerAdapter);
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
 		// enable ActionBar app icon to behave as action to toggle nav drawer
@@ -236,15 +243,16 @@ public class ChatClientActivity extends Activity {
 			final UserInfo receivedUser = m_nfcManager.handleIntent(intent);
 			
 			// Add the new friend to the sql database
-			try {
+			/*try {
 				keyManager_.addFriend(receivedUser.getUsername(), receivedUser.getPublicKey());
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 			
 			// Add the new user to the drawer
 			mFriendsArray.add(receivedUser.getUsername());
+			mDrawerAdapter.notifyDataSetChanged();
 			
 			// Make sure the UserInfo was parsed successfully
 			if (null != receivedUser) {
