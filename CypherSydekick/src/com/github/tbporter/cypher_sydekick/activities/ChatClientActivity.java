@@ -41,13 +41,12 @@ import com.github.tbporter.cypher_sydekick.nfc.NFCManagerException;
 import com.github.tbporter.cypher_sydekick.users.UserInfo;
 import com.github.tbporter.cypher_sydekick.chat.*;
 import com.github.tbporter.cypher_sydekick.crypt.Crypt;
-import com.github.tbporter.cypher_sydekick.crypt.KeyDatabaseManager;
+import com.github.tbporter.cypher_sydekick.database.UserKeyDatabaseHelper;
 
 public class ChatClientActivity extends Activity {
 	static final String USERNAME_FILE = "cypher-sidekick-username";
 	private String username_ = "";
 	private String pubKeyString_ = "";
-	private KeyDatabaseManager keyManager_;
 	
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
@@ -90,7 +89,7 @@ public class ChatClientActivity extends Activity {
 			showLoginDialog();
 		}
 		
-		KeyDatabaseManager keyManager_ = new KeyDatabaseManager();
+		// TODO: init database
 
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction()
@@ -242,9 +241,9 @@ public class ChatClientActivity extends Activity {
 			// Parse the intent with the NFCManager
 			final UserInfo receivedUser = m_nfcManager.handleIntent(intent);
 			
-			// Add the new friend to the sql database
+			// TODO: database Add the new friend to the sql database
 			/*try {
-				keyManager_.addFriend(receivedUser.getUsername(), receivedUser.getPublicKey());
+				KeyDatabaseManager.addFriend(receivedUser.getUsername(), receivedUser.getPublicKey());
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
