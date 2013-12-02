@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.tbporter.cypher_sydekick.chat.ChatMessage;
+import com.github.tbporter.cypher_sydekick.debugging.Debug;
 
 /**
  * Handles all database-related operations (opening database, managing tables,
@@ -75,6 +76,18 @@ public final class DatabaseManager {
 	 */
 	public static void createMessagesTable() throws DatabaseManagerException {
 		createTable(DatabaseConstants.MESSAGES_CREATE_TABLE);
+	}
+
+	/**
+	 * Drops all tables in the database. Database must be open (
+	 * {@link #openDatabase()}). <b>Tables are not recreated after they are
+	 * dropped.</b>
+	 * 
+	 * @throws DatabaseManagerException
+	 *             if table dropping fails
+	 */
+	public static void dropAllTables() throws DatabaseManagerException {
+		Debug.printMsg(TAG, "dropAllTables()");
 	}
 
 	/**
