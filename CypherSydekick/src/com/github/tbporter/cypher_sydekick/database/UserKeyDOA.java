@@ -78,8 +78,8 @@ public class UserKeyDOA {
 	public String getKeyViaUsername(String username) {
 		String newKey = null;
 
-		Cursor cursor = database.query(UserKeyDatabaseHelper.COLUMN_USERNAME, allColumns,
-				"username=" + username, null, null, null, null);
+		Cursor cursor = database.query(UserKeyDatabaseHelper.TABLE_KEYS, null,
+				"username=?", new String[]{username}, null, null, null);
 		cursor.moveToFirst();
 		UserKey cursordata = cursorToData(cursor);
 		newKey = cursordata.getKey();

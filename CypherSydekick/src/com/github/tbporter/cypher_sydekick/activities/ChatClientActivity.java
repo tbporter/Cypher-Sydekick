@@ -338,8 +338,12 @@ public class ChatClientActivity extends Activity {
 	private void selectItem(int position) {
 		mDrawerList.setItemChecked(position, true);
 		mDrawerLayout.closeDrawer(mDrawerList);
-		setTitle(mDrawerList.getItemAtPosition(position).toString());
-		// TODO here is where a new user is selected to chat with
+		String newUser = mDrawerList.getItemAtPosition(position).toString();
+		setTitle(newUser);
+		
+		// Here is where a new user is selected to chat with
+		chatFragment_.setRecipient(newUser, userKeyDatabase_.getKeyViaUsername(newUser));
+		chatFragment_.setMyUsername(username_);
 	}
 
 	@Override
@@ -363,7 +367,7 @@ public class ChatClientActivity extends Activity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		// Pass any configuration change to the drawer toggls
+		// Pass any configuration change to the drawer toggles
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
@@ -374,14 +378,21 @@ public class ChatClientActivity extends Activity {
 		private ImageButton sendButton_;
 		private EditText messageField_;
 		
-		private String recipientUsername_;
+		private String myUsername_;
+		private String recipientUsername_, recipientPubKey_;
+		private ChatTask messageChatTask_;
 		
 		public ChatFragment() {
 			// Empty constructor required for fragment subclasses
 		}
 		
-		public void setRecipientUsername(String username){
+		public void setMyUsername(String username){
+			myUsername_ = username;
+		}
+		
+		public void setRecipient(String username, String key){
 			recipientUsername_ = username;
+			recipientPubKey_ = key;
 		}
 
 		@Override
@@ -395,6 +406,8 @@ public class ChatClientActivity extends Activity {
 			ConversationAdapter newAdapter = new ConversationAdapter(getActivity(), conversationItems_);
 			conversationListView_.setAdapter(newAdapter);
 			
+			messageChatTask_ = new ChatTask(conversationItems_);
+			
 			sendButton_ = (ImageButton) rootView.findViewById(R.id.btn_sendMessage);
 			messageField_ = (EditText) rootView.findViewById(R.id.editText_message);
 
@@ -402,11 +415,12 @@ public class ChatClientActivity extends Activity {
 	             public void onClick(View v) {
 	            	ConversationItem newItem = new ConversationItem();
 	     			newItem.setMessage(messageField_.getText().toString());
-	     			newItem.setSubtitle("My Username");
+	     			newItem.setSubtitle("Sent from " + myUsername_);
 	     			newItem.setIcon(R.drawable.ic_action_person);
 	     			conversationItems_.add(newItem);
-	     			
 	     			// TODO Here is where we should fire the AsyncTaskto send the message
+	     			messageChatTask_.execute("send-message", myUsername_, recipientUsername_, recipientPubKey_, messageField_.getText().toString());
+	     			
 	     			messageField_.setText("");
 	             }
 	        });

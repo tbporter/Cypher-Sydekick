@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+
+import com.github.tbporter.cypher_sydekick.crypt.Crypt;
 
 import android.os.AsyncTask;
 
@@ -46,7 +49,18 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 		String url;
 		try {
 			if(params[0].equals("send-message")){	// send
-				
+				String message;
+				// Encryption is done here
+				byte[] encryptedBytes = Crypt.encrypt(params[4].getBytes(), params[3].getBytes());
+				message = new String(encryptedBytes, Charset.forName("US-ASCII"));
+				url = SERVER_URL_DEFAULT + "messages?action=send&sender="+params[1] + "&recipient="+params[2] + "&message="+message;
+				HttpURLConnection connection = (HttpURLConnection)(new URL(url).openConnection());
+	            connection.setRequestMethod("GET");
+	            connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.114 Safari/537.36");
+	    		connection.connect();
+	    		String content = getContents(connection);
+	    		connection.disconnect();
 			}
 			else if(params[0].equals("receive-message")){	// receive
 				
