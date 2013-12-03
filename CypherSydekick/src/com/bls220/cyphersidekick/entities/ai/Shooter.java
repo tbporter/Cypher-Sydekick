@@ -1,6 +1,10 @@
 package com.bls220.cyphersidekick.entities.ai;
 
+import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.bls220.cyphersidekick.entities.Bullet;
 import com.bls220.cyphersidekick.entities.Entity;
+import com.bls220.cyphersidekick.entities.Entity.EEnityCategories;
 import com.bls220.cyphersidekick.entities.Player;
 import com.bls220.cyphersidekick.screens.MainScreen;
 
@@ -29,6 +33,7 @@ public class Shooter extends AI {
 	public void update(float delta) {
 		Player p = MainScreen.mPlayer;
 		Double dist = Entity.getDist(mEntity, p);
+		Bullet bullet = null;
 		switch (mState) {
 		case idle:
 			if (dist <= DETECT_DIST) {
@@ -46,7 +51,7 @@ public class Shooter extends AI {
 			else {
 				mEntity.setHeading(p.getX() - mEntity.getX(), p.getY()
 						- mEntity.getY());
-				mEntity.shoot();
+				bullet = mEntity.shoot();
 			}
 			break;
 		case running:
@@ -55,7 +60,7 @@ public class Shooter extends AI {
 			else {
 				mEntity.setHeading(mEntity.getX() - p.getX(), mEntity.getY()
 						- p.getY());
-				// mEntity.shoot();
+				bullet = mEntity.shoot();
 			}
 			break;
 		case standing:
@@ -64,9 +69,18 @@ public class Shooter extends AI {
 			else if (dist >= SAFE_DIST + SAFE_DIST_JITTER)
 				mState = States.chasing;
 			else {
-				// mEntity.shoot();
+				bullet = mEntity.shoot();
 			}
 			break;
+		}
+
+		if (bullet != null) {
+			// Make bullet ignore enemies
+			Fixture fixture = bullet.getBody().getFixtureList().get(0);
+			Filter filter = fixture.getFilterData();
+			filter.maskBits &= ~EEnityCategories.ENEMY.getValue();
+			fixture.setFilterData(filter);
+
 		}
 
 	}
