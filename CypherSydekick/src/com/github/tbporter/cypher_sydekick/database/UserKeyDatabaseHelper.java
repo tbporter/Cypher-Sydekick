@@ -16,9 +16,8 @@ public class UserKeyDatabaseHelper extends SQLiteOpenHelper {
 	
 	private static final String DATABASE_CREATE = "create table "
 		      + TABLE_KEYS + "(" + COLUMN_ID
-		      + " integer primary key autoincrement, " + COLUMN_USERNAME
+		      + " integer primary key autoincrement not null, " + COLUMN_USERNAME
 		      + " text not null, " + COLUMN_KEY + " text not null);";
-	
 	
 	public UserKeyDatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
