@@ -383,6 +383,7 @@ public class ChatClientActivity extends Activity {
 	/** Fragment for the Chat **/
 	public static class ChatFragment extends Fragment {
 		private ListView conversationListView_;
+		ConversationAdapter convAdapter_;
 		private ArrayList<ConversationItem> conversationItems_ = new ArrayList<ConversationItem>();
 		private ImageButton sendButton_;
 		private EditText messageField_;
@@ -414,8 +415,8 @@ public class ChatClientActivity extends Activity {
 			
 			// Setup the adapter for the conversation list view			
 			conversationListView_ = (ListView) rootView.findViewById(R.id.listView_conversation);
-			ConversationAdapter newAdapter = new ConversationAdapter(getActivity(), conversationItems_);
-			conversationListView_.setAdapter(newAdapter);
+			convAdapter_ = new ConversationAdapter(getActivity(), conversationItems_);
+			conversationListView_.setAdapter(convAdapter_);
 			
 			sendButton_ = (ImageButton) rootView.findViewById(R.id.btn_sendMessage);
 			messageField_ = (EditText) rootView.findViewById(R.id.editText_message);
@@ -450,7 +451,8 @@ public class ChatClientActivity extends Activity {
 		                        //PerformBackgroundTask performBackgroundTask = new PerformBackgroundTask();
 		                        // PerformBackgroundTask this class is the class that extends AsynchTask 
 		                        //performBackgroundTask.execute();
-		                    	new ChatTask(conversationItems_).execute("receive-message", myUsername_, recipientUsername_);
+		                    	Toast.makeText(getActivity(), "Hello", Toast.LENGTH_SHORT).show();
+		                    	new ChatTask(convAdapter_, conversationItems_).execute("receive-message", myUsername_, recipientUsername_);
 		                    } catch (Exception e) {
 		                        // TODO Auto-generated catch block
 		                    }
@@ -458,7 +460,7 @@ public class ChatClientActivity extends Activity {
 		            });
 		        }
 		    };
-		    timer.schedule(doAsynchronousTask, 0, 50000); //execute in every 1000 ms
+		    timer.schedule(doAsynchronousTask, 0, 10000); //execute in every 1000 ms
 		}
 
 	}

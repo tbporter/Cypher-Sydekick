@@ -16,12 +16,14 @@ import com.github.tbporter.cypher_sydekick.crypt.Crypt;
 
 import android.os.AsyncTask;
 import android.util.Base64;
+import android.util.Log;
 
 public class ChatTask extends AsyncTask<String, Void, String> {
 	static final String SERVER_URL_DEFAULT = "http://ayelix.dnsdynamic.com/";
 	private ArrayList<ConversationItem> activityConversationItems_;
 	private String sender_;
 	private String recipient_;
+	private ConversationAdapter convAdapter_;
 	
 	
 	// Might have to add an instance of the Crypt class if we want to do encryption and decription in this class
@@ -30,7 +32,8 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 	}
 	
 	// Only need to make one instance of this class since the conversation items list array ref remains the same
-	public ChatTask(ArrayList<ConversationItem> convItems){
+	public ChatTask(ConversationAdapter adapter, ArrayList<ConversationItem> convItems){
+		convAdapter_ = adapter;
 		activityConversationItems_ = convItems;
 	}
 	
@@ -82,7 +85,8 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 		    			return null;
 		    		}
 		    		else{
-		    			message = message.substring(message.indexOf("."));
+		    			message = message.substring(message.indexOf(".")+1);
+		    			
 		    			return message;
 		    		}
 				}
@@ -108,12 +112,14 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 	@Override
 	protected void onPostExecute(String result) {
 		if(result != null){
+			Log.d("NewMessage", result);
 			if(activityConversationItems_ != null){
 				ConversationItem newItem = new ConversationItem();
      			newItem.setMessage(result);
      			newItem.setSubtitle("Received from " + sender_);
      			newItem.setIcon(R.drawable.ic_action_person);
 				activityConversationItems_.add(newItem);
+				convAdapter_.notifyDataSetChanged();
 			}
 		}
 	}
