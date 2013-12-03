@@ -21,6 +21,9 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import com.github.tbporter.cypher_sydekick.activities.ChatClientActivity;
+
+import android.app.ProgressDialog;
 import android.content.Context;
 
 public class Crypt {
@@ -45,7 +48,6 @@ public class Crypt {
 			return;
 		
 		try {
-			Crypt.genKey();
 			File file = context.getFileStreamPath(PUB_KEY_FILE);
 			if(file.exists()){
 				loadKeyFile(context);
@@ -66,6 +68,7 @@ public class Crypt {
 	 */
 	
 	static private void genKey() throws NoSuchAlgorithmException, NoSuchPaddingException{
+		
 		_keyPair = KeyPairGenerator.getInstance(ALGO).generateKeyPair();
 	}
 	
