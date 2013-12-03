@@ -162,7 +162,6 @@ public class ChatClientActivity extends Activity {
 		}
 
 		// Set the active user whose info should be shared over NFC
-		// TODO: Send real user information
 		m_nfcManager.setCurrentUser(new UserInfo(username_, pubKeyString_));
 
 		// Notify the user if they have not enabled NFC
@@ -202,9 +201,12 @@ public class ChatClientActivity extends Activity {
         			// TODO Auto-generated catch block
         			e.printStackTrace();
         		}
-        		byte[] pubKeyBytes = Crypt.getPublicKey();
         		
+        		byte[] pubKeyBytes = Crypt.getPublicKey();
         		pubKeyString_ = Base64.encodeToString(pubKeyBytes, Base64.NO_PADDING);
+        		
+        		// Set the active user whose info should be shared over NFC
+        		m_nfcManager.setCurrentUser(new UserInfo(username_, pubKeyString_));
         		
         		userKeyDatabase_.deleteAllUsers();
         		mFriendsArray.clear();
@@ -448,10 +450,8 @@ public class ChatClientActivity extends Activity {
 		            handler.post(new Runnable() {
 		                public void run() {       
 		                    try {
-		                        //PerformBackgroundTask performBackgroundTask = new PerformBackgroundTask();
 		                        // PerformBackgroundTask this class is the class that extends AsynchTask 
-		                        //performBackgroundTask.execute();
-		                    	Toast.makeText(getActivity(), "Hello", Toast.LENGTH_SHORT).show();
+		                    	//Toast.makeText(getActivity(), "Checked for new Message", Toast.LENGTH_SHORT).show();
 		                    	new ChatTask(convAdapter_, conversationItems_).execute("receive-message", myUsername_, recipientUsername_);
 		                    } catch (Exception e) {
 		                        // TODO Auto-generated catch block
@@ -460,7 +460,7 @@ public class ChatClientActivity extends Activity {
 		            });
 		        }
 		    };
-		    timer.schedule(doAsynchronousTask, 0, 10000); //execute in every 1000 ms
+		    timer.schedule(doAsynchronousTask, 0, 3000); //execute in every 1000 ms
 		}
 
 	}

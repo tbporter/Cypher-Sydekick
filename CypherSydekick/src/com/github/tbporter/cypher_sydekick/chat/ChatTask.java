@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import org.apache.http.protocol.HTTP;
 
@@ -58,8 +59,9 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 		String url;
 		try {
 			if(params[0].equals("send-message")){	// send
-				String message;
-				message = params[4].replaceAll("\\s", WHITESPACE);
+				String message = params[4];
+				if(message.contains(" "))
+						message = params[4].replaceAll("\\s", WHITESPACE);
 				// Encryption is done here
 				byte[] encryptedBytes = Crypt.encrypt(Base64.decode(message, Base64.NO_PADDING), Base64.decode(params[3], Base64.DEFAULT));
 				message = Base64.encodeToString(encryptedBytes, Base64.NO_PADDING);
@@ -90,7 +92,8 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 		    			messageEnc = messageEnc.substring(messageEnc.indexOf(".")+1);
 		    			byte[] messageByte = Crypt.decrypt(Base64.decode(messageEnc, Base64.NO_PADDING));
 		    			String messageDec = Base64.encodeToString(messageByte, Base64.NO_PADDING);
-		    			messageDec = messageDec.replaceAll(WHITESPACE, " ");
+		    			if(messageDec.contains(WHITESPACE));
+		    				messageDec = messageDec.replaceAll(Pattern.quote(WHITESPACE), " ");
 		    			return messageDec;
 		    		}
 				}
