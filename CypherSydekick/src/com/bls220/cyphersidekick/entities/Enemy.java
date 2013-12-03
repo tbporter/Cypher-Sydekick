@@ -57,8 +57,7 @@ public class Enemy extends Entity implements Harmful, Living {
 	 */
 	public Enemy(TextureRegion textReg, float x, float y, World world) {
 		super(textReg, x, y, world);
-		//setAI(new Melee(this)); // TODO: defaults to Melee AI
-		setAI(new Shooter(this));
+		setAI(AI.RandomFactory(this));
 		mBody.setBullet(true); // More accurate collision detection
 		mBody.setFixedRotation(true);
 		Fixture fixture = mBody.getFixtureList().get(0);
