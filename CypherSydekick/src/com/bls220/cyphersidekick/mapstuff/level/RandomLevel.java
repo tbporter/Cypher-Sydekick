@@ -1,5 +1,7 @@
 package com.bls220.cyphersidekick.mapstuff.level;
 
+import java.util.ArrayList;
+
 import pong.client.core.BodyEditorLoader;
 
 import com.badlogic.gdx.Gdx;
@@ -22,6 +24,7 @@ import com.bls220.cyphersidekick.comm.MsgHandler;
 import com.bls220.cyphersidekick.entities.Enemy;
 import com.bls220.cyphersidekick.entities.Portal;
 import com.bls220.cyphersidekick.mapstuff.C;
+import com.github.tbporter.cypher_sydekick.database.UserKeyDOA;
 
 public class RandomLevel extends Level {
 
@@ -104,12 +107,29 @@ public class RandomLevel extends Level {
 		generateCentralRoom(tileSets, tileLayer, objectLayer, world, loader);
 
 		// Make NPC
-		String name = "Travis"; // TODO: pick friends name from db
+		UserKeyDOA datasource = new UserKeyDOA(
+				((MySidekick) Gdx.app.getApplicationListener()).getContext());
+		datasource.open();
+		// TODO: enforce friends of friends
+		ArrayList<String> usernames = datasource.getAllUsers();
 		for (int i = 1; i < 6; i++) {
-			makeNPC(name + i, i, tileLayer.getWidth() / 2 - 5 + (2 * i - 1),
+			// Pick a name randomly
+			String name = "Anon " + i;
+			String key = "hasKey";
+			if (!usernames.isEmpty()) {
+				name = usernames.get(MathUtils.random(usernames.size()));
+				// see if has key
+				key = datasource.getKeyViaUsername(name);
+				usernames.remove(name);
+			}
+
+			boolean hasKey = (key != null) && !key.isEmpty();
+			makeNPC(name, hasKey, i,
+					tileLayer.getWidth() / 2 - 5 + (2 * i - 1),
 					tileLayer.getHeight() / 2 + 7, objectLayer.getObjects(),
 					loader, world);
 		}
+		datasource.close();
 	}
 
 	private Body createStaticTileBody(BodyEditorLoader loader, World world,
@@ -229,8 +249,9 @@ public class RandomLevel extends Level {
 	 * @param world
 	 *            - physics world
 	 */
-	private void makeNPC(String name, int pillarNum, float tileX, float tileY,
-			MapObjects objs, BodyEditorLoader loader, World world) {
+	private void makeNPC(String name, boolean hasKey, int pillarNum,
+			float tileX, float tileY, MapObjects objs, BodyEditorLoader loader,
+			World world) {
 
 		MapObject npc = new MapObject();
 
@@ -240,6 +261,7 @@ public class RandomLevel extends Level {
 		npc.getProperties().put("type", "npc");
 		npc.getProperties().put("used", false);
 		npc.getProperties().put("pillarNum", pillarNum);
+		npc.getProperties().put("hasKey", hasKey);
 		npc.setName(name);
 		createStaticTileBody(loader, world, "square").setTransform(
 				tileX + 0.5f, tileY + 0.5f, 0);

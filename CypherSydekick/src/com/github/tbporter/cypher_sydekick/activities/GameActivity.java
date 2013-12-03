@@ -15,6 +15,6 @@ public class GameActivity extends AndroidApplication {
 		AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
 		cfg.useGL20 = true;
 
-		initialize(new MySidekick(Debug.isDebuggerConnected()), cfg);
+		initialize(new MySidekick(Debug.isDebuggerConnected(), this), cfg);
 	}
 }

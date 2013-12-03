@@ -5,7 +5,6 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Filter;
@@ -50,10 +49,12 @@ public class Player extends Entity implements Living {
 		mSpeed = SPEED;
 		mHealth = MAX_HEALTH;
 	}
+
 	@Override
-	public Bullet shoot(){
+	public Bullet shoot() {
 		return super.shoot(SHOOT_DELAY);
 	}
+
 	/**
 	 * Handles players interaction with other objects, excluding physics
 	 * 
@@ -82,8 +83,8 @@ public class Player extends Entity implements Living {
 					Gdx.app.log(TAG, "Activating NPC");
 					// Activate NPC
 					String npcName = o.getName();
-					// TODO: check if user has key
-					boolean hasKey = true;
+					// check if user has key for npc
+					boolean hasKey = props.get("hasKey", false, Boolean.class);
 					if (hasKey) {
 						screen.setMsgBoxText(npcName
 								+ ": Happy travels comrade.");

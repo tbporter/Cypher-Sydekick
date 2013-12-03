@@ -1,5 +1,7 @@
 package com.bls220.cyphersidekick;
 
+import android.content.Context;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -21,9 +23,11 @@ public class MySidekick extends Game {
 	public static final int SCREEN_WIDTH = 480;
 	public static final int SCREEN_HEIGHT = 320;
 	public static boolean DEBUG_MODE;
+	public final Context CONTEXT;
 
-	public MySidekick(boolean debuggerConnected) {
+	public MySidekick(boolean debuggerConnected, Context context) {
 		DEBUG_MODE = debuggerConnected;
+		CONTEXT = context;
 	}
 
 	@Override
@@ -110,6 +114,13 @@ public class MySidekick extends Game {
 			world.dispose();
 			Gdx.app.exit();
 		}
+	}
+
+	/**
+	 * @return this applications android context
+	 */
+	public Context getContext() {
+		return CONTEXT;
 	}
 
 	/**
