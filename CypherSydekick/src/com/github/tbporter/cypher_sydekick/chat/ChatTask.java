@@ -20,6 +20,7 @@ import android.util.Log;
 
 public class ChatTask extends AsyncTask<String, Void, String> {
 	static final String SERVER_URL_DEFAULT = "http://ayelix.dnsdynamic.com/";
+	private final String WHITESPACE = "+/+";
 	private ArrayList<ConversationItem> activityConversationItems_;
 	private String sender_;
 	private String recipient_;
@@ -58,8 +59,9 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 		try {
 			if(params[0].equals("send-message")){	// send
 				String message;
+				message = params[4].replaceAll("\\s", WHITESPACE);
 				// Encryption is done here
-				byte[] encryptedBytes = Crypt.encrypt(Base64.decode(params[4], Base64.NO_PADDING), Base64.decode(params[3], Base64.DEFAULT));
+				byte[] encryptedBytes = Crypt.encrypt(Base64.decode(message, Base64.NO_PADDING), Base64.decode(params[3], Base64.DEFAULT));
 				message = Base64.encodeToString(encryptedBytes, Base64.NO_PADDING);
 				url = SERVER_URL_DEFAULT + "messages?action=send&sender="+params[1].trim() + "&recipient="+params[2].trim() + "&message="+URLEncoder.encode(message, HTTP.UTF_8);
 				HttpURLConnection connection = (HttpURLConnection)(new URL(url).openConnection());
@@ -88,6 +90,7 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 		    			messageEnc = messageEnc.substring(messageEnc.indexOf(".")+1);
 		    			byte[] messageByte = Crypt.decrypt(Base64.decode(messageEnc, Base64.NO_PADDING));
 		    			String messageDec = Base64.encodeToString(messageByte, Base64.NO_PADDING);
+		    			messageDec = messageDec.replaceAll(WHITESPACE, " ");
 		    			return messageDec;
 		    		}
 				}
