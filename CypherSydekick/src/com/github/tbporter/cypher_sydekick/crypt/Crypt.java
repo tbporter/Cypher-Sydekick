@@ -25,11 +25,25 @@ import android.content.Context;
 
 public class Crypt {
 	static final String ALGO = "RSA";	
+	
+	//IMPORTANT privacy concern, this should be kept private so that the private key stays private. private private
 	static private KeyPair _keyPair;
+	
 	static final String PRIV_KEY_FILE = "priv.key";
 	static final String PUB_KEY_FILE = "pub.key";
 
+	/* Either generates or loads from file the keypair, 
+	 * must be called once before any other Crypt methods are called.
+	 * Generating can take a few seconds.
+	 * 
+	 * Param: Context - used for saving the file.
+	 */
 	static public void init(Context context) throws IOException{
+		
+		//If it's already initialize, just return
+		if(_keyPair != null)
+			return;
+		
 		try {
 			Crypt.genKey();
 			File file = context.getFileStreamPath(PUB_KEY_FILE);
@@ -40,14 +54,28 @@ public class Crypt {
 				genKey();
 				saveKeyFile(context);
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (NoSuchPaddingException e) {
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
 			e.printStackTrace();
 		}
 	}
+	/* Generates a Key. Stores it in _keyPair.
+	 */
+	
 	static private void genKey() throws NoSuchAlgorithmException, NoSuchPaddingException{
 		_keyPair = KeyPairGenerator.getInstance(ALGO).generateKeyPair();
 	}
+	
+	/* Will encrypt data with a given public key and returns the results.
+	 * 
+	 * Param:	byte[] - data that will be encrypted
+	 * 			byte[] - public key used to encrypt
+	 * 
+	 * Return: byte[] - encrypted result
+	 */
 	static public byte[] encrypt(byte[] data, byte[] pubKeyBytes){
 		try {
 			Cipher cipher = Cipher.getInstance(ALGO);
@@ -60,6 +88,13 @@ public class Crypt {
 		}
 		return null;
 	}
+	
+	/* Will decrypt data with our private key.
+	 * 
+	 * Param:	byte[] - data that will be decrypted
+	 * 
+	 * Return: byte[] - decrypted result
+	 */
 	static public byte[] decrypt(byte[] data){
 		try {
 			Cipher cipher = Cipher.getInstance(ALGO);
@@ -96,6 +131,7 @@ public class Crypt {
 		_keyPair = new KeyPair(publicKey, privateKey);
 	}
 	
+	//Save the keys to a file
 	static private void saveKeyFile(Context context) throws IOException{
 		FileOutputStream out = context.openFileOutput(PUB_KEY_FILE, Context.MODE_PRIVATE);
 		X509EncodedKeySpec pubEnc = new X509EncodedKeySpec(_keyPair.getPublic().getEncoded());
@@ -108,6 +144,7 @@ public class Crypt {
 		out.close();
 	}
 	
+	//Returns the public key
 	static public byte[] getPublicKey(){
 		return new X509EncodedKeySpec(_keyPair.getPublic().getEncoded()).getEncoded();
 	}
