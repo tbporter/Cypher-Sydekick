@@ -88,8 +88,8 @@ public class ChatClientActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			username_ = new String(Base64.decode(usernameBytes, Base64.NO_PADDING ));
-			pubKeyString_ = Base64.encodeToString(Crypt.getPublicKey(), Base64.NO_PADDING );
+			username_ = new String(Base64.decode(usernameBytes, Base64.DEFAULT ));
+			pubKeyString_ = Base64.encodeToString(Crypt.getPublicKey(), Base64.DEFAULT );
 			
 			Toast.makeText(this, "Hello " + username_, Toast.LENGTH_LONG).show();
 		}
@@ -191,7 +191,7 @@ public class ChatClientActivity extends Activity {
         			
         			// Create username file with the username
         			FileOutputStream out = openFileOutput(USERNAME_FILE, Context.MODE_PRIVATE);
-                	out.write(Base64.encode(username_.getBytes(), Base64.NO_PADDING ));
+                	out.write(Base64.encode(username_.getBytes(), Base64.DEFAULT ));
 
             		out.close();
             		
@@ -202,7 +202,7 @@ public class ChatClientActivity extends Activity {
         		}
         		
         		byte[] pubKeyBytes = Crypt.getPublicKey();
-        		pubKeyString_ = Base64.encodeToString(pubKeyBytes, Base64.NO_PADDING);
+        		pubKeyString_ = Base64.encodeToString(pubKeyBytes, Base64.DEFAULT);
         		// Set the active user whose info should be shared over NFC
         		m_nfcManager.setCurrentUser(new UserInfo(username_, pubKeyString_));
         		
