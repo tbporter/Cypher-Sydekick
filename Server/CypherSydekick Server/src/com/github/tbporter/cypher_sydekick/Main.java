@@ -11,6 +11,7 @@ import com.github.tbporter.cypher_sydekick.database.DatabaseManager;
 import com.github.tbporter.cypher_sydekick.database.DatabaseManagerException;
 import com.github.tbporter.cypher_sydekick.debugging.Debug;
 import com.github.tbporter.cypher_sydekick.servlets.MessagesServlet;
+import com.github.tbporter.cypher_sydekick.servlets.ResetServlet;
 import com.github.tbporter.cypher_sydekick.servlets.RootServlet;
 import com.github.tbporter.cypher_sydekick.servlets.UsersServlet;
 
@@ -44,9 +45,8 @@ public final class Main {
 		context.addServlet(RootServlet.class, ""); // Empty string maps to
 													// *exactly* root
 		context.addServlet(UsersServlet.class, "/users");
-
-		// Add the chat servlet
 		context.addServlet(MessagesServlet.class, "/messages");
+		context.addServlet(ResetServlet.class, "/reset");
 
 		// Start the server
 		server.setHandler(context);

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.tbporter.cypher_sydekick.chat.ChatMessage;
+import com.github.tbporter.cypher_sydekick.debugging.Debug;
 
 /**
  * Handles all database-related operations (opening database, managing tables,
@@ -78,6 +79,33 @@ public final class DatabaseManager {
 	}
 
 	/**
+	 * Drops all tables in the database. Database must be open (
+	 * {@link #openDatabase()}). <b>Tables are not recreated after they are
+	 * dropped.</b>
+	 * 
+	 * @throws DatabaseManagerException
+	 *             if table dropping fails
+	 */
+	public static void dropAllTables() throws DatabaseManagerException {
+		if (isDatabaseOpen()) {
+			try {
+				Statement s = s_connection.createStatement();
+				s.executeUpdate(DatabaseConstants.USERS_TABLE_DROP);
+				s.executeUpdate(DatabaseConstants.MESSAGES_TABLE_DROP);
+				s.close();
+
+			} catch (SQLException sqle) {
+				sqle.printStackTrace();
+				throw new DatabaseManagerException(
+						"SQL exception during table deletion.");
+			}
+
+		} else {
+			throw new DatabaseManagerException("Database not open.");
+		}
+	}
+
+	/**
 	 * Retrieves user information for the given username. Database must be open
 	 * ( {@link #openDatabase()}).
 	 * 
@@ -112,6 +140,9 @@ public final class DatabaseManager {
 					// No results found
 					retVal = null;
 				}
+				
+				result.close();
+				ps.close();
 
 			} catch (SQLException sqle) {
 				throw new DatabaseManagerException(
@@ -139,18 +170,20 @@ public final class DatabaseManager {
 
 			final String sql = "SELECT * FROM "
 					+ DatabaseConstants.USERS_TABLE_NAME + ";";
-			ResultSet results;
 
 			// Search the table for user(s) with the given name
 			try {
 				Statement s = s_connection.createStatement();
-				results = s.executeQuery(sql);
+				ResultSet results = s.executeQuery(sql);
 
 				// Convert the ResultSet to a list
 				while (results.next()) {
 					retVal.add(results
 							.getString(DatabaseConstants.USERNAME_COLUMN_LABEL));
 				}
+				
+				results.close();
+				s.close();
 
 			} catch (SQLException sqle) {
 				throw new DatabaseManagerException(
@@ -302,6 +335,9 @@ public final class DatabaseManager {
 					// No results found
 					msg = null;
 				}
+				
+				result.close();
+				ps.close();
 
 			} catch (SQLException sqle) {
 				sqle.printStackTrace();

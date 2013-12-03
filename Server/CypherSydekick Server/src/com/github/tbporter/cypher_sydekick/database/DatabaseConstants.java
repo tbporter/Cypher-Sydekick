@@ -20,6 +20,9 @@ abstract class DatabaseConstants {
 			+ " ("
 			+ USERNAME_COLUMN_LABEL
 			+ " TEXT PRIMARY KEY NOT NULL);";
+	/** SQL string to drop users table. */
+	public static final String USERS_TABLE_DROP = "DROP TABLE IF EXISTS "
+			+ USERS_TABLE_NAME + ";";
 
 	/** Name of the messages table. */
 	public static final String MESSAGES_TABLE_NAME = "messages";
@@ -38,4 +41,7 @@ abstract class DatabaseConstants {
 			+ SENDER_COLUMN_LABEL
 			+ " TEXT NOT NULL, "
 			+ CONTENTS_COLUMN_LABEL + " TEXT NOT NULL);";
+	/** SQL string to drop messages table. */
+	public static final String MESSAGES_TABLE_DROP = "DROP TABLE IF EXISTS "
+			+ MESSAGES_TABLE_NAME + ";";
 }
