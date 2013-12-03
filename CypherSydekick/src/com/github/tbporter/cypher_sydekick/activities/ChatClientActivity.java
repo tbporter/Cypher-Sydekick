@@ -197,7 +197,8 @@ public class ChatClientActivity extends Activity {
         		}
         		
         		pubKeyString_ = new String(Crypt.getPublicKey(), Charset.forName("US-ASCII"));
-
+        		userKeyDatabase_.deleteAllUsers();
+        		mFriendsArray.clear();
             	Toast.makeText(getApplicationContext(), "Add new user pressed: " + usernameInput.getText().toString() + "\nKey: " + pubKeyString_, Toast.LENGTH_SHORT).show();
             }
         });
