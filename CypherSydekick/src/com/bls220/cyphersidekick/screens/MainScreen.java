@@ -164,7 +164,11 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(
 				C.TileLayer));
 		drawObjects(C.ActionLayer);
-		for (Entity e : Entity.mEntities) {
+
+		@SuppressWarnings("unchecked")
+		ArrayList<Entity> tmpEntities = (ArrayList<Entity>) Entity.mEntities
+				.clone();
+		for (Entity e : tmpEntities) {
 			e.draw(renderer.getSpriteBatch());
 			// This is here to save from having multiple texure resources
 			if (e instanceof Living) {
