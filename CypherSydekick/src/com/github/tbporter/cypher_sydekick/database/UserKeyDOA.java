@@ -12,7 +12,8 @@ import android.database.sqlite.SQLiteDatabase;
 public class UserKeyDOA {
 	private SQLiteDatabase database;
 	private UserKeyDatabaseHelper dbHelper;
-	private String[] allColumns = { UserKeyDatabaseHelper.COLUMN_ID, UserKeyDatabaseHelper.COLUMN_USERNAME };
+	private String[] allColumns = { UserKeyDatabaseHelper.COLUMN_ID, UserKeyDatabaseHelper.COLUMN_USERNAME,
+			UserKeyDatabaseHelper.COLUMN_KEY };
 	
 	public UserKeyDOA(Context context) {
 		dbHelper = new UserKeyDatabaseHelper(context);
@@ -73,7 +74,7 @@ public class UserKeyDOA {
 		String newKey = null;
 
 		Cursor cursor = database.query(UserKeyDatabaseHelper.COLUMN_USERNAME, allColumns,
-				null, null, null, null, null);
+				"username=" + username, null, null, null, null);
 		cursor.moveToFirst();
 		UserKey cursordata = cursorToData(cursor);
 		newKey = cursordata.getKey();
