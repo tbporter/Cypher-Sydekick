@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -21,6 +23,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -82,9 +85,9 @@ public class ChatClientActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			username_ = new String(usernameBytes, Charset.forName("US-ASCII"));
+			username_ = Base64.encodeToString(usernameBytes, Base64.DEFAULT);
 			
-			pubKeyString_ = new String(Crypt.getPublicKey(), Charset.forName("US-ASCII"));
+			pubKeyString_ = Base64.encodeToString(Crypt.getPublicKey(), Base64.DEFAULT);
 			
 			Toast.makeText(this, "Hello " + username_, Toast.LENGTH_LONG).show();
 		}
@@ -187,7 +190,8 @@ public class ChatClientActivity extends Activity {
         			
         			// Create username file with the username
         			FileOutputStream out = openFileOutput(USERNAME_FILE, Context.MODE_PRIVATE);
-                	out.write(username_.getBytes());
+                	out.write(Base64.decode(username_, Base64.DEFAULT));
+                	
             		out.close();
             		
             		new ChatTask().execute(username_);
@@ -195,8 +199,10 @@ public class ChatClientActivity extends Activity {
         			// TODO Auto-generated catch block
         			e.printStackTrace();
         		}
+        		byte[] pubKeyBytes = Crypt.getPublicKey();
         		
-        		pubKeyString_ = new String(Crypt.getPublicKey(), Charset.forName("US-ASCII"));
+        		pubKeyString_ = Base64.encodeToString(pubKeyBytes, Base64.DEFAULT);
+        		
         		userKeyDatabase_.deleteAllUsers();
         		mFriendsArray.clear();
             	Toast.makeText(getApplicationContext(), "Add new user pressed: " + usernameInput.getText().toString() + "\nKey: " + pubKeyString_, Toast.LENGTH_SHORT).show();
@@ -380,7 +386,6 @@ public class ChatClientActivity extends Activity {
 		
 		private String myUsername_;
 		private String recipientUsername_, recipientPubKey_;
-		private ChatTask messageChatTask_;
 		
 		public ChatFragment() {
 			// Empty constructor required for fragment subclasses
@@ -406,8 +411,6 @@ public class ChatClientActivity extends Activity {
 			ConversationAdapter newAdapter = new ConversationAdapter(getActivity(), conversationItems_);
 			conversationListView_.setAdapter(newAdapter);
 			
-			messageChatTask_ = new ChatTask(conversationItems_);
-			
 			sendButton_ = (ImageButton) rootView.findViewById(R.id.btn_sendMessage);
 			messageField_ = (EditText) rootView.findViewById(R.id.editText_message);
 
@@ -419,7 +422,7 @@ public class ChatClientActivity extends Activity {
 	     			newItem.setIcon(R.drawable.ic_action_person);
 	     			conversationItems_.add(newItem);
 	     			// TODO Here is where we should fire the AsyncTaskto send the message
-	     			messageChatTask_.execute("send-message", myUsername_, recipientUsername_, recipientPubKey_, messageField_.getText().toString());
+	     			new ChatTask().execute("send-message", myUsername_, recipientUsername_, recipientPubKey_, messageField_.getText().toString());
 	     			
 	     			messageField_.setText("");
 	             }
