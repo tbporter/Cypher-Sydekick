@@ -9,7 +9,7 @@ public class AI {
 		mEntity = e;
 	}
 	
-	public void update(){
+	public void update(float delta){
 		
 	};
 	
