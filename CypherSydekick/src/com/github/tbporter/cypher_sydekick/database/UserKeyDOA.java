@@ -46,8 +46,8 @@ public class UserKeyDOA {
 		database.delete(UserKeyDatabaseHelper.TABLE_KEYS, UserKeyDatabaseHelper.COLUMN_ID + " = " + id, null);
 	}
 	
-	public List<String> getAllUsers() {
-		List<String> usernames = new ArrayList<String>();
+	public ArrayList<String> getAllUsers() {
+		ArrayList<String> usernames = new ArrayList<String>();
 	
 		Cursor cursor = database.query(UserKeyDatabaseHelper.TABLE_KEYS, allColumns,
 				null, null, null, null, null);

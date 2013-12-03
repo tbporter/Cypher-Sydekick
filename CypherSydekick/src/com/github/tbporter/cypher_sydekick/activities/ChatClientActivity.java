@@ -41,6 +41,7 @@ import com.github.tbporter.cypher_sydekick.nfc.NFCManagerException;
 import com.github.tbporter.cypher_sydekick.users.UserInfo;
 import com.github.tbporter.cypher_sydekick.chat.*;
 import com.github.tbporter.cypher_sydekick.crypt.Crypt;
+import com.github.tbporter.cypher_sydekick.database.UserKeyDOA;
 import com.github.tbporter.cypher_sydekick.database.UserKeyDatabaseHelper;
 
 public class ChatClientActivity extends Activity {
@@ -58,6 +59,8 @@ public class ChatClientActivity extends Activity {
 	private ArrayAdapter<String> mDrawerAdapter;
 	
 	private ChatFragment chatFragment_ = new ChatFragment();
+	
+	private UserKeyDOA userKeyDatabase_;
 
 	/** NFCManager to handle NFC operations. */
 	private NFCManager m_nfcManager;
@@ -90,7 +93,9 @@ public class ChatClientActivity extends Activity {
 		}
 		
 		// TODO: init database
-
+		userKeyDatabase_ = new UserKeyDOA(this);
+		userKeyDatabase_.open();
+		
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction()
 				.replace(R.id.content_frame, chatFragment_).commit();
@@ -100,7 +105,7 @@ public class ChatClientActivity extends Activity {
 		/*mFriendsArray = new String[] { "user1", "user2", "user3", "user4",
 				"user5", "user6", "user7", "user8", "user9", "user10",
 				"user11", "user12", "user13", "user14" };*/
-		mFriendsArray.add("TestUser");
+		mFriendsArray = userKeyDatabase_.getAllUsers();
 		
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -241,17 +246,14 @@ public class ChatClientActivity extends Activity {
 			// Parse the intent with the NFCManager
 			final UserInfo receivedUser = m_nfcManager.handleIntent(intent);
 			
-			// TODO: database Add the new friend to the sql database
-			/*try {
-				KeyDatabaseManager.addFriend(receivedUser.getUsername(), receivedUser.getPublicKey());
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
+			// Add the new user to the database
+			userKeyDatabase_.createUser(receivedUser.getUsername(), receivedUser.getPublicKey());
 			
 			// Add the new user to the drawer
-			mFriendsArray.add(receivedUser.getUsername());
-			mDrawerAdapter.notifyDataSetChanged();
+			if(!mFriendsArray.contains(receivedUser.getUsername())){
+				mFriendsArray.add(receivedUser.getUsername());
+				mDrawerAdapter.notifyDataSetChanged();
+			}
 			
 			// Make sure the UserInfo was parsed successfully
 			if (null != receivedUser) {
