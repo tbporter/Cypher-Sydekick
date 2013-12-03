@@ -57,7 +57,7 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 				// Encryption is done here
 				byte[] encryptedBytes = Crypt.encrypt(Base64.decode(params[4], Base64.DEFAULT), Base64.decode(params[3], Base64.DEFAULT));
 				message = Base64.encodeToString(encryptedBytes, Base64.DEFAULT);
-				url = SERVER_URL_DEFAULT + "messages?action=send&sender="+params[1] + "&recipient="+params[2] + "&message="+URLEncoder.encode(message, HTTP.UTF_8);
+				url = SERVER_URL_DEFAULT + "messages?action=send&sender="+params[1].trim() + "&recipient="+params[2].trim() + "&message="+URLEncoder.encode(message, HTTP.UTF_8);
 				HttpURLConnection connection = (HttpURLConnection)(new URL(url).openConnection());
 	            connection.setRequestMethod("GET");
 	            connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
