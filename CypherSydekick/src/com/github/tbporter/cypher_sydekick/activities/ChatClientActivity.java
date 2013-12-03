@@ -353,6 +353,7 @@ public class ChatClientActivity extends Activity {
 		// Here is where a new user is selected to chat with
 		chatFragment_.setRecipient(newUser, userKeyDatabase_.getKeyViaUsername(newUser));
 		chatFragment_.setMyUsername(username_);
+		chatFragment_.setContext(getBaseContext());
 	}
 
 	@Override
@@ -390,11 +391,13 @@ public class ChatClientActivity extends Activity {
 		
 		private String myUsername_;
 		private String recipientUsername_, recipientPubKey_;
-		
+		private Context context_;
 		public ChatFragment() {
 			// Empty constructor required for fragment subclasses
 		}
-		
+		public void setContext(Context c){
+			context_ = c;
+		}
 		public void setMyUsername(String username){
 			myUsername_ = username;
 		}
@@ -450,7 +453,7 @@ public class ChatClientActivity extends Activity {
 		                    try {
 		                        // PerformBackgroundTask this class is the class that extends AsynchTask 
 		                    	//Toast.makeText(getActivity(), "Checked for new Message", Toast.LENGTH_SHORT).show();
-		                    	new ChatTask(convAdapter_, conversationItems_).execute("receive-message", myUsername_, recipientUsername_);
+		                    	new ChatTask(convAdapter_, conversationItems_, context_).execute("receive-message", myUsername_, recipientUsername_);
 		                    } catch (Exception e) {
 		                        // TODO Auto-generated catch block
 		                    }

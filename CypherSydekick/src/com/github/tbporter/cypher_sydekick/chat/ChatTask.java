@@ -15,6 +15,10 @@ import org.apache.http.protocol.HTTP;
 import com.github.tbporter.cypher_sydekick.R;
 import com.github.tbporter.cypher_sydekick.crypt.Crypt;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Log;
@@ -27,6 +31,7 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 	private String recipient_;
 	private ConversationAdapter convAdapter_;
 	
+	private Context context_;
 	
 	// Might have to add an instance of the Crypt class if we want to do encryption and decription in this class
 	public ChatTask(){
@@ -34,9 +39,10 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 	}
 	
 	// Only need to make one instance of this class since the conversation items list array ref remains the same
-	public ChatTask(ConversationAdapter adapter, ArrayList<ConversationItem> convItems){
+	public ChatTask(ConversationAdapter adapter, ArrayList<ConversationItem> convItems, Context c){
 		convAdapter_ = adapter;
 		activityConversationItems_ = convItems;
+		context_ = c;
 	}
 	
 	// The two following methods are called when chatting with a new user is initiated
@@ -127,10 +133,20 @@ public class ChatTask extends AsyncTask<String, Void, String> {
      			newItem.setIcon(R.drawable.ic_action_person);
 				activityConversationItems_.add(newItem);
 				convAdapter_.notifyDataSetChanged();
+				if(context_ != null){
+					Log.d("Notify", result);
+					NotificationManager nMan = (NotificationManager) context_.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+					Notification n = new Notification.Builder(context_)
+						.setContentTitle("New message from " + sender_)
+						.setContentText(result)
+						.setSmallIcon(R.drawable.ic_launcher)
+						.setAutoCancel(false)
+						.build();
+					nMan.notify((int)System.currentTimeMillis(), n);
+				}
 			}
 		}
 	}
-	
 	private String getContents(HttpURLConnection connection) throws IOException {
         BufferedReader inReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
