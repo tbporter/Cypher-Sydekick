@@ -27,9 +27,10 @@ public class UserKeyDOA {
 		dbHelper.close();
 	}
 	
-	public UserKey createUser(String comment) {
+	public UserKey createUser(String user, String key) {
 		ContentValues values = new ContentValues();
-		values.put(UserKeyDatabaseHelper.COLUMN_USERNAME, comment);
+		values.put(UserKeyDatabaseHelper.COLUMN_USERNAME, user);
+		values.put(UserKeyDatabaseHelper.COLUMN_KEY, key);
 		long insertId = database.insert(UserKeyDatabaseHelper.TABLE_KEYS, null, values);
 		Cursor cursor = database.query(UserKeyDatabaseHelper.TABLE_KEYS, allColumns,
 				UserKeyDatabaseHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
@@ -45,8 +46,12 @@ public class UserKeyDOA {
 		database.delete(UserKeyDatabaseHelper.TABLE_KEYS, UserKeyDatabaseHelper.COLUMN_ID + " = " + id, null);
 	}
 	
-	public List<String> getAllUsers() {
-		List<String> usernames = new ArrayList<String>();
+	public void deleteAllUsers() {
+		database.delete(UserKeyDatabaseHelper.TABLE_KEYS, null, null);
+	}
+	
+	public ArrayList<String> getAllUsers() {
+		ArrayList<String> usernames = new ArrayList<String>();
 	
 		Cursor cursor = database.query(UserKeyDatabaseHelper.TABLE_KEYS, allColumns,
 				null, null, null, null, null);
@@ -73,8 +78,8 @@ public class UserKeyDOA {
 	public String getKeyViaUsername(String username) {
 		String newKey = null;
 
-		Cursor cursor = database.query(UserKeyDatabaseHelper.COLUMN_USERNAME, allColumns,
-				"username=" + username, null, null, null, null);
+		Cursor cursor = database.query(UserKeyDatabaseHelper.TABLE_KEYS, null,
+				"username=?", new String[]{username}, null, null, null);
 		cursor.moveToFirst();
 		UserKey cursordata = cursorToData(cursor);
 		newKey = cursordata.getKey();

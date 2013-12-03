@@ -41,6 +41,7 @@ import com.github.tbporter.cypher_sydekick.nfc.NFCManagerException;
 import com.github.tbporter.cypher_sydekick.users.UserInfo;
 import com.github.tbporter.cypher_sydekick.chat.*;
 import com.github.tbporter.cypher_sydekick.crypt.Crypt;
+import com.github.tbporter.cypher_sydekick.database.UserKeyDOA;
 import com.github.tbporter.cypher_sydekick.database.UserKeyDatabaseHelper;
 
 public class ChatClientActivity extends Activity {
@@ -58,6 +59,8 @@ public class ChatClientActivity extends Activity {
 	private ArrayAdapter<String> mDrawerAdapter;
 	
 	private ChatFragment chatFragment_ = new ChatFragment();
+	
+	private UserKeyDOA userKeyDatabase_;
 
 	/** NFCManager to handle NFC operations. */
 	private NFCManager m_nfcManager;
@@ -90,7 +93,9 @@ public class ChatClientActivity extends Activity {
 		}
 		
 		// TODO: init database
-
+		userKeyDatabase_ = new UserKeyDOA(this);
+		userKeyDatabase_.open();
+		
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction()
 				.replace(R.id.content_frame, chatFragment_).commit();
@@ -100,7 +105,7 @@ public class ChatClientActivity extends Activity {
 		/*mFriendsArray = new String[] { "user1", "user2", "user3", "user4",
 				"user5", "user6", "user7", "user8", "user9", "user10",
 				"user11", "user12", "user13", "user14" };*/
-		mFriendsArray.add("TestUser");
+		mFriendsArray = userKeyDatabase_.getAllUsers();
 		
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -192,7 +197,8 @@ public class ChatClientActivity extends Activity {
         		}
         		
         		pubKeyString_ = new String(Crypt.getPublicKey(), Charset.forName("US-ASCII"));
-
+        		userKeyDatabase_.deleteAllUsers();
+        		mFriendsArray.clear();
             	Toast.makeText(getApplicationContext(), "Add new user pressed: " + usernameInput.getText().toString() + "\nKey: " + pubKeyString_, Toast.LENGTH_SHORT).show();
             }
         });
@@ -241,17 +247,14 @@ public class ChatClientActivity extends Activity {
 			// Parse the intent with the NFCManager
 			final UserInfo receivedUser = m_nfcManager.handleIntent(intent);
 			
-			// TODO: database Add the new friend to the sql database
-			/*try {
-				KeyDatabaseManager.addFriend(receivedUser.getUsername(), receivedUser.getPublicKey());
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
+			// Add the new user to the database
+			userKeyDatabase_.createUser(receivedUser.getUsername(), receivedUser.getPublicKey());
 			
 			// Add the new user to the drawer
-			mFriendsArray.add(receivedUser.getUsername());
-			mDrawerAdapter.notifyDataSetChanged();
+			if(!mFriendsArray.contains(receivedUser.getUsername())){
+				mFriendsArray.add(receivedUser.getUsername());
+				mDrawerAdapter.notifyDataSetChanged();
+			}
 			
 			// Make sure the UserInfo was parsed successfully
 			if (null != receivedUser) {
@@ -335,8 +338,12 @@ public class ChatClientActivity extends Activity {
 	private void selectItem(int position) {
 		mDrawerList.setItemChecked(position, true);
 		mDrawerLayout.closeDrawer(mDrawerList);
-		setTitle(mDrawerList.getItemAtPosition(position).toString());
-		// TODO here is where a new user is selected to chat with
+		String newUser = mDrawerList.getItemAtPosition(position).toString();
+		setTitle(newUser);
+		
+		// Here is where a new user is selected to chat with
+		chatFragment_.setRecipient(newUser, userKeyDatabase_.getKeyViaUsername(newUser));
+		chatFragment_.setMyUsername(username_);
 	}
 
 	@Override
@@ -360,7 +367,7 @@ public class ChatClientActivity extends Activity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		// Pass any configuration change to the drawer toggls
+		// Pass any configuration change to the drawer toggles
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
@@ -371,14 +378,21 @@ public class ChatClientActivity extends Activity {
 		private ImageButton sendButton_;
 		private EditText messageField_;
 		
-		private String recipientUsername_;
+		private String myUsername_;
+		private String recipientUsername_, recipientPubKey_;
+		private ChatTask messageChatTask_;
 		
 		public ChatFragment() {
 			// Empty constructor required for fragment subclasses
 		}
 		
-		public void setRecipientUsername(String username){
+		public void setMyUsername(String username){
+			myUsername_ = username;
+		}
+		
+		public void setRecipient(String username, String key){
 			recipientUsername_ = username;
+			recipientPubKey_ = key;
 		}
 
 		@Override
@@ -392,6 +406,8 @@ public class ChatClientActivity extends Activity {
 			ConversationAdapter newAdapter = new ConversationAdapter(getActivity(), conversationItems_);
 			conversationListView_.setAdapter(newAdapter);
 			
+			messageChatTask_ = new ChatTask(conversationItems_);
+			
 			sendButton_ = (ImageButton) rootView.findViewById(R.id.btn_sendMessage);
 			messageField_ = (EditText) rootView.findViewById(R.id.editText_message);
 
@@ -399,11 +415,12 @@ public class ChatClientActivity extends Activity {
 	             public void onClick(View v) {
 	            	ConversationItem newItem = new ConversationItem();
 	     			newItem.setMessage(messageField_.getText().toString());
-	     			newItem.setSubtitle("My Username");
+	     			newItem.setSubtitle("Sent from " + myUsername_);
 	     			newItem.setIcon(R.drawable.ic_action_person);
 	     			conversationItems_.add(newItem);
-	     			
 	     			// TODO Here is where we should fire the AsyncTaskto send the message
+	     			messageChatTask_.execute("send-message", myUsername_, recipientUsername_, recipientPubKey_, messageField_.getText().toString());
+	     			
 	     			messageField_.setText("");
 	             }
 	        });

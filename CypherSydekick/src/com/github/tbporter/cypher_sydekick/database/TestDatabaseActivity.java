@@ -38,10 +38,11 @@ public class TestDatabaseActivity extends ListActivity {
     UserKey username = null;
     switch (view.getId()) {
     case R.id.add:
-      String[] usernames = new String[] { "Ben", "Travis", "Alex" };
+      String[] namelist = new String[] { "Ben", "Travis", "Alex" };
+      String[] keylist = new String[] { "FA8400DB", "FA8400DC", "FA8400DD" };
       int nextInt = new Random().nextInt(3);
       // save the new users to the database
-      username = datasource.createUser(usernames[nextInt]);
+      username = datasource.createUser(namelist[nextInt], keylist[nextInt]);
       adapter.add(username);
       break;
     case R.id.delete:
