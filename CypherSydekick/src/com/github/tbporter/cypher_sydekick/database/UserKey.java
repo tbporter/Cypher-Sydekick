@@ -20,6 +20,14 @@ public class UserKey {
 		this.username_ = username;
 	}
 
+	public String getKey() {
+		return key_;
+	}
+
+	public void setKey(String key) {
+		this.key_ = key;
+	}
+
 	@Override
 	public String toString() {
 		return "Username: " + username_ + "Public key: " + key_;
