@@ -51,6 +51,7 @@ public class Shooter extends AI {
 			else {
 				mEntity.setHeading(p.getX() - mEntity.getX(), p.getY()
 						- mEntity.getY());
+				facePoint(p);
 				bullet = mEntity.shoot();
 			}
 			break;
@@ -60,6 +61,7 @@ public class Shooter extends AI {
 			else {
 				mEntity.setHeading(mEntity.getX() - p.getX(), mEntity.getY()
 						- p.getY());
+				facePoint(p);
 				bullet = mEntity.shoot();
 			}
 			break;
@@ -69,6 +71,7 @@ public class Shooter extends AI {
 			else if (dist >= SAFE_DIST + SAFE_DIST_JITTER)
 				mState = States.chasing;
 			else {
+				facePoint(p);
 				bullet = mEntity.shoot();
 			}
 			break;
