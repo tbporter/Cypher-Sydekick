@@ -27,9 +27,10 @@ public class UserKeyDOA {
 		dbHelper.close();
 	}
 	
-	public UserKey createUser(String comment) {
+	public UserKey createUser(String user, String key) {
 		ContentValues values = new ContentValues();
-		values.put(UserKeyDatabaseHelper.COLUMN_USERNAME, comment);
+		values.put(UserKeyDatabaseHelper.COLUMN_USERNAME, user);
+		values.put(UserKeyDatabaseHelper.COLUMN_KEY, key);
 		long insertId = database.insert(UserKeyDatabaseHelper.TABLE_KEYS, null, values);
 		Cursor cursor = database.query(UserKeyDatabaseHelper.TABLE_KEYS, allColumns,
 				UserKeyDatabaseHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
