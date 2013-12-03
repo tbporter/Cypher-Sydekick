@@ -63,8 +63,8 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 				if(message.contains(" "))
 						message = params[4].replaceAll("\\s", WHITESPACE);
 				// Encryption is done here
-				byte[] encryptedBytes = Crypt.encrypt(Base64.decode(message, Base64.NO_PADDING), Base64.decode(params[3], Base64.DEFAULT));
-				message = Base64.encodeToString(encryptedBytes, Base64.NO_PADDING);
+				byte[] encryptedBytes = Crypt.encrypt(message.getBytes(), Base64.decode(params[3], Base64.NO_PADDING ));
+				message = Base64.encodeToString(encryptedBytes, Base64.NO_PADDING );
 				url = SERVER_URL_DEFAULT + "messages?action=send&sender="+params[1].trim() + "&recipient="+params[2].trim() + "&message="+URLEncoder.encode(message, HTTP.UTF_8);
 				HttpURLConnection connection = (HttpURLConnection)(new URL(url).openConnection());
 	            connection.setRequestMethod("GET");
@@ -90,8 +90,8 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 		    		}
 		    		else{
 		    			messageEnc = messageEnc.substring(messageEnc.indexOf(".")+1);
-		    			byte[] messageByte = Crypt.decrypt(Base64.decode(messageEnc, Base64.NO_PADDING));
-		    			String messageDec = Base64.encodeToString(messageByte, Base64.NO_PADDING);
+		    			byte[] messageByte = Crypt.decrypt(Base64.decode(messageEnc, Base64.NO_PADDING ));
+		    			String messageDec = new String(messageByte);
 		    			if(messageDec.contains(WHITESPACE));
 		    				messageDec = messageDec.replaceAll(Pattern.quote(WHITESPACE), " ");
 		    			return messageDec;

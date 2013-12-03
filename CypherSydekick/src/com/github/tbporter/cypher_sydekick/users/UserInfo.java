@@ -53,7 +53,7 @@ public class UserInfo implements Serializable {
 			ObjectOutputStream oos = new ObjectOutputStream(baos);
 			oos.writeObject(this);
 			oos.close();
-			retVal = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+			retVal = Base64.encodeToString(baos.toByteArray(), Base64.NO_PADDING );
 		} catch (IOException ioe) {
 			// Just return null to indicate error
 		}
@@ -75,7 +75,7 @@ public class UserInfo implements Serializable {
 
 		try {
 			final byte[] decodedBytes = Base64.decode(serializedString,
-					Base64.DEFAULT);
+					Base64.NO_PADDING );
 			ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
 			ObjectInputStream ois = new ObjectInputStream(bais);
 			retVal = (UserInfo) ois.readObject();
