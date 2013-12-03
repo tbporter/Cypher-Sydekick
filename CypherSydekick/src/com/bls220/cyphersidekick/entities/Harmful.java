@@ -12,5 +12,4 @@ public interface Harmful {
 	 * @return The amount of damage to be dealt by this object.
 	 */
 	public float getDamage();
-
 }

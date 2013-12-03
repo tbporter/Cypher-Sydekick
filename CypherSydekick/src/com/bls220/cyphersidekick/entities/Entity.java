@@ -21,6 +21,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.bls220.cyphersidekick.MySidekick;
 import com.bls220.cyphersidekick.entities.ai.AI;
 
 public class Entity {
@@ -30,7 +31,8 @@ public class Entity {
 	protected AI mAI;
 	protected Body mBody;
 	protected Sprite mSprite;
-
+	protected  long mShootTime;
+	
 	public static float TILE_WIDTH, TILE_HEIGHT;
 	public static ArrayList<Entity> mEntities;
 	private static TiledMapTileSet TILES;
@@ -178,7 +180,7 @@ public class Entity {
 		
 		//Do any ai calculations if the entity has it
 		if(mAI != null)
-			mAI.update();
+			mAI.update(delta);
 		
 		// Update Body
 		updateBody();
@@ -225,5 +227,34 @@ public class Entity {
 	
 	public void setAI(AI ai){
 		mAI = ai;
+	}
+	
+	
+	/**
+	 * Causes the entity to shoot a bullet
+	 * 
+	 * @return - the bullet that was shot
+	 */
+	protected Bullet shoot(final long shootDelay) {
+		System.out.println("Shoot()!");
+		long curTime = System.currentTimeMillis();
+		Bullet bullet = null;
+		if (curTime - shootDelay >= mShootTime) {
+			float angle = mBody.getAngle();
+			Vector2 heading = new Vector2(MathUtils.cos(angle),
+					MathUtils.sin(angle)).nor().scl(1.2f);
+			bullet = new Bullet(Entity.getTileRegion(17).getTextureRegion(),
+					getX() + heading.x, getY() + heading.y,
+					MySidekick.getWorld());
+			bullet.setRotation(angle);
+			bullet.setHeading(heading.x, heading.y);
+			mShootTime = curTime;
+		}
+		return bullet;
+	}
+	
+	//Override this
+	public Bullet shoot(){
+		return null;
 	}
 }

@@ -11,15 +11,15 @@ public class Shooter extends AI {
 	private static final double DETECT_DIST = 7; //entity inactive until player is within this range
 	private static final double STOP_CHASE_DIST = 10; //entity will stop chasing player
 	private static final double SAFE_DIST = 3; //entity will try to keep this distance
-	private static final double SAFE_DIST_JITTER = .3; //so the entity doesn't have to be exactly precise
+	private static final double SAFE_DIST_JITTER = .5; //so the entity doesn't have to be exactly precise
 	
-	Shooter(Entity e) {
+	public Shooter(Entity e) {
 		super(e);
 		mState = States.idle;
 	}
 	
 	@Override
-	public void update() {
+	public void update(float delta) {
 		Player p = MainScreen.mPlayer;
 		Double dist = Entity.getDist(mEntity, p);
 		switch(mState){
@@ -27,6 +27,7 @@ public class Shooter extends AI {
 			if(dist <= DETECT_DIST){
 				mState = States.chasing;
 			}
+			mEntity.setHeading(0,0);
 			break;
 		case chasing:
 			if(dist >= STOP_CHASE_DIST)
@@ -37,6 +38,7 @@ public class Shooter extends AI {
 				mState = States.standing;
 			else{
 				mEntity.setHeading(p.getX() - mEntity.getX(),p.getY() - mEntity.getY());
+				//mEntity.shoot();
 			}
 			break;
 		case running:
@@ -44,6 +46,7 @@ public class Shooter extends AI {
 				mState = States.chasing;
 			else{
 				mEntity.setHeading(mEntity.getX() - p.getX(), mEntity.getY() - p.getY());
+				//mEntity.shoot();
 			}
 			break;
 		case standing:
@@ -52,7 +55,7 @@ public class Shooter extends AI {
 			else if(dist >= SAFE_DIST + SAFE_DIST_JITTER)
 				mState = States.chasing;
 			else{
-				
+				//mEntity.shoot();
 			}
 			break;
 		}

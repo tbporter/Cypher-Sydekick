@@ -18,7 +18,7 @@ public class Melee extends AI {
 	}
 
 	@Override
-	public void update() {
+	public void update(float delta) {
 		Player p = MainScreen.mPlayer;
 		Double dist = Entity.getDist(mEntity, p);
 		switch(mState){
@@ -26,6 +26,7 @@ public class Melee extends AI {
 			if(dist <= DETECT_DIST){
 				mState = States.chasing;
 			}
+			mEntity.setHeading(0,0);
 			break;
 		case chasing:
 			if(dist >= STOP_CHASE_DIST){

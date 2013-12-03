@@ -22,8 +22,6 @@ public class Player extends Entity implements Living {
 
 	private float mHealth;
 
-	private long shootTime;
-
 	private int mPillarCount;
 
 	private static final float SPEED = 4f; // m/s
@@ -52,35 +50,16 @@ public class Player extends Entity implements Living {
 		mSpeed = SPEED;
 		mHealth = MAX_HEALTH;
 	}
-
-	/**
-	 * Causes the player to shoot a bullet
-	 * 
-	 * @return - the bullet that was shot
-	 */
-	public Bullet shoot() {
-		long curTime = System.currentTimeMillis();
-		Bullet bullet = null;
-		if (curTime - SHOOT_DELAY >= shootTime) {
-			float angle = mBody.getAngle();
-			Vector2 heading = new Vector2(MathUtils.cos(angle),
-					MathUtils.sin(angle)).nor().scl(1.2f);
-			bullet = new Bullet(Entity.getTileRegion(17).getTextureRegion(),
-					getX() + heading.x, getY() + heading.y,
-					MySidekick.getWorld());
-			bullet.setRotation(angle);
-			bullet.setHeading(heading.x, heading.y);
-			shootTime = curTime;
-		}
-		return bullet;
+	@Override
+	public Bullet shoot(){
+		return super.shoot(SHOOT_DELAY);
 	}
-
 	/**
 	 * Handles players interaction with other objects, excluding physics
 	 * 
 	 * @param tileTouch
 	 *            - Which tile is to be activated
-	 * @param map
+	 * @param mapa
 	 *            - The current level's map
 	 */
 	public void activate(Vector2 tileTouch, TiledMap map) {
