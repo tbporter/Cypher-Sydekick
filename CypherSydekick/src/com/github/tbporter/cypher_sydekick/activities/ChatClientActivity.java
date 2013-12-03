@@ -9,6 +9,8 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,6 +22,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -406,6 +409,9 @@ public class ChatClientActivity extends Activity {
 			View rootView = inflater.inflate(R.layout.fragment_chat, container,
 					false);
 			
+			myUsername_ = "";
+			recipientUsername_ = "";
+			
 			// Setup the adapter for the conversation list view			
 			conversationListView_ = (ListView) rootView.findViewById(R.id.listView_conversation);
 			ConversationAdapter newAdapter = new ConversationAdapter(getActivity(), conversationItems_);
@@ -427,8 +433,32 @@ public class ChatClientActivity extends Activity {
 	     			messageField_.setText("");
 	             }
 	        });
+			callAsynchronousTask();
 			
 			return rootView;
+		}
+		
+		public void callAsynchronousTask() {
+		    final Handler handler = new Handler();
+		    Timer timer = new Timer();
+		    TimerTask doAsynchronousTask = new TimerTask() {       
+		        @Override
+		        public void run() {
+		            handler.post(new Runnable() {
+		                public void run() {       
+		                    try {
+		                        //PerformBackgroundTask performBackgroundTask = new PerformBackgroundTask();
+		                        // PerformBackgroundTask this class is the class that extends AsynchTask 
+		                        //performBackgroundTask.execute();
+		                    	new ChatTask(conversationItems_).execute("receive-message", myUsername_, recipientUsername_);
+		                    } catch (Exception e) {
+		                        // TODO Auto-generated catch block
+		                    }
+		                }
+		            });
+		        }
+		    };
+		    timer.schedule(doAsynchronousTask, 0, 50000); //execute in every 1000 ms
 		}
 
 	}

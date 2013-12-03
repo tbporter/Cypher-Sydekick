@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import org.apache.http.protocol.HTTP;
 
+import com.github.tbporter.cypher_sydekick.R;
 import com.github.tbporter.cypher_sydekick.crypt.Crypt;
 
 import android.os.AsyncTask;
@@ -25,7 +26,7 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 	
 	// Might have to add an instance of the Crypt class if we want to do encryption and decription in this class
 	public ChatTask(){
-		
+		activityConversationItems_ = null;
 	}
 	
 	// Only need to make one instance of this class since the conversation items list array ref remains the same
@@ -67,7 +68,24 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 	    		connection.disconnect();
 			}
 			else if(params[0].equals("receive-message")){	// receive
-				
+				if(!params[1].equals("") && !params[2].equals("")){
+					sender_ = params[2].trim();
+					url = SERVER_URL_DEFAULT + "messages?action=receive&sender="+params[2].trim() + "&recipient="+params[1].trim();
+					HttpURLConnection connection = (HttpURLConnection)(new URL(url).openConnection());
+		            connection.setRequestMethod("GET");
+		            connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+	                connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.114 Safari/537.36");
+		    		connection.connect();
+		    		String message = getContents(connection);
+		    		connection.disconnect();
+		    		if(message.contains("Error")){
+		    			return null;
+		    		}
+		    		else{
+		    			message = message.substring(message.indexOf("."));
+		    			return message;
+		    		}
+				}
 			}
 			else{	// add user
 				url = SERVER_URL_DEFAULT + "users?username=" + params[0];
@@ -89,7 +107,15 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 
 	@Override
 	protected void onPostExecute(String result) {
-
+		if(result != null){
+			if(activityConversationItems_ != null){
+				ConversationItem newItem = new ConversationItem();
+     			newItem.setMessage(result);
+     			newItem.setSubtitle("Received from " + sender_);
+     			newItem.setIcon(R.drawable.ic_action_person);
+				activityConversationItems_.add(newItem);
+			}
+		}
 	}
 	
 	private String getContents(HttpURLConnection connection) throws IOException {
