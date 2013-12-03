@@ -59,8 +59,8 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 			if(params[0].equals("send-message")){	// send
 				String message;
 				// Encryption is done here
-				byte[] encryptedBytes = Crypt.encrypt(Base64.decode(params[4], Base64.DEFAULT), Base64.decode(params[3], Base64.DEFAULT));
-				message = Base64.encodeToString(encryptedBytes, Base64.DEFAULT);
+				byte[] encryptedBytes = Crypt.encrypt(Base64.decode(params[4], Base64.NO_PADDING), Base64.decode(params[3], Base64.DEFAULT));
+				message = Base64.encodeToString(encryptedBytes, Base64.NO_PADDING);
 				url = SERVER_URL_DEFAULT + "messages?action=send&sender="+params[1].trim() + "&recipient="+params[2].trim() + "&message="+URLEncoder.encode(message, HTTP.UTF_8);
 				HttpURLConnection connection = (HttpURLConnection)(new URL(url).openConnection());
 	            connection.setRequestMethod("GET");
@@ -79,15 +79,16 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 		            connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
 	                connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.114 Safari/537.36");
 		    		connection.connect();
-		    		String message = getContents(connection);
+		    		String messageEnc = getContents(connection);
 		    		connection.disconnect();
-		    		if(message.contains("Error")){
+		    		if(messageEnc.contains("Error")){
 		    			return null;
 		    		}
 		    		else{
-		    			message = message.substring(message.indexOf(".")+1);
-		    			
-		    			return message;
+		    			messageEnc = messageEnc.substring(messageEnc.indexOf(".")+1);
+		    			byte[] messageByte = Crypt.decrypt(Base64.decode(messageEnc, Base64.NO_PADDING));
+		    			String messageDec = Base64.encodeToString(messageByte, Base64.NO_PADDING);
+		    			return messageDec;
 		    		}
 				}
 			}

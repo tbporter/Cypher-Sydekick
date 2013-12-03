@@ -88,9 +88,9 @@ public class ChatClientActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			username_ = Base64.encodeToString(usernameBytes, Base64.DEFAULT);
+			username_ = Base64.encodeToString(usernameBytes, Base64.NO_PADDING);
 			
-			pubKeyString_ = Base64.encodeToString(Crypt.getPublicKey(), Base64.DEFAULT);
+			pubKeyString_ = Base64.encodeToString(Crypt.getPublicKey(), Base64.NO_PADDING);
 			
 			Toast.makeText(this, "Hello " + username_, Toast.LENGTH_LONG).show();
 		}
@@ -193,7 +193,7 @@ public class ChatClientActivity extends Activity {
         			
         			// Create username file with the username
         			FileOutputStream out = openFileOutput(USERNAME_FILE, Context.MODE_PRIVATE);
-                	out.write(Base64.decode(username_, Base64.DEFAULT));
+                	out.write(Base64.decode(username_, Base64.NO_PADDING));
                 	
             		out.close();
             		
@@ -204,7 +204,7 @@ public class ChatClientActivity extends Activity {
         		}
         		byte[] pubKeyBytes = Crypt.getPublicKey();
         		
-        		pubKeyString_ = Base64.encodeToString(pubKeyBytes, Base64.DEFAULT);
+        		pubKeyString_ = Base64.encodeToString(pubKeyBytes, Base64.NO_PADDING);
         		
         		userKeyDatabase_.deleteAllUsers();
         		mFriendsArray.clear();
