@@ -14,16 +14,14 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSets;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.bls220.cyphersidekick.MySidekick;
 import com.bls220.cyphersidekick.comm.MsgHandler;
 import com.bls220.cyphersidekick.entities.Enemy;
 import com.bls220.cyphersidekick.entities.Portal;
 import com.bls220.cyphersidekick.mapstuff.C;
+import com.bls220.cyphersidekick.util.BodyFactory;
 import com.github.tbporter.cypher_sydekick.database.UserKeyDOA;
 
 public class RandomLevel extends Level {
@@ -77,21 +75,19 @@ public class RandomLevel extends Level {
 		// Generate walls
 		for (int y = 0; y < tileLayer.getHeight(); y++) {
 			tileLayer.setCell(0, y, wallCell);
-			createStaticTileBody(loader, world, "square").setTransform(
-					0 + 0.5f, y + 0.5f, 0);
+			BodyFactory.createBody(world, "tile", BodyType.StaticBody, 0, y);
 
 			tileLayer.setCell(tileLayer.getWidth() - 1, y, wallCell);
-			createStaticTileBody(loader, world, "square").setTransform(
-					(tileLayer.getWidth() - 1) + 0.5f, y + 0.5f, 0);
+			BodyFactory.createBody(world, "tile", BodyType.StaticBody,
+					(tileLayer.getWidth() - 1), y);
 		}
 		for (int x = 0; x < tileLayer.getWidth(); x++) {
 			tileLayer.setCell(x, 0, wallCell);
-			createStaticTileBody(loader, world, "square").setTransform(
-					x + 0.5f, 0 + 0.5f, 0);
+			BodyFactory.createBody(world, "tile", BodyType.StaticBody, x, 0);
 
 			tileLayer.setCell(x, tileLayer.getHeight() - 1, wallCell);
-			createStaticTileBody(loader, world, "square").setTransform(
-					x + 0.5f, (tileLayer.getHeight() - 1) + 0.5f, 0);
+			BodyFactory.createBody(world, "tile", BodyType.StaticBody, x,
+					(tileLayer.getHeight() - 1));
 		}
 
 		// Place enemies
@@ -132,27 +128,6 @@ public class RandomLevel extends Level {
 		datasource.close();
 	}
 
-	private Body createStaticTileBody(BodyEditorLoader loader, World world,
-			String name) {
-
-		// 1. Create a BodyDef, as usual.
-		BodyDef bd = new BodyDef();
-		bd.type = BodyType.StaticBody;
-
-		// 2. Create a FixtureDef, as usual.
-		FixtureDef fd = new FixtureDef();
-		fd.density = 1;
-		fd.friction = 0.5f;
-		fd.restitution = 0.3f;
-
-		// 3. Create a Body, as usual.
-		Body body = world.createBody(bd);
-
-		// 4. Create the body fixture automatically by using the loader.
-		loader.attachFixture(body, name, fd, 1);
-		return body;
-	}
-
 	private void generateCentralRoom(TiledMapTileSets tileSets,
 			TiledMapTileLayer tileLayer, MapLayer objectLayer, World world,
 			BodyEditorLoader loader) {
@@ -186,25 +161,25 @@ public class RandomLevel extends Level {
 		for (int y = (int) (center.y - roomWidth / 2 + 1); y < center.y
 				+ roomWidth / 2; y++) {
 			tileLayer.setCell((int) (center.x - roomWidth / 2), y, wallCell);
-			createStaticTileBody(loader, world, "square").setTransform(
-					(center.x - roomWidth / 2) + 0.5f, y + 0.5f, 0);
+			BodyFactory.createBody(world, "tile", BodyType.StaticBody,
+					(center.x - roomWidth / 2), y);
 
 			tileLayer.setCell((int) (center.x + roomWidth / 2), y, wallCell);
-			createStaticTileBody(loader, world, "square").setTransform(
-					(center.x + roomWidth / 2) + 0.5f, y + 0.5f, 0);
+			BodyFactory.createBody(world, "tile", BodyType.StaticBody,
+					(center.x + roomWidth / 2), y);
 		}
 		for (int x = (int) (center.x - roomWidth / 2); x < center.x + roomWidth
 				/ 2 + 1; x++) {
 			if (x != center.x) {
 				tileLayer
 						.setCell(x, (int) (center.y - roomWidth / 2), wallCell);
-				createStaticTileBody(loader, world, "square").setTransform(
-						x + 0.5f, (center.y - roomWidth / 2) + 0.5f, 0);
+				BodyFactory.createBody(world, "tile", BodyType.StaticBody, x,
+						(center.y - roomWidth / 2));
 			}
 
 			tileLayer.setCell(x, (int) (center.y + roomWidth / 2), wallCell);
-			createStaticTileBody(loader, world, "square").setTransform(
-					x + 0.5f, (center.y + roomWidth / 2) + 0.5f, 0);
+			BodyFactory.createBody(world, "tile", BodyType.StaticBody, x,
+					(center.y + roomWidth / 2));
 		}
 
 		// Place pillars
@@ -263,8 +238,8 @@ public class RandomLevel extends Level {
 		npc.getProperties().put("pillarNum", pillarNum);
 		npc.getProperties().put("hasKey", hasKey);
 		npc.setName(name);
-		createStaticTileBody(loader, world, "square").setTransform(
-				tileX + 0.5f, tileY + 0.5f, 0);
+		BodyFactory
+				.createBody(world, "tile", BodyType.StaticBody, tileX, tileY);
 
 		objs.add(npc);
 
@@ -300,8 +275,8 @@ public class RandomLevel extends Level {
 		pillarBottom.getProperties().put("y", (int) (tileY * TILE_HEIGHT));
 		pillarBottom.getProperties().put("gid", PILLAR_OFF_BOTTOM_ID);
 		pillarBottom.getProperties().put("pillarNum", pillarNum);
-		createStaticTileBody(loader, world, "pillar").setTransform(
-				tileX + 0.5f, tileY + 0.5f, 0);
+		BodyFactory.createBody(world, "pillar", BodyType.StaticBody, tileX,
+				tileY);
 
 		objs.add(pillarBottom);
 		objs.add(pillarTop);

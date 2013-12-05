@@ -11,9 +11,6 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.bls220.cyphersidekick.entities.ai.AI;
-import com.bls220.cyphersidekick.entities.ai.Melee;
-import com.bls220.cyphersidekick.entities.ai.Shooter;
-import com.bls220.cyphersidekick.screens.MainScreen;
 
 /**
  * @author bsmith
@@ -23,7 +20,7 @@ public class Enemy extends Entity implements Harmful, Living {
 
 	float mHealth;
 	float mDamage;
-	
+
 	private static final long SHOOT_DELAY = 400;
 	public static final float MAX_HEALTH = 100;
 	private static final float SPEED = 2;
@@ -43,8 +40,7 @@ public class Enemy extends Entity implements Harmful, Living {
 	 * @param world
 	 */
 	public Enemy(String texturePath, float x, float y, World world) {
-		
-		
+
 		this(new TextureRegion(new Texture(Gdx.files.internal(texturePath))),
 				x, y, world);
 	}
@@ -56,7 +52,7 @@ public class Enemy extends Entity implements Harmful, Living {
 	 * @param world
 	 */
 	public Enemy(TextureRegion textReg, float x, float y, World world) {
-		super(textReg, x, y, world);
+		super(textReg, x, y, world, "square");
 		setAI(AI.RandomFactory(this));
 		mBody.setBullet(true); // More accurate collision detection
 		mBody.setFixedRotation(true);
@@ -110,7 +106,6 @@ public class Enemy extends Entity implements Harmful, Living {
 		super.onCollisionEnd(contact, otherFixture);
 	}
 
-	
 	@Override
 	public float getDamage() {
 		return mDamage;
@@ -130,9 +125,9 @@ public class Enemy extends Entity implements Harmful, Living {
 	public float getMaxHealth() {
 		return MAX_HEALTH;
 	}
-	
+
 	@Override
-	public Bullet shoot(){
+	public Bullet shoot() {
 		return super.shoot(SHOOT_DELAY);
 	}
 }

@@ -36,7 +36,7 @@ public class Player extends Entity implements Living {
 
 	public Player(String[] spritePaths, TiledMap map, MapActions actions,
 			int x, int y, World world) {
-		super(spritePaths[1], x, y, world);
+		super(spritePaths[1], x, y, world, "circle");
 		Gdx.app.log(TAG, String.format("Player spawned at (%d, %d)", x, y));
 		mBody.setFixedRotation(true);
 

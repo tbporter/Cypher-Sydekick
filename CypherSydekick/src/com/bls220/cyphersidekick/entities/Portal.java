@@ -48,7 +48,7 @@ public class Portal extends Entity {
 	 * @param world
 	 */
 	public Portal(TextureRegion textReg, float x, float y, World world) {
-		super(textReg, x, y, world);
+		super(textReg, x, y, world, "circle");
 		Fixture fixture = mBody.getFixtureList().get(0);
 
 		Filter filter = fixture.getFilterData();

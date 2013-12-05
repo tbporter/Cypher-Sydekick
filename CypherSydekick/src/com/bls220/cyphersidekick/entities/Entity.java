@@ -14,15 +14,14 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.bls220.cyphersidekick.MySidekick;
 import com.bls220.cyphersidekick.entities.ai.AI;
+import com.bls220.cyphersidekick.util.BodyFactory;
 
 public class Entity {
 
@@ -31,8 +30,8 @@ public class Entity {
 	protected AI mAI;
 	protected Body mBody;
 	protected Sprite mSprite;
-	protected  long mShootTime;
-	
+	protected long mShootTime;
+
 	public static float TILE_WIDTH, TILE_HEIGHT;
 	public static ArrayList<Entity> mEntities;
 	private static TiledMapTileSet TILES;
@@ -52,17 +51,18 @@ public class Entity {
 		}
 	}
 
-	public Entity(String texturePath, World world) {
-		this(texturePath, 0, 0, world);
+	public Entity(String texturePath, World world, String bodyShapeName) {
+		this(texturePath, 0, 0, world, bodyShapeName);
 	}
 
-	public Entity(String texturePath, float x, float y, World world) {
+	public Entity(String texturePath, float x, float y, World world,
+			String bodyShapeName) {
 		this(new TextureRegion(new Texture(Gdx.files.internal(texturePath))),
-				x, y, world);
+				x, y, world, bodyShapeName);
 	}
 
-	public Entity(TextureRegion textReg, World world) {
-		this(textReg, 0, 0, world);
+	public Entity(TextureRegion textReg, World world, String bodyShapeName) {
+		this(textReg, 0, 0, world, bodyShapeName);
 	}
 
 	/**
@@ -76,12 +76,11 @@ public class Entity {
 	 * @param world
 	 *            - the world
 	 */
-	public Entity(TextureRegion textReg, float x, float y, World world) {
+	public Entity(TextureRegion textReg, float x, float y, World world,
+			String bodyShapeName) {
 		mHeading = new Vector2();
 
 		// Create physics body
-		BodyDef bd = new BodyDef();
-		bd.type = BodyType.DynamicBody;
 
 		FixtureDef fd = new FixtureDef();
 		fd.density = 10;
@@ -90,22 +89,18 @@ public class Entity {
 		fd.filter.categoryBits = EEnityCategories.BOUNDARY.getValue();
 		fd.filter.maskBits = EEnityCategories.ALL.getValue();
 
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(0.5f, 0.5f);
-		fd.shape = shape;
-
-		mBody = world.createBody(bd);
-		mBody.createFixture(fd).setUserData(this);
-
-		shape.dispose();
-
-		setPosition(x, y);
+		mBody = BodyFactory.createBody(world, bodyShapeName,
+				BodyType.DynamicBody, x, y, fd);
+		for (Fixture fixture : mBody.getFixtureList()) {
+			fixture.setUserData(this);
+		}
 		mBody.setAngularVelocity(0);
 		mBody.setLinearVelocity(0, 0);
 		mBody.setLinearDamping(3f);
 
 		mSprite = new Sprite(textReg);
-		mSprite.setOrigin(TILE_WIDTH / 2, TILE_HEIGHT / 2);
+		Vector2 origin = new Vector2(0.5f, 0.5f).scl(TILE_WIDTH);
+		mSprite.setOrigin(origin.x, origin.y);
 
 		mEntities.add(this);
 	}
@@ -134,7 +129,7 @@ public class Entity {
 	 *            - in tiles (meters)
 	 */
 	public void setPosition(float x, float y) {
-		mBody.setTransform(x + 0.5f, y + 0.5f, 0);
+		mBody.setTransform(x, y, 0);
 	}
 
 	public Vector2 getHeading() {
@@ -164,7 +159,7 @@ public class Entity {
 	}
 
 	protected void updateSprite() {
-		mSprite.setPosition(getX() * TILE_WIDTH, getY() * TILE_HEIGHT);
+		mSprite.setPosition((getX()) * TILE_WIDTH, (getY()) * TILE_HEIGHT);
 		mSprite.setRotation(mBody.getAngle() * MathUtils.radiansToDegrees);
 	}
 
@@ -177,11 +172,11 @@ public class Entity {
 	}
 
 	public void update(float delta) {
-		
-		//Do any ai calculations if the entity has it
-		if(mAI != null)
+
+		// Do any ai calculations if the entity has it
+		if (mAI != null)
 			mAI.update(delta);
-		
+
 		// Update Body
 		updateBody();
 
@@ -221,15 +216,16 @@ public class Entity {
 	public void dispose() {
 		mSprite.getTexture().dispose();
 	}
-	static public double getDist(Entity a, Entity b){
-		return Math.sqrt(Math.pow(((double) a.getX()-b.getX()),2)+Math.pow(((double) a.getY()-b.getY()),2));
+
+	static public double getDist(Entity a, Entity b) {
+		return Math.sqrt(Math.pow(((double) a.getX() - b.getX()), 2)
+				+ Math.pow(((double) a.getY() - b.getY()), 2));
 	}
-	
-	public void setAI(AI ai){
+
+	public void setAI(AI ai) {
 		mAI = ai;
 	}
-	
-	
+
 	/**
 	 * Causes the entity to shoot a bullet
 	 * 
@@ -252,9 +248,9 @@ public class Entity {
 		}
 		return bullet;
 	}
-	
-	//Override this
-	public Bullet shoot(){
+
+	// Override this
+	public Bullet shoot() {
 		return null;
 	}
 }

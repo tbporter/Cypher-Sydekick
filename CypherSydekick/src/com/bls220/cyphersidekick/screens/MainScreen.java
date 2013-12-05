@@ -93,7 +93,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		mJoystick[1].setSize(w, w);
 
 		// Create message area
-		msgBox = new Label("Stuff Goes Here.", skin);
+		msgBox = new Label("", skin);
 		msgBox.getStyle().background = skin.getDrawable("msgBack");
 		msgBox.setAlignment(Align.center);
 
@@ -223,6 +223,7 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		if (MySidekick.DEBUG_MODE) {
 			debugBox2DRenderer = new Box2DDebugRenderer();
 			debugBox2DRenderer.setDrawContacts(true);
+			debugBox2DRenderer.setDrawBodies(true);
 		} else {
 			debugBox2DRenderer = null;
 		}

@@ -47,18 +47,17 @@ public class Bullet extends Entity implements Harmful {
 	 * @param world
 	 */
 	public Bullet(TextureRegion textReg, float x, float y, World world) {
-		super(textReg, x, y, world);
+		super(textReg, x, y, world, "bullet");
 		mBody.setBullet(true); // More accurate collision detection
-		Fixture fixture = mBody.getFixtureList().get(0);
-		fixture.setDensity(0);
-		fixture.setRestitution(1);
-		fixture.setFriction(0);
-
-		Filter filter = fixture.getFilterData();
-		filter.categoryBits = EEnityCategories.BULLET.getValue();
-		filter.maskBits &= ~EEnityCategories.BULLET.getValue();
-
-		fixture.setFilterData(filter);
+		for (Fixture fixture : mBody.getFixtureList()) {
+			fixture.setDensity(0);
+			fixture.setRestitution(1);
+			fixture.setFriction(0);
+			Filter filter = fixture.getFilterData();
+			filter.categoryBits = EEnityCategories.BULLET.getValue();
+			filter.maskBits &= ~EEnityCategories.BULLET.getValue();
+			fixture.setFilterData(filter);
+		}
 		mBody.setLinearDamping(0);
 		mSpeed = SPEED;
 		mDamage = 20f;
