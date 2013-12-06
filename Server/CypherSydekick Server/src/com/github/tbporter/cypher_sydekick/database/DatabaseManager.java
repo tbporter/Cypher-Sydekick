@@ -1,5 +1,6 @@
 package com.github.tbporter.cypher_sydekick.database;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.tbporter.cypher_sydekick.chat.ChatMessage;
-import com.github.tbporter.cypher_sydekick.debugging.Debug;
 
 /**
  * Handles all database-related operations (opening database, managing tables,
@@ -32,10 +32,13 @@ public final class DatabaseManager {
 	 *             if the connection fails.
 	 */
 	public static void openDatabase() throws DatabaseManagerException {
+		// Create the database directory if it doesn't exist
+		new File(DatabaseConstants.DB_DIR).mkdirs();
+
 		try {
 			Class.forName(org.sqlite.JDBC.class.getName());
-			s_connection = DriverManager
-					.getConnection(DatabaseConstants.DB_NAME);
+			s_connection = DriverManager.getConnection("jdbc:sqlite:"
+					+ DatabaseConstants.DB_DIR + DatabaseConstants.DB_NAME);
 
 		} catch (ClassNotFoundException cnfe) {
 			throw new DatabaseManagerException(
@@ -140,7 +143,7 @@ public final class DatabaseManager {
 					// No results found
 					retVal = null;
 				}
-				
+
 				result.close();
 				ps.close();
 
@@ -181,7 +184,7 @@ public final class DatabaseManager {
 					retVal.add(results
 							.getString(DatabaseConstants.USERNAME_COLUMN_LABEL));
 				}
-				
+
 				results.close();
 				s.close();
 
@@ -335,7 +338,7 @@ public final class DatabaseManager {
 					// No results found
 					msg = null;
 				}
-				
+
 				result.close();
 				ps.close();
 

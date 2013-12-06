@@ -8,7 +8,9 @@ package com.github.tbporter.cypher_sydekick.database;
  */
 abstract class DatabaseConstants {
 	/** Location of the main database. */
-	public static final String DB_NAME = "jdbc:sqlite:war/WEB-INF/userlist.db";
+	public static final String DB_DIR = "war/WEB-INF/";
+	/** Name of the main database file. */
+	public static final String DB_NAME = "userlist.db";
 
 	/** Name of the users table. */
 	public static final String USERS_TABLE_NAME = "users";
