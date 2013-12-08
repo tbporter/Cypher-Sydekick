@@ -425,6 +425,8 @@ public class ChatClientActivity extends Activity {
 		public void setRecipient(String username, String key) {
 			recipientUsername_ = username;
 			recipientPubKey_ = key;
+			messageField_.setVisibility(View.VISIBLE);
+			sendButton_.setVisibility(View.VISIBLE);
 		}
 
 		@Override
@@ -464,6 +466,9 @@ public class ChatClientActivity extends Activity {
 					messageField_.setText("");
 				}
 			});
+			
+			messageField_.setVisibility(View.INVISIBLE);
+			sendButton_.setVisibility(View.INVISIBLE);
 			callAsynchronousTask();
 
 			return rootView;
@@ -494,7 +499,7 @@ public class ChatClientActivity extends Activity {
 				}
 			};
 			timer.schedule(doAsynchronousTask, 0, 3000); // execute in every
-															// 1000 ms
+															// 3000 ms
 		}
 
 	}
