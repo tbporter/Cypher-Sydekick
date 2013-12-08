@@ -11,7 +11,8 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <!-- Preferences strings -->
-    <string name="pref_server">Server address</string>
+    <string name="pref_server_key">server_pref</string>
+    <string name="pref_server_title">Server address</string>
     <string name="pref_server_summary">Address of the CypherSydekick Server.  This address must include the port if the default HTTP port is not used.</string>
     <string name="pref_server_default">http://ayelix.dnsdynamic.com</string>
 
