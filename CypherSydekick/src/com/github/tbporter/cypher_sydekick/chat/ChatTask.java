@@ -42,8 +42,9 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 
 	// Might have to add an instance of the Crypt class if we want to do
 	// encryption and decription in this class
-	public ChatTask() {
+	public ChatTask(Context c) {
 		activityConversationItems_ = null;
+		context_ = c;
 	}
 
 	// Only need to make one instance of this class since the conversation items
@@ -85,6 +86,7 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 				url = getServerAddress() + "/messages?action=send&sender="
 						+ params[1].trim() + "&recipient=" + params[2].trim()
 						+ "&message=" + URLEncoder.encode(message, HTTP.UTF_8);
+				Log.d("URL", url);
 				HttpURLConnection connection = (HttpURLConnection) (new URL(url)
 						.openConnection());
 				connection.setRequestMethod("GET");
@@ -105,6 +107,7 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 							+ "/messages?action=receive&sender="
 							+ params[2].trim() + "&recipient="
 							+ params[1].trim();
+					Log.d("URL", url);
 					HttpURLConnection connection = (HttpURLConnection) (new URL(
 							url).openConnection());
 					connection.setRequestMethod("GET");
@@ -135,6 +138,7 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 				}
 			} else { // add user
 				url = getServerAddress() + "/users?username=" + params[0];
+				Log.d("URL", url);
 				HttpURLConnection connection = (HttpURLConnection) (new URL(url)
 						.openConnection());
 				connection.setRequestMethod("GET");

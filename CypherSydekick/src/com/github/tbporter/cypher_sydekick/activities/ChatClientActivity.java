@@ -205,7 +205,7 @@ public class ChatClientActivity extends Activity {
 
 									out.close();
 
-									new ChatTask().execute(username_);
+									new ChatTask(getBaseContext()).execute(username_);
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
@@ -347,13 +347,13 @@ public class ChatClientActivity extends Activity {
 			return true;
 		case R.id.action_newuser:
 			showLoginDialog();
-			
+
 			return true;
 		case R.id.action_settings:
 			// Open the settings activity
 			Intent settingsIntent = new Intent(this, SettingsActivity.class);
 			startActivity(settingsIntent);
-			
+
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -467,16 +467,17 @@ public class ChatClientActivity extends Activity {
 					newItem.setSubtitle("Sent from " + myUsername_);
 					newItem.setIcon(R.drawable.ic_action_person);
 					conversationItems_.add(newItem);
-					
-					// Here is where we should fire the AsyncTaskto send the message
-					new ChatTask().execute("send-message", myUsername_,
+
+					// Here is where we should fire the AsyncTaskto send the
+					// message
+					new ChatTask(context_).execute("send-message", myUsername_,
 							recipientUsername_, recipientPubKey_, messageField_
 									.getText().toString());
 
 					messageField_.setText("");
 				}
 			});
-			
+
 			messageField_.setVisibility(View.INVISIBLE);
 			sendButton_.setVisibility(View.INVISIBLE);
 			callAsynchronousTask();
