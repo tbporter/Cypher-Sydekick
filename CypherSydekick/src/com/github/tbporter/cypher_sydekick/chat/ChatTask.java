@@ -6,22 +6,23 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import org.apache.http.protocol.HTTP;
 
-import com.github.tbporter.cypher_sydekick.R;
-import com.github.tbporter.cypher_sydekick.crypt.Crypt;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
+
+import com.github.tbporter.cypher_sydekick.R;
+import com.github.tbporter.cypher_sydekick.crypt.Crypt;
 
 /**
  * ChatTask is the Async Task that handles all the network communication with
@@ -31,7 +32,6 @@ import android.util.Log;
  * 
  */
 public class ChatTask extends AsyncTask<String, Void, String> {
-	static final String SERVER_URL_DEFAULT = "http://ayelix.dnsdynamic.com/";
 	private final String WHITESPACE = "+/+";
 	private ArrayList<ConversationItem> activityConversationItems_;
 	private String sender_;
@@ -82,7 +82,7 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 				byte[] encryptedBytes = Crypt.encrypt(message.getBytes(),
 						Base64.decode(params[3], Base64.DEFAULT));
 				message = Base64.encodeToString(encryptedBytes, Base64.DEFAULT);
-				url = SERVER_URL_DEFAULT + "messages?action=send&sender="
+				url = getServerAddress() + "/messages?action=send&sender="
 						+ params[1].trim() + "&recipient=" + params[2].trim()
 						+ "&message=" + URLEncoder.encode(message, HTTP.UTF_8);
 				HttpURLConnection connection = (HttpURLConnection) (new URL(url)
@@ -101,8 +101,8 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 			} else if (params[0].equals("receive-message")) { // receive
 				if (!params[1].equals("") && !params[2].equals("")) {
 					sender_ = params[2].trim();
-					url = SERVER_URL_DEFAULT
-							+ "messages?action=receive&sender="
+					url = getServerAddress()
+							+ "/messages?action=receive&sender="
 							+ params[2].trim() + "&recipient="
 							+ params[1].trim();
 					HttpURLConnection connection = (HttpURLConnection) (new URL(
@@ -134,7 +134,7 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 					}
 				}
 			} else { // add user
-				url = SERVER_URL_DEFAULT + "users?username=" + params[0];
+				url = getServerAddress() + "/users?username=" + params[0];
 				HttpURLConnection connection = (HttpURLConnection) (new URL(url)
 						.openConnection());
 				connection.setRequestMethod("GET");
@@ -193,5 +193,19 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 		}
 
 		return htmlStringBuilder.toString();
+	}
+
+	/**
+	 * Retrieves the server address as set in app preferences.
+	 * 
+	 * @return Current server address.
+	 */
+	private String getServerAddress() {
+		SharedPreferences sharedPref = PreferenceManager
+				.getDefaultSharedPreferences(context_);
+		final Resources res = context_.getResources();
+		final String prefKey = res.getString(R.string.pref_server_key);
+		final String prefDefault = res.getString(R.string.pref_server_default);
+		return sharedPref.getString(prefKey, prefDefault);
 	}
 }

@@ -44,6 +44,7 @@ import com.github.tbporter.cypher_sydekick.crypt.Crypt;
 import com.github.tbporter.cypher_sydekick.database.UserKeyDOA;
 import com.github.tbporter.cypher_sydekick.nfc.NFCManager;
 import com.github.tbporter.cypher_sydekick.nfc.NFCManagerException;
+import com.github.tbporter.cypher_sydekick.settings.SettingsActivity;
 import com.github.tbporter.cypher_sydekick.users.UserInfo;
 
 /**
@@ -346,6 +347,13 @@ public class ChatClientActivity extends Activity {
 			return true;
 		case R.id.action_newuser:
 			showLoginDialog();
+			
+			return true;
+		case R.id.action_settings:
+			// Open the settings activity
+			Intent settingsIntent = new Intent(this, SettingsActivity.class);
+			startActivity(settingsIntent);
+			
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
