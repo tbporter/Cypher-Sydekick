@@ -1,6 +1,7 @@
 package com.bls220.cyphersidekick.entities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -29,14 +30,14 @@ public class Player extends Entity implements Living {
 
 	private static final String TAG = "Player";
 
-	public Player(String[] spritePaths, TiledMap map, MapActions actions,
+	public Player(TextureRegion reg, TiledMap map, MapActions actions,
 			World world) {
-		this(spritePaths, map, actions, 0, 0, world);
+		this(reg, map, actions, 0, 0, world);
 	}
 
-	public Player(String[] spritePaths, TiledMap map, MapActions actions,
-			int x, int y, World world) {
-		super(spritePaths[1], x, y, world, "circle");
+	public Player(TextureRegion reg, TiledMap map, MapActions actions, int x,
+			int y, World world) {
+		super(reg, x, y, world, "circle");
 		Gdx.app.log(TAG, String.format("Player spawned at (%d, %d)", x, y));
 		mBody.setFixedRotation(true);
 
