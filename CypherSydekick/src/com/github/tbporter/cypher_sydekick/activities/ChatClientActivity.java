@@ -484,7 +484,7 @@ public class ChatClientActivity extends Activity {
 					newItem.setSubtitle("Sent from " + myUsername_);
 					newItem.setIcon(R.drawable.ic_action_person);
 					conversationItems_.add(newItem);
-
+					convAdapter_.notifyDataSetChanged();
 					// Here is where we should fire the AsyncTaskto send the
 					// message
 					new ChatTask(context_).execute("send-message", myUsername_,
