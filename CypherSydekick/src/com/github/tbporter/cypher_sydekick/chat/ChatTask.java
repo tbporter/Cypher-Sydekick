@@ -164,7 +164,7 @@ public class ChatTask extends AsyncTask<String, Void, String> {
 				ConversationItem newItem = new ConversationItem();
 				newItem.setMessage(result);
 				newItem.setSubtitle("Received from " + sender_);
-				newItem.setIcon(R.drawable.ic_action_person);
+				newItem.setIcon(R.drawable.ic_action_social_person_blue);
 				activityConversationItems_.add(newItem);
 				convAdapter_.notifyDataSetChanged();
 				if (context_ != null) {
