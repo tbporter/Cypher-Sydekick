@@ -24,7 +24,7 @@ public class Player extends Entity implements Living {
 
 	private int mPillarCount;
 
-	private static final float SPEED = 4f; // m/s
+	private static final float SPEED = 2f; // m/s
 	private static final long SHOOT_DELAY = 400; // ms
 	private static final float MAX_HEALTH = 100f;
 

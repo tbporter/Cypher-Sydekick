@@ -23,7 +23,7 @@ public class Enemy extends Entity implements Harmful, Living {
 
 	private static final long SHOOT_DELAY = 400;
 	public static final float MAX_HEALTH = 100;
-	private static final float SPEED = 2;
+	private static final float SPEED = 2f;
 
 	/**
 	 * @param texturePath
