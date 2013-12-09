@@ -25,7 +25,8 @@
         android:layout_toLeftOf="@+id/btn_sendMessage"
         android:ems="10"
         android:hint="Type message"
-        android:inputType="textMultiLine" />
+        android:imeOptions="actionSend"
+        android:inputType="textCapSentences|textAutoCorrect|textImeMultiLine" />
 
     <ImageButton
         android:id="@+id/btn_sendMessage"

@@ -23,17 +23,21 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Base64;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.github.tbporter.cypher_sydekick.R;
@@ -205,7 +209,8 @@ public class ChatClientActivity extends Activity {
 
 									out.close();
 
-									new ChatTask(getBaseContext()).execute(username_);
+									new ChatTask(getBaseContext())
+											.execute(username_);
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
@@ -270,17 +275,15 @@ public class ChatClientActivity extends Activity {
 			final UserInfo receivedUser = m_nfcManager.handleIntent(intent);
 
 			// Add the new user to the database
-			
 
 			// Add the new user to the drawer
 			if (!mFriendsArray.contains(receivedUser.getUsername())) {
 				mFriendsArray.add(receivedUser.getUsername());
 				mDrawerAdapter.notifyDataSetChanged();
-			}
-			else{
+			} else {
 				userKeyDatabase_.deleteUser(receivedUser.getUsername());
 			}
-			
+
 			userKeyDatabase_.createUser(receivedUser.getUsername(),
 					receivedUser.getPublicKey());
 
@@ -459,6 +462,20 @@ public class ChatClientActivity extends Activity {
 					.findViewById(R.id.btn_sendMessage);
 			messageField_ = (EditText) rootView
 					.findViewById(R.id.editText_message);
+
+			messageField_
+					.setOnEditorActionListener(new OnEditorActionListener() {
+						@Override
+						public boolean onEditorAction(TextView v, int actionId,
+								KeyEvent event) {
+							boolean handled = false;
+							if (actionId == EditorInfo.IME_ACTION_SEND) {
+								sendButton_.callOnClick();
+								handled = true;
+							}
+							return handled;
+						}
+					});
 
 			sendButton_.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
