@@ -16,6 +16,12 @@ import android.widget.Toast;
 
 import com.github.tbporter.cypher_sydekick.users.UserInfo;
 
+/**
+ * Contains all NFC-related operations for exchanging UserInfo via Android Beam.
+ * 
+ * @author ayelix
+ * 
+ */
 public class NFCManager implements CreateNdefMessageCallback {
 	private static final String TAG = "NFCManager";
 
@@ -60,6 +66,20 @@ public class NFCManager implements CreateNdefMessageCallback {
 		m_nfcAdapter.setNdefPushMessageCallback(this, m_activity);
 	}
 
+	/**
+	 * Creates a new NFCManager using the given NfcAdapter and associated with
+	 * the given Activity. The current user is set to the given UserInfo.
+	 * 
+	 * @param nfcAdapter
+	 *            NfcAdapter this manager will use.
+	 * @param activity
+	 *            Activity this manager is associated with.
+	 * @param user
+	 *            UserInfo to share via Android Beam.
+	 * @throws NFCManagerException
+	 *             If the given NfcAdapter is not valid (i.e. NFC is not
+	 *             available).
+	 */
 	public NFCManager(final NfcAdapter nfcAdapter, final Activity activity,
 			final UserInfo user) throws NFCManagerException {
 		this(nfcAdapter, activity);
@@ -229,6 +249,10 @@ public class NFCManager implements CreateNdefMessageCallback {
 		return retVal;
 	}
 
+	/**
+	 * Builds an NDEF message with current user info when Android Beam is
+	 * initiated.
+	 */
 	@Override
 	public NdefMessage createNdefMessage(NfcEvent event) {
 		Log.d(TAG, "Building NDEF message");
