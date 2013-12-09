@@ -1,5 +1,12 @@
 package com.github.tbporter.cypher_sydekick.chat;
 
+/**
+ * Object for each conversation item to be displayed on the chat message
+ * fragment.
+ * 
+ * @author teja
+ * 
+ */
 public class ConversationItem {
 	private String subtitle_ = "";
 	private String message_ = "";

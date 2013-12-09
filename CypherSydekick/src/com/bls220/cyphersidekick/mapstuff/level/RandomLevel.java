@@ -132,7 +132,7 @@ public class RandomLevel extends Level {
 			String name = "Anon " + i;
 			String key = "hasKey";
 			if (!usernames.isEmpty()) {
-				name = usernames.get(MathUtils.random(usernames.size()));
+				name = usernames.get(MathUtils.random(usernames.size() - 1));
 				// see if has key
 				key = datasource.getKeyViaUsername(name);
 				usernames.remove(name);

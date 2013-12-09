@@ -237,9 +237,10 @@ public class MainScreen implements Screen, GestureListener, ContactListener {
 		int mapHeight = ((TiledMapTileLayer) map.getLayers().get(0))
 				.getHeight();
 
-		mPlayer = new Player(new String[] { "man_back.png", "man_front.png",
-				"man_right.png", "man_left.png" }, map, acts, mapWidth / 2,
-				mapHeight / 2, MySidekick.getWorld());
+		TextureRegion playerReg = map.getTileSets().getTile(12)
+				.getTextureRegion();
+		mPlayer = new Player(playerReg, map, acts, mapWidth / 2, mapHeight / 2,
+				MySidekick.getWorld());
 
 		camera.position.set(mPlayer.getX() * Entity.TILE_WIDTH, mPlayer.getY()
 				* Entity.TILE_HEIGHT, 0);
