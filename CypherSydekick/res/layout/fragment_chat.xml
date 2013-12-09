@@ -37,6 +37,6 @@
         android:background="?android:selectableItemBackground"
         android:contentDescription="TODO"
         android:padding="8dp"
-        android:src="@drawable/ic_action_send_now" />
+        android:src="@android:drawable/ic_menu_send" />
 
 </RelativeLayout>
