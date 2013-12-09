@@ -40,10 +40,8 @@ public class UserKeyDOA {
 		return newComment;
 	}
 	
-	public void deleteUser(UserKey username) {
-		long id = username.getId();
-		System.out.println("Username deleted with id: " + id);
-		database.delete(UserKeyDatabaseHelper.TABLE_KEYS, UserKeyDatabaseHelper.COLUMN_ID + " = " + id, null);
+	public void deleteUser(String username) {
+		database.delete(UserKeyDatabaseHelper.TABLE_KEYS, UserKeyDatabaseHelper.COLUMN_USERNAME + "=?", new String[]{username});
 	}
 	
 	public void deleteAllUsers() {

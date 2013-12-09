@@ -48,7 +48,7 @@ public class TestDatabaseActivity extends ListActivity {
     case R.id.delete:
       if (getListAdapter().getCount() > 0) {
     	username = (UserKey) getListAdapter().getItem(0);
-        datasource.deleteUser(username);
+        //datasource.deleteUser(username);
         adapter.remove(username);
       }
       break;

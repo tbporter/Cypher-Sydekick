@@ -269,14 +269,19 @@ public class ChatClientActivity extends Activity {
 			final UserInfo receivedUser = m_nfcManager.handleIntent(intent);
 
 			// Add the new user to the database
-			userKeyDatabase_.createUser(receivedUser.getUsername(),
-					receivedUser.getPublicKey());
+			
 
 			// Add the new user to the drawer
 			if (!mFriendsArray.contains(receivedUser.getUsername())) {
 				mFriendsArray.add(receivedUser.getUsername());
 				mDrawerAdapter.notifyDataSetChanged();
 			}
+			else{
+				userKeyDatabase_.deleteUser(receivedUser.getUsername());
+			}
+			
+			userKeyDatabase_.createUser(receivedUser.getUsername(),
+					receivedUser.getPublicKey());
 
 			// Make sure the UserInfo was parsed successfully
 			if (null != receivedUser) {
