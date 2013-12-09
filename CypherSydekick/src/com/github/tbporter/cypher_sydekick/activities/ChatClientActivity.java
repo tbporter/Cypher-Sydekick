@@ -46,6 +46,14 @@ import com.github.tbporter.cypher_sydekick.nfc.NFCManager;
 import com.github.tbporter.cypher_sydekick.nfc.NFCManagerException;
 import com.github.tbporter.cypher_sydekick.users.UserInfo;
 
+/**
+ * ChatClientActivity is the activity for the Chat Client that includes the
+ * drawer and the top action bar for other actions. Also includes the actual
+ * messaging fragment.
+ * 
+ * @author teja
+ * 
+ */
 public class ChatClientActivity extends Activity {
 	static final String USERNAME_FILE = "cypher-sidekick-username";
 	private String username_ = "";
@@ -94,7 +102,7 @@ public class ChatClientActivity extends Activity {
 			showLoginDialog();
 		}
 
-		// TODO: init database
+		// init database
 		userKeyDatabase_ = new UserKeyDOA(this);
 		userKeyDatabase_.open();
 
@@ -104,11 +112,6 @@ public class ChatClientActivity extends Activity {
 
 		mTitle = getResources().getString(R.string.chatclient_title);
 		mDrawerTitle = getResources().getString(R.string.drawer_title);
-		/*
-		 * mFriendsArray = new String[] { "user1", "user2", "user3", "user4",
-		 * "user5", "user6", "user7", "user8", "user9", "user10", "user11",
-		 * "user12", "user13", "user14" };
-		 */
 		mFriendsArray = userKeyDatabase_.getAllUsers();
 
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -166,10 +169,6 @@ public class ChatClientActivity extends Activity {
 		// Notify the user if they have not enabled NFC
 		checkAndNotifyNFCEnabled();
 
-		/*
-		 * if (savedInstanceState == null) { selectItem(0); }
-		 */
-
 		// Drawer is initially open
 		mDrawerLayout.openDrawer(mDrawerList);
 	}
@@ -184,8 +183,7 @@ public class ChatClientActivity extends Activity {
 		newUserAlert.setPositiveButton("Create",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						// TODO Write code for what to do after create is
-						// pressed
+						// What to do after create is pressed
 						Runnable runnable = new Runnable() {
 
 							@Override
@@ -208,7 +206,6 @@ public class ChatClientActivity extends Activity {
 
 									new ChatTask().execute(username_);
 								} catch (IOException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 
@@ -398,7 +395,7 @@ public class ChatClientActivity extends Activity {
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
-	/** Fragment for the Chat **/
+	/** Fragment for the Chat for each individual **/
 	public static class ChatFragment extends Fragment {
 		private ListView conversationListView_;
 		ConversationAdapter convAdapter_;
@@ -457,8 +454,8 @@ public class ChatClientActivity extends Activity {
 					newItem.setSubtitle("Sent from " + myUsername_);
 					newItem.setIcon(R.drawable.ic_action_person);
 					conversationItems_.add(newItem);
-					// TODO Here is where we should fire the AsyncTaskto send
-					// the message
+					
+					// Here is where we should fire the AsyncTaskto send the message
 					new ChatTask().execute("send-message", myUsername_,
 							recipientUsername_, recipientPubKey_, messageField_
 									.getText().toString());
@@ -483,16 +480,11 @@ public class ChatClientActivity extends Activity {
 					handler.post(new Runnable() {
 						public void run() {
 							try {
-								// PerformBackgroundTask this class is the class
-								// that extends AsynchTask
-								// Toast.makeText(getActivity(),
-								// "Checked for new Message",
-								// Toast.LENGTH_SHORT).show();
 								new ChatTask(convAdapter_, conversationItems_,
 										context_).execute("receive-message",
 										myUsername_, recipientUsername_);
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
 						}
 					});
