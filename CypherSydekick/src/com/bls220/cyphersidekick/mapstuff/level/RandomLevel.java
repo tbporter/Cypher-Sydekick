@@ -1,6 +1,7 @@
 package com.bls220.cyphersidekick.mapstuff.level;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import pong.client.core.BodyEditorLoader;
 
@@ -20,6 +21,8 @@ import com.bls220.cyphersidekick.MySidekick;
 import com.bls220.cyphersidekick.comm.MsgHandler;
 import com.bls220.cyphersidekick.entities.Enemy;
 import com.bls220.cyphersidekick.entities.Portal;
+import com.bls220.cyphersidekick.entities.ai.Melee;
+import com.bls220.cyphersidekick.entities.ai.Shooter;
 import com.bls220.cyphersidekick.mapstuff.C;
 import com.bls220.cyphersidekick.util.BodyFactory;
 import com.github.tbporter.cypher_sydekick.database.UserKeyDOA;
@@ -71,7 +74,23 @@ public class RandomLevel extends Level {
 				tileLayer.setCell(x, y, dirtCell);
 			}
 		}
-
+		
+		//Random block genration
+		int choice = 0;
+		Vector2 center = new Vector2(tileLayer.getWidth() / 2, tileLayer.getHeight() / 2);
+		int centerDeadzone = 10;
+		for (int y = 1; y < tileLayer.getHeight() - 1; y++) {
+			for (int x = 1; x < tileLayer.getWidth() - 1 ; x++){
+				if((x < center.x - centerDeadzone || x > center.x + centerDeadzone) && (y < center.y -centerDeadzone || y > center.y + centerDeadzone) ){
+					choice = MathUtils.random(10);
+					if(choice == 9){
+						tileLayer.setCell(x, y, wallCell);
+						BodyFactory.createBody(world, "tile", BodyType.StaticBody, x, y);
+					}
+				}
+			}
+		}
+		
 		// Generate walls
 		for (int y = 0; y < tileLayer.getHeight(); y++) {
 			tileLayer.setCell(0, y, wallCell);
@@ -137,6 +156,9 @@ public class RandomLevel extends Level {
 		Cell floorCell = new Cell();
 		floorCell.setTile(tileSets.getTile(FLOOR_BLUE_ID));
 
+		Cell groundCell = new Cell();
+		groundCell.setTile(tileSets.getTile(FLOOR_RED_ID));
+		
 		Cell pillarTopCell = new Cell();
 		pillarTopCell.setTile(tileSets.getTile(PILLAR_OFF_TOP_ID));
 
@@ -147,7 +169,16 @@ public class RandomLevel extends Level {
 		int mapWidth = tileLayer.getWidth();
 		Vector2 center = new Vector2(mapWidth / 2, mapHeight / 2);
 		int roomWidth = 10;
-
+		int borderWidth = roomWidth+5;
+		// Generate ground
+		for (int y = (int) (center.y - borderWidth / 2); y < center.y + borderWidth
+				/ 2; y++) {
+			for (int x = (int) (center.x - borderWidth / 2); x < center.x
+					+ borderWidth / 2; x++) {
+				tileLayer.setCell(x, y, groundCell);
+			}
+		}
+		
 		// Generate ground
 		for (int y = (int) (center.y - roomWidth / 2); y < center.y + roomWidth
 				/ 2; y++) {
