@@ -1,3 +1,8 @@
+// Test file to check for correct functionality of the local database.
+// Adding a user will randomly add one of three pre-generated users into
+// the list, and removing a user will remove the user with the lowest id
+// number
+
 package com.github.tbporter.cypher_sydekick.database;
 
 import java.util.List;
