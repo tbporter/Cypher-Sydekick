@@ -1,3 +1,6 @@
+// Class file for User Keys that gives access to user ids, keys, and names. 
+// Enables setting and retrieving information for each UserKey class
+
 package com.github.tbporter.cypher_sydekick.database;
 
 public class UserKey {
