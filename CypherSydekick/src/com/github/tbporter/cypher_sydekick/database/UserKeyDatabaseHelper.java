@@ -1,3 +1,6 @@
+// Provides the layout for the table database stored locally. The important fields
+// are column id (necessary but not thoroughly used), a username, and their key
+
 package com.github.tbporter.cypher_sydekick.database;
 
 import android.content.Context;
