@@ -1,3 +1,8 @@
+// Class file for modifying the local database. Gives options to create users,
+// delete users, delete all the users, retrieve all the users, and retrieve
+// a users key by searching for their username. A SQL cursor function is used
+// to search for different values in the table and retrieve results
+
 package com.github.tbporter.cypher_sydekick.database;
 
 import java.util.ArrayList;
